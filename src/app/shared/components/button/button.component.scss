@@ -1,0 +1,126 @@
+
+@use 'variables' as *;
+
+:host {
+  display: inline-block;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-2;
+
+  min-height: 38px;
+  padding: 9px $space-4;
+
+  border: 1px solid transparent;
+  border-radius: $radius-sm;
+
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease;
+
+  &:focus-visible {
+    outline: 3px solid rgba($color-turquoise, 0.3);
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  &.button-primary {
+    color: $color-white;
+    background-color: $color-primary;
+
+    &:hover:not(:disabled) {
+      background-color: $color-dark;
+    }
+  }
+
+  &.button-secondary {
+    color: $color-white;
+    background-color: $color-turquoise;
+
+    &:hover:not(:disabled) {
+      background-color: $color-primary;
+    }
+  }
+
+  &.button-success {
+    color: $color-white;
+    background-color: $color-green;
+
+    &:hover:not(:disabled) {
+      background-color: $color-primary;
+    }
+  }
+
+  &.button-warning {
+    color: $color-dark;
+    background-color: $color-gold;
+
+    &:hover:not(:disabled) {
+      filter: brightness(0.96);
+    }
+  }
+
+  &.button-danger {
+    color: $color-white;
+    background-color: $color-danger;
+
+    &:hover:not(:disabled) {
+      filter: brightness(0.92);
+    }
+  }
+
+  &.button-outline {
+    color: $color-primary;
+    border-color: $color-light-gray;
+    background-color: $color-white;
+
+    &:hover:not(:disabled) {
+      background-color: $color-light-gray;
+    }
+  }
+
+  &.button-ghost {
+    color: $color-primary;
+    background-color: transparent;
+
+    &:hover:not(:disabled) {
+      background-color: $color-light-gray;
+    }
+  }
+
+  &.button-sm {
+    min-height: 30px;
+    padding: 5px $space-3;
+    font-size: 12px;
+  }
+
+  &.button-md {
+    min-height: 38px;
+    padding: 9px $space-4;
+    font-size: 14px;
+  }
+
+  &.button-lg {
+    min-height: 44px;
+    padding: $space-3 $space-5;
+    font-size: 15px;
+  }
+
+  &.button-full {
+    display: flex;
+    width: 100%;
+  }
+}
