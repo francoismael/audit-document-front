@@ -1,0 +1,73 @@
+
+@use 'variables' as *;
+
+:host {
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2;
+
+  border: 1px solid transparent;
+  border-radius: 999px;
+
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: nowrap;
+
+  &.status-badge-sm {
+    padding: 3px $space-2;
+    font-size: 11px;
+  }
+
+  &.status-badge-md {
+    padding: 5px $space-3;
+    font-size: 12px;
+  }
+
+  .status-indicator {
+    width: 7px;
+    height: 7px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background-color: currentColor;
+  }
+
+  &.status-badge-draft {
+    color: $color-primary;
+    background-color: $color-light-gray;
+  }
+
+  &.status-badge-pending {
+    color: #805A0A;
+    background-color: #FFF0D0;
+  }
+
+  &.status-badge-in-progress {
+    color: #14758A;
+    background-color: #DDF3F7;
+  }
+
+  &.status-badge-approved {
+    color: $color-green;
+    background-color: #E1EEE8;
+  }
+
+  &.status-badge-completed {
+    color: $color-white;
+    background-color: $color-green;
+  }
+
+  &.status-badge-rejected {
+    color: #A52D2D;
+    background-color: #FBE5E5;
+  }
+
+  &.status-badge-cancelled {
+    color: $color-dark;
+    background-color: #E9EAEB;
+  }
+}

@@ -1,0 +1,15 @@
+
+<span
+  class="status-badge"
+  [class.status-badge-draft]="status() === 'draft'"
+  [class.status-badge-pending]="status() === 'pending'"
+  [class.status-badge-in-progress]="status() === 'in-progress'"
+  [class.status-badge-approved]="status() === 'approved'"
+  [class.status-badge-completed]="status() === 'completed'"
+  [class.status-badge-rejected]="status() === 'rejected'"
+  [class.status-badge-cancelled]="status() === 'cancelled'"
+  [class.status-badge-sm]="size() === 'sm'"
+  [class.status-badge-md]="size() === 'md'"
+>
+  {{ label() }}
+</span>

@@ -1,0 +1,43 @@
+
+<div class="form-field">
+  <label class="form-field-label" [for]="id()">
+    {{ config().label }}
+
+    @if (config().required) {
+      <span class="form-field-required" aria-hidden="true">*</span>
+    }
+  </label>
+
+  @if (fieldType === 'textarea') {
+    <textarea
+      class="form-field-control form-field-textarea"
+      [id]="id()"
+      [value]="value()"
+      [placeholder]="config().placeholder ?? ''"
+      [required]="config().required ?? false"
+      [disabled]="config().disabled ?? false"
+      [attr.aria-invalid]="invalid()"
+      [attr.aria-describedby]="invalid() ? id() + '-error' : null"
+      (input)="onValueInput($event)"
+    ></textarea>
+  } @else {
+    <input
+      class="form-field-control"
+      [id]="id()"
+      [type]="fieldType"
+      [value]="value()"
+      [placeholder]="config().placeholder ?? ''"
+      [required]="config().required ?? false"
+      [disabled]="config().disabled ?? false"
+      [attr.aria-invalid]="invalid()"
+      [attr.aria-describedby]="invalid() ? id() + '-error' : null"
+      (input)="onValueInput($event)"
+    />
+  }
+
+  @if (invalid()) {
+    <p class="form-field-error" [id]="id() + '-error'" role="alert">
+      {{ errorMessage }}
+    </p>
+  }
+</div>

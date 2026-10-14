@@ -1,0 +1,26 @@
+
+<article
+  class="card"
+  [class.card-default]="variant() === 'default'"
+  [class.card-outlined]="variant() === 'outlined'"
+  [class.card-elevated]="variant() === 'elevated'"
+  [class.card-padding-sm]="padding() === 'sm'"
+  [class.card-padding-md]="padding() === 'md'"
+  [class.card-padding-lg]="padding() === 'lg'"
+>
+  @if (title() || description()) {
+    <header class="card-header">
+      @if (title()) {
+        <h2 class="card-title">{{ title() }}</h2>
+      }
+
+      @if (description()) {
+        <p class="card-description">{{ description() }}</p>
+      }
+    </header>
+  }
+
+  <div class="card-content">
+    <ng-content />
+  </div>
+</article>

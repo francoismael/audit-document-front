@@ -1,0 +1,64 @@
+
+@use 'variables' as *;
+
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.card {
+  width: 100%;
+  border-radius: $radius-md;
+  background-color: $color-white;
+  transition:
+    box-shadow 160ms ease,
+    border-color 160ms ease;
+
+  &.card-default {
+    border: 1px solid $color-light-gray;
+  }
+
+  &.card-outlined {
+    border: 1px solid $color-turquoise;
+  }
+
+  &.card-elevated {
+    border: 1px solid transparent;
+    box-shadow: $shadow-card;
+  }
+
+  &.card-padding-sm {
+    padding: $space-3;
+  }
+
+  &.card-padding-md {
+    padding: $space-5;
+  }
+
+  &.card-padding-lg {
+    padding: $space-6;
+  }
+
+  .card-header {
+    margin-bottom: $space-4;
+  }
+
+  .card-title {
+    margin: 0;
+    color: $color-primary;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  .card-description {
+    margin: $space-2 0 0;
+    color: $color-text-muted;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .card-content {
+    min-width: 0;
+  }
+}

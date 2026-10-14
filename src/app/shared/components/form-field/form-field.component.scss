@@ -1,0 +1,74 @@
+
+@use 'variables' as *;
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  width: 100%;
+
+  .form-field-label {
+    color: $color-primary;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+
+  .form-field-required {
+    margin-left: 3px;
+    color: $color-danger;
+  }
+
+  .form-field-control {
+    width: 100%;
+    min-height: 42px;
+    padding: $space-3;
+    border: 1px solid $color-border;
+    border-radius: $radius-sm;
+    background-color: $color-white;
+    color: $color-text;
+    font: inherit;
+    font-size: 14px;
+    transition:
+      border-color 160ms ease,
+      box-shadow 160ms ease;
+
+    &::placeholder {
+      color: $color-text-muted;
+      opacity: 1;
+    }
+
+    &:focus {
+      outline: none;
+      border-color: $color-turquoise;
+      box-shadow: 0 0 0 3px rgba($color-turquoise, 0.15);
+    }
+
+    &:disabled {
+      background-color: $color-background;
+      color: $color-text-muted;
+      cursor: not-allowed;
+    }
+
+    &[aria-invalid='true'] {
+      border-color: $color-danger;
+    }
+  }
+
+  .form-field-textarea {
+    min-height: 110px;
+    resize: vertical;
+  }
+
+  .form-field-error {
+    margin: 0;
+    color: $color-danger;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+}
