@@ -1,0 +1,39 @@
+<div class="textarea-field">
+  <label class="textarea-field-label" [for]="id()">
+    {{ config().label }}
+
+    @if (config().required) {
+      <span class="textarea-field-required" aria-hidden="true">*</span>
+    }
+  </label>
+
+  <textarea
+    class="textarea-field-control"
+    [id]="id()"
+    [value]="value()"
+    [placeholder]="config().placeholder ?? ''"
+    [rows]="config().rows ?? 4"
+    [required]="config().required ?? false"
+    [disabled]="config().disabled ?? false"
+    [attr.maxlength]="config().maxLength ?? null"
+    [attr.aria-invalid]="invalid()"
+    [attr.aria-describedby]="invalid() ? id() + '-error' : null"
+    (input)="onValueInput($event)"
+  ></textarea>
+
+  @if (invalid()) {
+    <p
+      class="textarea-field-error"
+      [id]="id() + '-error'"
+      role="alert"
+    >
+      {{ errorMessage }}
+    </p>
+  }
+
+  @if (config().maxLength) {
+    <p class="textarea-field-counter">
+      {{ value().length }} / {{ config().maxLength }}
+    </p>
+  }
+</div>

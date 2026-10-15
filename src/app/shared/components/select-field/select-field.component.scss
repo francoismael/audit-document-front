@@ -1,0 +1,91 @@
+
+@use 'variables' as *;
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+.select-field {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  width: 100%;
+
+  .select-field-label {
+    color: $color-primary;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+
+  .select-field-required {
+    margin-left: 3px;
+    color: $color-danger;
+  }
+
+  .select-field-control-wrapper {
+    position: relative;
+    width: 100%;
+  }
+
+  .select-field-control {
+    display: block;
+    width: 100%;
+    min-height: 42px;
+    padding: $space-3 38px $space-3 $space-3;
+
+    border: 1px solid $color-border;
+    border-radius: $radius-sm;
+
+    background-color: $color-white;
+    color: $color-text;
+    font: inherit;
+    font-size: 14px;
+
+    appearance: none;
+    cursor: pointer;
+
+    transition:
+      border-color 160ms ease,
+      box-shadow 160ms ease;
+
+    &:focus {
+      outline: none;
+      border-color: $color-turquoise;
+      box-shadow: 0 0 0 3px rgba($color-turquoise, 0.15);
+    }
+
+    &:disabled {
+      background-color: $color-background;
+      color: $color-text-muted;
+      cursor: not-allowed;
+    }
+
+    &[aria-invalid='true'] {
+      border-color: $color-danger;
+    }
+  }
+
+  .select-field-arrow {
+    position: absolute;
+    top: 50%;
+    right: $space-4;
+
+    width: 8px;
+    height: 8px;
+
+    border-right: 2px solid $color-text-muted;
+    border-bottom: 2px solid $color-text-muted;
+
+    transform: translateY(-70%) rotate(45deg);
+    pointer-events: none;
+  }
+
+  .select-field-error {
+    margin: 0;
+    color: $color-danger;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+}

@@ -1,0 +1,41 @@
+
+<div class="select-field">
+  <label class="select-field-label" [for]="id()">
+    {{ config().label }}
+
+    @if (config().required) {
+      <span class="select-field-required" aria-hidden="true">*</span>
+    }
+  </label>
+
+  <div class="select-field-control-wrapper">
+    <select
+      class="select-field-control"
+      [id]="id()"
+      [value]="value()"
+      [required]="config().required ?? false"
+      [disabled]="config().disabled ?? false"
+      [attr.aria-invalid]="invalid()"
+      [attr.aria-describedby]="invalid() ? id() + '-error' : null"
+      (change)="onValueChange($event)"
+    >
+      <option value="" disabled>
+        {{ config().placeholder ?? 'Sélectionner une option' }}
+      </option>
+
+      @for (option of config().options; track option.value) {
+        <option [value]="option.value">
+          {{ option.label }}
+        </option>
+      }
+    </select>
+
+    <span class="select-field-arrow" aria-hidden="true"></span>
+  </div>
+
+  @if (invalid()) {
+    <p class="select-field-error" [id]="id() + '-error'" role="alert">
+      {{ errorMessage }}
+    </p>
+  }
+</div>

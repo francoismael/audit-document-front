@@ -1,0 +1,58 @@
+@if (isOpen()) {
+  <div
+    class="modal-backdrop"
+    (click)="onBackdropClick($event)"
+    (keydown)="onKeydown($event)"
+  >
+    <section
+      class="modal"
+      role="dialog"
+      aria-modal="true"
+      [attr.aria-label]="title()"
+    >
+      <header class="modal-header">
+        <h2 class="modal-title">{{ title() }}</h2>
+
+        <button
+          class="modal-close"
+          type="button"
+          aria-label="Fermer la fenêtre"
+          [disabled]="loading()"
+          (click)="onCancel()"
+        >
+          &times;
+        </button>
+      </header>
+
+      <div class="modal-content">
+        <ng-content />
+      </div>
+
+      <footer class="modal-actions">
+        <button
+          class="modal-button modal-button-cancel"
+          type="button"
+          [disabled]="loading()"
+          (click)="onCancel()"
+        >
+          {{ cancelText() }}
+        </button>
+
+        <button
+          class="modal-button"
+          [class.modal-button-primary]="confirmVariant() === 'primary'"
+          [class.modal-button-danger]="confirmVariant() === 'danger'"
+          type="button"
+          [disabled]="loading()"
+          (click)="onConfirm()"
+        >
+          @if (loading()) {
+            Traitement...
+          } @else {
+            {{ confirmText() }}
+          }
+        </button>
+      </footer>
+    </section>
+  </div>
+}

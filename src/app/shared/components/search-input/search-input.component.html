@@ -1,0 +1,56 @@
+<div class="search-input">
+  <label class="search-input-label" [for]="id()">
+    <span class="search-input-label-text">Rechercher</span>
+  </label>
+
+  <div class="search-input-control">
+    <svg
+      class="search-input-icon"
+      xmlns="http://www.w3.org/2000/svg"
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
+      <circle cx="11" cy="11" r="8" />
+      <path d="m21 21-4.35-4.35" />
+    </svg>
+
+    <input
+      class="search-input-field"
+      type="search"
+      [id]="id()"
+      [value]="value()"
+      [placeholder]="placeholder()"
+      [disabled]="disabled()"
+      autocomplete="off"
+      (input)="onValueInput($event)"
+      (keydown)="onKeydown($event)"
+    />
+
+    @if (value().length > 0 && !disabled()) {
+      <button
+        class="search-input-clear"
+        type="button"
+        aria-label="Effacer la recherche"
+        (click)="clearSearch()"
+      >
+        &times;
+      </button>
+    }
+
+    <button
+      class="search-input-button"
+      type="button"
+      [disabled]="disabled()"
+      (click)="onSearch()"
+    >
+      Rechercher
+    </button>
+  </div>
+</div>

@@ -1,0 +1,38 @@
+
+<div class="checkbox-field">
+  <div class="checkbox-field-content">
+    <input
+      class="checkbox-field-control"
+      type="checkbox"
+      [id]="id()"
+      [checked]="checked()"
+      [required]="config().required ?? false"
+      [disabled]="config().disabled ?? false"
+      [attr.aria-invalid]="invalid()"
+      [attr.aria-describedby]="invalid() ? id() + '-error' : null"
+      (change)="onValueChange($event)"
+    />
+
+    <div class="checkbox-field-text">
+      <label class="checkbox-field-label" [for]="id()">
+        {{ config().label }}
+
+        @if (config().required) {
+          <span class="checkbox-field-required" aria-hidden="true">*</span>
+        }
+      </label>
+
+      @if (config().description) {
+        <p class="checkbox-field-description">
+          {{ config().description }}
+        </p>
+      }
+    </div>
+  </div>
+
+  @if (invalid()) {
+    <p class="checkbox-field-error" [id]="id() + '-error'" role="alert">
+      {{ errorMessage }}
+    </p>
+  }
+</div>

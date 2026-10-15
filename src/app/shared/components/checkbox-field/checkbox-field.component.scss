@@ -1,0 +1,77 @@
+
+@use 'variables' as *;
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+.checkbox-field {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  width: 100%;
+
+  .checkbox-field-content {
+    display: flex;
+    align-items: flex-start;
+    gap: $space-3;
+  }
+
+  .checkbox-field-control {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    margin: 2px 0 0;
+
+    accent-color: $color-turquoise;
+    cursor: pointer;
+
+    &:focus-visible {
+      outline: 3px solid rgba($color-turquoise, 0.3);
+      outline-offset: 2px;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+    }
+  }
+
+  .checkbox-field-text {
+    display: flex;
+    flex-direction: column;
+    gap: $space-1;
+    min-width: 0;
+  }
+
+  .checkbox-field-label {
+    color: $color-primary;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.5;
+    cursor: pointer;
+  }
+
+  .checkbox-field-required {
+    margin-left: 3px;
+    color: $color-danger;
+  }
+
+  .checkbox-field-description {
+    margin: 0;
+    color: $color-text-muted;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .checkbox-field-error {
+    margin: 0;
+    color: $color-danger;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  .checkbox-field-control:disabled + .checkbox-field-text {
+    opacity: 0.6;
+  }
+}
