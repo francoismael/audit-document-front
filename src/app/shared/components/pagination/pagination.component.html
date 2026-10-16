@@ -1,0 +1,62 @@
+<div class="pagination">
+  <div class="pagination-info">
+    <span>
+      Affichage de
+      <strong>{{ firstItem() }}</strong>
+      à
+      <strong>{{ lastItem() }}</strong>
+      sur
+      <strong>{{ totalItems() }}</strong>
+      résultat(s)
+    </span>
+
+    <label class="page-size">
+      <span>Par page</span>
+
+      <select
+        [value]="pageSize()"
+        (change)="onPageSizeChange($event)"
+        aria-label="Nombre de résultats par page"
+      >
+        @for (size of pageSizeOptions(); track size) {
+          <option [value]="size">{{ size }}</option>
+        }
+      </select>
+    </label>
+  </div>
+
+  <nav class="pagination-navigation" aria-label="Pagination">
+    <button
+      type="button"
+      class="pagination-button pagination-arrow"
+      aria-label="Page précédente"
+      [disabled]="currentPage() <= 1"
+      (click)="goToPage(currentPage() - 1)"
+    >
+      <span aria-hidden="true">‹</span>
+    </button>
+
+    @for (page of pageNumbers(); track page) {
+      <button
+        type="button"
+        class="pagination-button"
+        [class.active]="page === currentPage()"
+        [attr.aria-current]="page === currentPage() ? 'page' : null"
+        [attr.aria-label]="'Page ' + page"
+        (click)="goToPage(page)"
+      >
+        {{ page }}
+      </button>
+    }
+
+    <button
+      type="button"
+      class="pagination-button pagination-arrow"
+      aria-label="Page suivante"
+      [disabled]="currentPage() >= totalPages()"
+      (click)="goToPage(currentPage() + 1)"
+    >
+      <span aria-hidden="true">›</span>
+    </button>
+  </nav>
+</div>

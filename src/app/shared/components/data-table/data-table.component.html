@@ -1,0 +1,33 @@
+<div class="table-container">
+  @if (rows().length > 0 && columns().length > 0) {
+    <div class="table-scroll">
+      <table class="data-table">
+        <thead>
+          <tr>
+            @for (column of columns(); track column.key) {
+              <th [class]="getColumnAlign(column)">
+                {{ column.label }}
+              </th>
+            }
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (row of rows(); track $index) {
+            <tr>
+              @for (column of columns(); track column.key) {
+                <td [class]="getColumnAlign(column)">
+                  {{ formatCell(row[column.key]) }}
+                </td>
+              }
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  } @else {
+    <div class="table-empty" role="status">
+      {{ emptyMessage() }}
+    </div>
+  }
+</div>

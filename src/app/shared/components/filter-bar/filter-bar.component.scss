@@ -1,0 +1,107 @@
+@use 'variables' as *;
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+.filter-bar {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: $space-4;
+  padding: $space-4;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  background: $color-white;
+}
+
+.filter-search {
+  flex: 1 1 240px;
+  min-width: 200px;
+}
+
+.filter-status {
+  flex: 0 1 200px;
+  min-width: 170px;
+}
+
+.filter-date {
+  display: flex;
+  flex: 0 1 165px;
+  flex-direction: column;
+  gap: $space-2;
+
+  label {
+    color: $color-text;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  input {
+    width: 100%;
+    min-height: 40px;
+    padding: 0 $space-3;
+    border: 1px solid $color-border;
+    border-radius: $radius-sm;
+    background: $color-white;
+    color: $color-text;
+    font: inherit;
+    font-size: 13px;
+
+    &:focus-visible {
+      border-color: $color-turquoise;
+      outline: 2px solid rgba(29, 142, 166, 0.15);
+      outline-offset: 1px;
+    }
+  }
+}
+
+.filter-reset {
+  min-height: 40px;
+  padding: 0 $space-4;
+  border: 1px solid $color-border;
+  border-radius: $radius-sm;
+  background: $color-white;
+  color: $color-primary;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+
+  &:hover:not(:disabled) {
+    border-color: $color-primary;
+    background: $color-background;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-turquoise;
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    color: $color-text-muted;
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+}
+
+@media (max-width: 768px) {
+  .filter-bar {
+    align-items: stretch;
+    gap: $space-3;
+  }
+
+  .filter-search,
+  .filter-status,
+  .filter-date {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+
+  .filter-reset {
+    width: 100%;
+  }
+}

@@ -1,0 +1,18 @@
+<div
+  class="loading"
+  [class.loading-full-page]="fullPage()"
+  role="status"
+  aria-live="polite"
+>
+  <span
+    class="loading-spinner"
+    [class.loading-spinner-sm]="size() === 'sm'"
+    [class.loading-spinner-md]="size() === 'md'"
+    [class.loading-spinner-lg]="size() === 'lg'"
+    aria-hidden="true"
+  ></span>
+
+  <p class="loading-message">
+    {{ message() }}
+  </p>
+</div>

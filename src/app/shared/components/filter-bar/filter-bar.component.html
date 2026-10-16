@@ -1,0 +1,52 @@
+<section class="filter-bar" aria-label="Filtres des résultats">
+  <div class="filter-search">
+    <app-search-input
+      id="filter-search"
+      [placeholder]="placeholder()"
+      [value]="search()"
+      (valueChange)="onSearchChange($event)"
+    />
+  </div>
+
+  <div class="filter-status">
+    <app-select-field
+      id="filter-status"
+      [config]="statusConfig()"
+      [value]="status()"
+      (valueChange)="onStatusChange($event)"
+    />
+  </div>
+
+  @if (showDateFilters()) {
+    <div class="filter-date">
+      <label for="filter-date-from">Date de début</label>
+      <input
+        id="filter-date-from"
+        type="date"
+        [value]="dateFrom()"
+        [max]="dateTo() || null"
+        (change)="onDateFromChange($event)"
+      />
+    </div>
+
+    <div class="filter-date">
+      <label for="filter-date-to">Date de fin</label>
+      <input
+        id="filter-date-to"
+        type="date"
+        [value]="dateTo()"
+        [min]="dateFrom() || null"
+        (change)="onDateToChange($event)"
+      />
+    </div>
+  }
+
+  <button
+    type="button"
+    class="filter-reset"
+    (click)="resetFilters()"
+    [disabled]="!search() && !status() && !dateFrom() && !dateTo()"
+  >
+    Réinitialiser
+  </button>
+</section>

@@ -1,0 +1,86 @@
+@use 'variables' as *;
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+.table-container {
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  background: $color-white;
+}
+
+.table-scroll {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+
+  th,
+  td {
+    padding: $space-4;
+    border-bottom: 1px solid $color-border;
+    font-size: 14px;
+    vertical-align: middle;
+  }
+
+  th {
+    background: $color-background;
+    color: $color-primary;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  td {
+    color: $color-text;
+    overflow-wrap: anywhere;
+  }
+
+  tbody tr {
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background: $color-background;
+    }
+
+    &:last-child td {
+      border-bottom: none;
+    }
+  }
+
+  .left {
+    text-align: left;
+  }
+
+  .center {
+    text-align: center;
+  }
+
+  .right {
+    text-align: right;
+  }
+}
+
+.table-empty {
+  padding: $space-6;
+  color: $color-text-muted;
+  font-size: 14px;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .data-table {
+    th,
+    td {
+      padding: $space-3;
+      font-size: 13px;
+    }
+  }
+}

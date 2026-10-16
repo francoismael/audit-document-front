@@ -1,0 +1,53 @@
+<section class="empty-state" aria-live="polite">
+  <div class="empty-state-icon" aria-hidden="true">
+    @switch (icon()) {
+      @case ('search') {
+        <svg viewBox="0 0 24 24" fill="none">
+          <circle cx="11" cy="11" r="7" />
+          <path d="m16 16 5 5" />
+        </svg>
+      }
+
+      @case ('folder') {
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M3 7a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z" />
+          <path d="M3 10h18" />
+        </svg>
+      }
+
+      @case ('document') {
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M7 3h7l5 5v13H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" />
+          <path d="M14 3v5h5M9 13h6M9 17h6" />
+        </svg>
+      }
+
+      @case ('users') {
+        <svg viewBox="0 0 24 24" fill="none">
+          <circle cx="9" cy="8" r="3" />
+          <path d="M3 20v-2a6 6 0 0 1 12 0v2H3Z" />
+          <path d="M16 5.5a3 3 0 0 1 0 5.8M18 14a5 5 0 0 1 3 4.5V20h-3" />
+        </svg>
+      }
+    }
+  </div>
+
+  <h3 class="empty-state-title">
+    {{ title() }}
+  </h3>
+
+  <p class="empty-state-description">
+    {{ description() }}
+  </p>
+
+  @if (actionLabel().trim()) {
+    <button
+      class="empty-state-button"
+      type="button"
+      [disabled]="actionDisabled()"
+      (click)="onAction()"
+    >
+      {{ actionLabel() }}
+    </button>
+  }
+</section>

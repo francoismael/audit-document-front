@@ -1,0 +1,1 @@
+export type FileUploadExtension = '.docx' | '.pdf' | '.doc' | '.xlsx' | '.png' | '.jpg' | '.jpeg';

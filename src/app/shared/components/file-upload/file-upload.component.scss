@@ -1,0 +1,244 @@
+@use 'variables' as *;
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+.file-upload {
+  width: 100%;
+}
+
+.upload-zone {
+  display: flex;
+  justify-content: center;
+  min-height: 230px;
+  padding: $space-6;
+  border: 2px dashed $color-border;
+  border-radius: $radius-lg;
+  background: $color-background;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+
+  &.dragging {
+    border-color: $color-turquoise;
+    background: rgba(29, 142, 166, 0.06);
+  }
+
+  &.has-error {
+    border-color: $color-danger;
+  }
+
+  &.has-file {
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 120px;
+    border-style: solid;
+    background: $color-white;
+  }
+
+  &.is-disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.upload-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.upload-icon,
+.file-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: $radius-md;
+  background: rgba(29, 142, 166, 0.1);
+  color: $color-turquoise;
+
+  svg {
+    width: 27px;
+    height: 27px;
+  }
+}
+
+.upload-content {
+  h3 {
+    margin: $space-4 0 $space-2;
+    color: $color-primary;
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  p {
+    max-width: 440px;
+    margin: 0 0 $space-4;
+    color: $color-text-muted;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+}
+
+.upload-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 $space-5;
+  border-radius: $radius-sm;
+  background: $color-primary;
+  color: $color-white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover:not(.disabled) {
+    background: $color-turquoise;
+  }
+
+  &.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    clip-path: inset(50%);
+  }
+
+  &:focus-within {
+    outline: 2px solid $color-turquoise;
+    outline-offset: 3px;
+  }
+}
+
+.upload-hint {
+  margin-top: $space-3;
+  color: $color-text-muted;
+  font-size: 12px;
+}
+
+.selected-file {
+  display: flex;
+  align-items: center;
+  gap: $space-4;
+  width: 100%;
+  min-width: 0;
+}
+
+.file-icon {
+  flex-shrink: 0;
+}
+
+.file-details {
+  flex: 1;
+  min-width: 0;
+
+  p {
+    margin: 0;
+  }
+}
+
+.file-name {
+  overflow-wrap: anywhere;
+  color: $color-text;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.file-size {
+  margin-top: $space-1 !important;
+  color: $color-text-muted;
+  font-size: 12px;
+}
+
+.file-success {
+  display: inline-block;
+  margin-top: $space-2;
+  color: $color-green;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.remove-button {
+  flex-shrink: 0;
+  min-height: 36px;
+  padding: 0 $space-3;
+  border: 1px solid $color-border;
+  border-radius: $radius-sm;
+  background: $color-white;
+  color: $color-danger;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    border-color: $color-danger;
+    background: rgba(200, 61, 61, 0.05);
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-turquoise;
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.upload-error {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-2;
+  margin: $space-3 0 0;
+  color: $color-danger;
+  font-size: 13px;
+  line-height: 1.5;
+
+  span {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border: 1px solid currentColor;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 700;
+  }
+}
+
+@media (max-width: 480px) {
+  .upload-zone {
+    min-height: 210px;
+    padding: $space-4;
+  }
+
+  .selected-file {
+    flex-wrap: wrap;
+  }
+
+  .file-details {
+    flex-basis: calc(100% - 68px);
+  }
+
+  .remove-button {
+    margin-left: 68px;
+  }
+}
