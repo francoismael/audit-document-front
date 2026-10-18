@@ -14,6 +14,9 @@ describe('FormFieldComponent', () => {
 
     fixture = TestBed.createComponent(FormFieldComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('id', 'test-field');
+    fixture.componentRef.setInput('config', { label: 'Libellé', type: 'text' });
+
     fixture.detectChanges();
   });
 

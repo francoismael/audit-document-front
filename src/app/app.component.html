@@ -1,26 +1,12 @@
-<main class="container">
-  <app-page-header
-    title="Test du composant search-input"
-    description="Recherche de missions et de documents."
-  />
+<router-outlet />
 
-  <app-card
-    title="Rechercher une mission"
-    description="Saisissez un intitulé ou une référence de mission."
-    variant="elevated"
-  >
-    <div class="search-test">
-      <app-search-input
-        id="mission-search"
-        placeholder="Ex. : Audit des dépenses..."
-        [value]="searchTerm"
-        (valueChange)="onSearchValueChange($event)"
-        (search)="onSearch()"
-      />
-
-      <p class="search-test-result">
-        Texte saisi : {{ searchTerm || 'Aucune recherche saisie' }}
-      </p>
-    </div>
-  </app-card>
-</main>
+<div class="toast-stack" aria-live="polite">
+  @for (toast of toastService.toasts(); track toast.id) {
+    <app-toast
+      [type]="toast.type"
+      [message]="toast.message"
+      [closable]="true"
+      (closed)="toastService.dismiss(toast.id)"
+    />
+  }
+</div>

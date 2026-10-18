@@ -1,0 +1,52 @@
+@use 'variables' as *;
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  height: $topbar-height;
+  padding: 0 $space-6;
+
+  background-color: $color-white;
+  border-bottom: 1px solid $color-border;
+
+  .header-brand {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+  }
+
+  .header-logo {
+    height: 44px;
+    width: auto;
+  }
+
+  .header-title {
+    color: $color-gold-dark;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .header-user {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+  }
+
+  .header-user-name {
+    color: $color-text;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .header-avatar {
+    width: 32px;
+    height: 32px;
+
+    border: 2px solid $color-border;
+    border-radius: 50%;
+    background-color: $color-light-gray;
+  }
+}

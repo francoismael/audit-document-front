@@ -1,0 +1,13 @@
+@use 'variables' as *;
+
+.toast-stack {
+  position: fixed;
+  top: $topbar-height + $space-4;
+  right: $space-6;
+  z-index: 1000;
+
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+  width: 360px;
+}

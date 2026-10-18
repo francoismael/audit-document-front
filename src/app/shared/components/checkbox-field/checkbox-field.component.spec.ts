@@ -14,6 +14,9 @@ describe('CheckboxFieldComponent', () => {
 
     fixture = TestBed.createComponent(CheckboxFieldComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('id', 'test-checkbox');
+    fixture.componentRef.setInput('config', { label: 'Libellé' });
+
     fixture.detectChanges();
   });
 

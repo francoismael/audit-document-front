@@ -14,6 +14,8 @@ describe('PageHeaderComponent', () => {
 
     fixture = TestBed.createComponent(PageHeaderComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('title', 'Titre');
+
     fixture.detectChanges();
   });
 

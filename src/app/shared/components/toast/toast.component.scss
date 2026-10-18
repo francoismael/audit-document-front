@@ -1,0 +1,75 @@
+@use 'variables' as *;
+
+@mixin toast-theme($color, $background) {
+  border-color: $color;
+  background-color: $background;
+  color: $color;
+
+  .toast-icon {
+    background-color: $color;
+  }
+}
+
+:host {
+  display: block;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+
+  padding: $space-3 $space-4;
+
+  border: 1px solid;
+  border-radius: $radius-sm;
+
+  &.toast-success {
+    @include toast-theme($color-green, $color-success-light);
+  }
+
+  &.toast-warning {
+    @include toast-theme($color-gold-dark, $color-warning-light);
+  }
+
+  &.toast-error {
+    @include toast-theme($color-danger, $color-danger-light);
+  }
+
+  &.toast-info {
+    @include toast-theme($color-turquoise, $color-info-light);
+  }
+
+  .toast-icon {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+
+    width: 22px;
+    height: 22px;
+
+    border-radius: 50%;
+    color: $color-white;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .toast-message {
+    flex: 1;
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .toast-close {
+    padding: 0 $space-1;
+
+    border: none;
+    background: none;
+    color: inherit;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+  }
+}

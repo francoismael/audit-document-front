@@ -1,0 +1,42 @@
+@use 'variables' as *;
+
+.document-generate {
+  display: flex;
+  overflow: hidden;
+
+  border-radius: $radius-md;
+  background-color: $color-white;
+  box-shadow: $shadow-card;
+
+  .document-generate-brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: $space-4;
+
+    width: 280px;
+    padding: $space-6;
+
+    background-color: $color-primary;
+  }
+
+  .document-generate-logo {
+    width: 120px;
+    height: auto;
+  }
+
+  .document-generate-ministry {
+    margin: 0;
+    color: $color-text-inverse;
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  .document-generate-form {
+    flex: 1;
+    padding: $space-6 * 2;
+  }
+}

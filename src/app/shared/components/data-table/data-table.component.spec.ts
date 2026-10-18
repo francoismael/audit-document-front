@@ -14,6 +14,9 @@ describe('DataTableComponent', () => {
 
     fixture = TestBed.createComponent(DataTableComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('columns', []);
+    fixture.componentRef.setInput('rows', []);
+
     fixture.detectChanges();
   });
 

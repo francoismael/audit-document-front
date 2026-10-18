@@ -1,0 +1,45 @@
+@use 'variables' as *;
+
+:host {
+  display: block;
+  height: 100%;
+}
+
+.sidebar {
+  width: $sidebar-width;
+  height: 100%;
+  padding: $space-6 $space-3;
+
+  background-color: $color-primary;
+
+  .sidebar-menu {
+    display: flex;
+    flex-direction: column;
+    gap: $space-2;
+
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .sidebar-link {
+    display: block;
+    padding: $space-3 $space-4;
+
+    border-radius: $radius-sm;
+    color: $color-text-inverse;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background-color: rgba($color-white, 0.08);
+    }
+
+    &.active {
+      background-color: $color-green;
+    }
+  }
+}

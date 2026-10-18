@@ -1,0 +1,9 @@
+<div class="toast" [class]="'toast-' + type()">
+  <span class="toast-icon" aria-hidden="true">{{ icon() }}</span>
+
+  <p class="toast-message">{{ message() }}</p>
+
+  @if (closable()) {
+    <button class="toast-close" type="button" aria-label="Fermer" (click)="closed.emit()">×</button>
+  }
+</div>

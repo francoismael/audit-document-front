@@ -1,0 +1,11 @@
+<nav class="sidebar">
+  <ul class="sidebar-menu">
+    @for (item of items; track item.route) {
+      <li>
+        <a class="sidebar-link" [routerLink]="item.route" routerLinkActive="active">
+          {{ item.label }}
+        </a>
+      </li>
+    }
+  </ul>
+</nav>

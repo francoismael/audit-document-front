@@ -14,6 +14,9 @@ describe('SelectFieldComponent', () => {
 
     fixture = TestBed.createComponent(SelectFieldComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('id', 'test-select');
+    fixture.componentRef.setInput('config', { label: 'Libellé', options: [] });
+
     fixture.detectChanges();
   });
 

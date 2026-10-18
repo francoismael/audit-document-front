@@ -14,6 +14,8 @@ describe('SearchInputComponent', () => {
 
     fixture = TestBed.createComponent(SearchInputComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('id', 'test-search');
+
     fixture.detectChanges();
   });
 

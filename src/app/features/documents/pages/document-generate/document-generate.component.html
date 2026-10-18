@@ -1,0 +1,28 @@
+@if (values(); as values) {
+  <app-page-header title="Aperçu du document" />
+
+  <app-document-preview [title]="documentTitle" [fields]="fields" [values]="values">
+    <app-button variant="outline" (clicked)="onEdit()">Modifier</app-button>
+    <app-button variant="warning" (clicked)="onDownload()">Télécharger DOCX</app-button>
+  </app-document-preview>
+} @else {
+  <section class="document-generate">
+    <aside class="document-generate-brand">
+      <img
+        class="document-generate-logo"
+        src="images/logos/logo-mef.png"
+        alt="Logo du Ministère de l'Économie et des Finances"
+      >
+      <p class="document-generate-ministry">Ministère<br>Économie<br>et Finances</p>
+    </aside>
+
+    <div class="document-generate-form">
+      <app-dynamic-form
+        [title]="documentTitle"
+        description="Veuillez remplir les informations ci-dessous"
+        [fields]="fields"
+        (formSubmit)="onGenerate($event)"
+      />
+    </div>
+  </section>
+}

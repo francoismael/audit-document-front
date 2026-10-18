@@ -14,6 +14,9 @@ describe('TextareaFieldComponent', () => {
 
     fixture = TestBed.createComponent(TextareaFieldComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('id', 'test-textarea');
+    fixture.componentRef.setInput('config', { label: 'Libellé' });
+
     fixture.detectChanges();
   });
 

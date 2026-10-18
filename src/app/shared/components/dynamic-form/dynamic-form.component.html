@@ -1,0 +1,64 @@
+<form class="dynamic-form" novalidate (submit)="onSubmit($event)">
+  @if (title() || description()) {
+    <header class="dynamic-form-header">
+      @if (title()) {
+        <h2 class="dynamic-form-title">{{ title() }}</h2>
+      }
+
+      @if (description()) {
+        <p class="dynamic-form-description">{{ description() }}</p>
+      }
+    </header>
+  }
+
+  <div class="dynamic-form-fields">
+    @for (field of fields(); track field.name) {
+      @switch (field.type) {
+        @case ('TEXTAREA') {
+          <app-textarea-field
+            [id]="'dynamic-field-' + field.name"
+            [config]="{ label: field.label, placeholder: field.placeholder, required: field.required }"
+            [value]="textValue(field)"
+            [invalid]="isInvalid(field)"
+            (valueChange)="updateValue(field, $event)"
+          />
+        }
+
+        @case ('SELECT') {
+          <app-select-field
+            [id]="'dynamic-field-' + field.name"
+            [config]="{ label: field.label, placeholder: field.placeholder, required: field.required, options: field.options ?? [] }"
+            [value]="textValue(field)"
+            [invalid]="isInvalid(field)"
+            (valueChange)="updateValue(field, $event)"
+          />
+        }
+
+        @case ('CHECKBOX') {
+          <app-checkbox-field
+            [id]="'dynamic-field-' + field.name"
+            [config]="{ label: field.label, required: field.required }"
+            [checked]="isChecked(field)"
+            [invalid]="isInvalid(field)"
+            (valueChange)="updateValue(field, $event)"
+          />
+        }
+
+        @default {
+          <app-form-field
+            [id]="'dynamic-field-' + field.name"
+            [config]="{ label: field.label, placeholder: field.placeholder, required: field.required, type: inputType(field) }"
+            [value]="textValue(field)"
+            [invalid]="isInvalid(field)"
+            (valueChange)="updateValue(field, $event)"
+          />
+        }
+      }
+    }
+  </div>
+
+  <div class="dynamic-form-actions">
+    <app-button variant="outline" (clicked)="onReset()">{{ resetLabel() }}</app-button>
+    <app-button type="submit">{{ submitLabel() }}</app-button>
+  </div>
+</form>

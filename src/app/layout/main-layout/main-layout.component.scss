@@ -1,0 +1,19 @@
+@use 'variables' as *;
+
+.main-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+
+  .main-layout-body {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .main-layout-content {
+    flex: 1;
+    padding: $space-6;
+    overflow-y: auto;
+  }
+}

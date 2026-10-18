@@ -1,0 +1,37 @@
+@use 'variables' as *;
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+.dynamic-form {
+  display: flex;
+  flex-direction: column;
+  gap: $space-6;
+
+  .dynamic-form-title {
+    margin: 0;
+    color: $color-primary;
+    font-size: 24px;
+    font-weight: 700;
+  }
+
+  .dynamic-form-description {
+    margin: $space-1 0 0;
+    color: $color-text-muted;
+    font-size: 14px;
+  }
+
+  .dynamic-form-fields {
+    display: flex;
+    flex-direction: column;
+    gap: $space-5;
+  }
+
+  .dynamic-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: $space-3;
+  }
+}

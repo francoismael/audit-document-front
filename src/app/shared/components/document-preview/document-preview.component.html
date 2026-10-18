@@ -1,0 +1,18 @@
+<section class="document-preview">
+  <article class="document-preview-sheet">
+    <h2 class="document-preview-title">{{ title() }}</h2>
+
+    <dl class="document-preview-list">
+      @for (field of fields(); track field.name) {
+        <div class="document-preview-row">
+          <dt class="document-preview-label">{{ field.label }}</dt>
+          <dd class="document-preview-value">{{ displayValue(field) }}</dd>
+        </div>
+      }
+    </dl>
+  </article>
+
+  <div class="document-preview-actions">
+    <ng-content />
+  </div>
+</section>
