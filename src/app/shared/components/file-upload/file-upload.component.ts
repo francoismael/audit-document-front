@@ -35,7 +35,7 @@ export class FileUploadComponent {
       this.processFile(file);
     }
 
-    // Permet de sélectionner à nouveau le même fichier.
+    // Allows selecting the same file again.
     target.value = '';
   }
 

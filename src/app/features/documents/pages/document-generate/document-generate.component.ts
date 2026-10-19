@@ -10,7 +10,7 @@ import {
   DynamicFormValues
 } from '../../../../shared/interfaces/dynamic-field.interface';
 
-// Données de démonstration, à remplacer par l'appel API des champs du type de document.
+// Demo data, to be replaced by the API call that loads the document type fields.
 const FICHE_DE_SUIVI_FIELDS: DynamicField[] = [
   { name: 'motifs', label: 'Motifs', type: 'TEXTAREA', required: true, placeholder: 'Saisissez les motifs...' },
   { name: 'nature', label: 'Nature', type: 'TEXT', required: false, placeholder: 'Saisissez la nature...' },

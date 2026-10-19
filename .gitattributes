@@ -1,1 +1,10 @@
+# Line endings: LF everywhere in the repository and the working copy.
 * text=auto eol=lf
+
+# Binary files: never convert.
+*.docx binary
+*.pdf binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.ico binary

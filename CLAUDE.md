@@ -115,6 +115,14 @@ Pour l'instant, seuls `core/http/` et `shared/components/` existent. Créer les 
 - Noms de fichiers Angular standards : `button.component.ts`, `button.component.html`, `button.component.scss`.
 - Guillemets simples, indentation de 2 espaces (`.editorconfig`).
 
+### Langue du code (front et back)
+
+- **Les noms de fonctions et de méthodes sont toujours en anglais** et décrivent l'action réalisée, sous la forme verbe + complément : `loadDocumentTypes()`, `generateDocument()`, `onDownload()`, `findMissionPersonne()`. Ne jamais écrire `chargerTypes()`, `trouverMission()`, etc.
+- **Tous les commentaires sont en anglais**, dans le front (TypeScript, HTML, SCSS) comme dans le back (Java).
+- Restent en français :
+  - les textes affichés à l'utilisateur (libellés, messages, toasts) et les messages d'erreur métier renvoyés par l'API ;
+  - les noms des entités métier et des champs du contrat d'API (`Mission`, `Constat`, `motifs`, `dateEmission`…). Ils ne sont pas traduits, y compris quand ils apparaissent dans un nom de fonction : `addRisques()`, `findConstat()`.
+
 ## Façon de répondre et de travailler
 
 - Donner le chemin exact de chaque fichier créé ou modifié.
