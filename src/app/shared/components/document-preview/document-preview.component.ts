@@ -34,10 +34,6 @@ export class DocumentPreviewComponent {
       return `${day}/${month}/${year}`;
     }
 
-    if (field.type === 'SELECT') {
-      return field.options?.find((option) => option.value === value)?.label ?? value;
-    }
-
     return value;
   }
 }

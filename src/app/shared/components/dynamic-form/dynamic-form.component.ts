@@ -4,7 +4,6 @@ import { ButtonComponent } from '../button/button.component';
 import { CheckboxFieldComponent } from '../checkbox-field/checkbox-field.component';
 import { FormFieldComponent } from '../form-field/form-field.component';
 import { FormFieldType } from '../form-field/form-field.interface';
-import { SelectFieldComponent } from '../select-field/select-field.component';
 import { TextareaFieldComponent } from '../textarea-field/textarea-field.component';
 import {
   DynamicField,
@@ -16,7 +15,6 @@ import {
 const INPUT_TYPES: Partial<Record<DynamicFieldType, FormFieldType>> = {
   TEXT: 'text',
   NUMBER: 'number',
-  EMAIL: 'email',
   DATE: 'date'
 };
 
@@ -27,7 +25,6 @@ const INPUT_TYPES: Partial<Record<DynamicFieldType, FormFieldType>> = {
     ButtonComponent,
     CheckboxFieldComponent,
     FormFieldComponent,
-    SelectFieldComponent,
     TextareaFieldComponent
   ],
   templateUrl: './dynamic-form.component.html',

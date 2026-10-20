@@ -146,18 +146,18 @@ Ces problèmes ont été découverts en préparant le front. Ils sont tous corri
 
 ### Étape 1 — Socle HTTP et modèles
 
-- [ ] `app.config.ts` : ajouter `provideHttpClient()`.
-- [ ] `core/http/api.config.ts` : définir la constante `API_BASE_URL`.
-- [ ] `core/http/api-error.ts` : écrire une fonction qui extrait le `message` d'une `HttpErrorResponse`, que le corps soit déjà du JSON ou un `Blob` (erreur pendant un téléchargement). Si le backend est injoignable (`status === 0`), afficher « Le serveur est injoignable ».
-- [ ] `core/http/file-download.ts` : lire le nom du fichier dans `Content-Disposition` et déclencher l'enregistrement d'un `Blob`. Cette fonction sert à la génération et à l'historique.
-- [ ] Créer les modèles TypeScript calqués sur les DTO :
-  - `features/document-types/models/` : `DocumentType`, `DocumentField`, `DocumentTemplate`, `DocumentTypeForm`, `TemplateValidation`, `DocumentFieldType` ;
+- [x] `app.config.ts` : ajouter `provideHttpClient()`.
+- [x] `core/http/api.config.ts` : définir la constante `API_BASE_URL`.
+- [x] `core/http/api-error.ts` : `readApiErrorMessage(error)` extrait le `message` d'une `HttpErrorResponse`, que le corps soit déjà du JSON ou un `Blob` (erreur pendant un téléchargement). Si le backend est injoignable (`status === 0`), elle renvoie « Le serveur est injoignable ». La fonction est asynchrone, puisqu'un `Blob` se lit de façon asynchrone.
+- [x] `core/http/file-download.ts` : `readFileName(response)` lit le nom du fichier dans `Content-Disposition`, et `saveFile(blob, fileName)` déclenche l'enregistrement. Ces fonctions servent à la génération et à l'historique.
+- [x] Créer les modèles TypeScript calqués sur les DTO :
+  - `features/document-types/models/` : `DocumentType`, `DocumentTypeRequest`, `DocumentTypeForm`, `DocumentField`, `DocumentFieldRequest`, `DocumentTemplate`, `TemplateValidation`. Le type d'un champ réutilise `DynamicFieldType` (`shared/interfaces`), pour ne pas dupliquer la liste des types ;
   - `features/document-history/models/` : `GeneratedDocument` ;
-  - `features/missions/models/` : `Mission`, `MissionPersonne`, `MissionRole`, `Personne`, `Structure` ;
-  - `features/statistics/models/` : `Statistics` ;
+  - `features/missions/models/` : `Mission`, `MissionRequest`, `CreatedMission` (le `POST /missions` renvoie l'entité brute, avec `structure` imbriquée et sans `personnes`), `MissionPersonne`, `MissionRole`, `Personne`, `Structure` ;
+  - `features/statistics/models/` : `Statistics`, `MissionProgress` ;
   - `features/settings/models/` : `AppSettings`.
-- [ ] Aligner `shared/interfaces/dynamic-field.interface.ts` sur les types du backend (`TEXT | TEXTAREA | DATE | NUMBER | BOOLEAN`). `BOOLEAN` s'affiche avec `app-checkbox-field`. `EMAIL` est supprimé définitivement, car il n'est pas nécessaire. `SELECT` est retiré tant que le backend ne le gère pas.
-- **Validation :** `npm run build` passe.
+- [x] Aligner `shared/interfaces/dynamic-field.interface.ts` sur les types du backend (`TEXT | TEXTAREA | DATE | NUMBER | BOOLEAN`). `BOOLEAN` s'affiche avec `app-checkbox-field`. `EMAIL` est supprimé définitivement, car il n'est pas nécessaire. `SELECT` est retiré tant que le backend ne le gère pas (`dynamic-form` et `document-preview` mis à jour).
+- **Validation :** `npm run build` passe, la vérification TypeScript stricte des nouveaux fichiers passe, et les 25 tests unitaires passent.
 
 ### Étape 2 — Layout et navigation
 
@@ -332,3 +332,4 @@ Les documents métier qui ont leurs propres API (TDR, réunions, interviews, dé
 | 19/10/2026 | Backend | Fait | Ajout de `/api/rapports`, du CORS global, de l'endpoint de génération DOCX et de la validation des rôles de mission |
 | 19/10/2026 | Étape 0 | Fait | Upload jusqu'à 10 Mo ; ajout de la gestion des types (modification, statut, suppression), de l'historique, des statistiques et des paramètres ; noms de méthodes et commentaires du back passés en anglais |
 | 19/10/2026 | Étape 0 | Fait | Codes HTTP d'erreur corrects et format JSON unique ; `/form` accessible sans modèle ; fichiers retrouvés même après déplacement du projet |
+| 19/10/2026 | Étape 1 | Fait | Socle HTTP (`provideHttpClient`, URL de l'API, lecture des erreurs, téléchargement de fichiers), modèles TypeScript et types de champs alignés sur le backend |

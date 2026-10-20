@@ -4,7 +4,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Projet
 
-Front-end Angular 19 de l'application d'audit documentaire du MEF. Les textes de l'interface sont en français. Le projet en est au début : le routing est vide (`src/app/app.routes.ts`), `src/app/core/http/api.config.ts` est un fichier vide, et `AppComponent` sert pour l'instant de page de démonstration des composants partagés.
+Front-end Angular 19 de l'application d'audit documentaire du MEF. Les textes de l'interface sont en français. Il consomme l'API de `../audit-document-back` (`API_BASE_URL` dans `core/http/api.config.ts`).
+
+**La feuille de route est dans `ROADMAP.md`** : contrats de l'API, étapes de réalisation et état d'avancement. La lire avant toute nouvelle étape, et la mettre à jour (cases cochées et journal) à la fin de chaque étape.
+
+Outils HTTP communs dans `core/http/` : `readApiErrorMessage()` pour afficher le message d'une erreur API, `readFileName()` et `saveFile()` pour les téléchargements.
 
 ## Commandes (PowerShell)
 
@@ -58,7 +62,7 @@ src/app/
 
 Images et fichiers statiques : dans `public/` (servi à la racine du site), par exemple `public/images/logos/` et `public/images/icons/`. Dans le code, on y fait référence sans `public` : `<img src="images/logos/logo-mef.svg" alt="Logo MEF">`.
 
-Pour l'instant, seuls `core/http/` et `shared/components/` existent. Créer les autres dossiers au fur et à mesure des besoins.
+Créer les dossiers au fur et à mesure des besoins. Les fonctionnalités prévues sont `dashboard`, `missions`, `documents`, `document-types`, `document-history`, `statistics` et `settings`.
 
 - Composants génériques et réutilisables : `shared/components/`. Ils servent uniquement à l'affichage : ils reçoivent des données en `input` et émettent des événements en `output` (`valueChange`, `clicked`…), sans appeler de service.
 - **Toujours réutiliser les composants de `shared/components/`** (`app-button`, `app-card`, `app-data-table`, `app-modal`, `app-form-field`, `app-page-header`…) au lieu de réécrire leur HTML et leur SCSS dans une page ou un composant métier. Avant d'écrire un élément d'interface, vérifier si un composant partagé existe déjà. Si un même bloc revient à plusieurs endroits, en faire un composant réutilisable plutôt que de dupliquer le code.

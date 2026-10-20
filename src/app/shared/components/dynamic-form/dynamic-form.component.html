@@ -24,17 +24,7 @@
           />
         }
 
-        @case ('SELECT') {
-          <app-select-field
-            [id]="'dynamic-field-' + field.name"
-            [config]="{ label: field.label, placeholder: field.placeholder, required: field.required, options: field.options ?? [] }"
-            [value]="textValue(field)"
-            [invalid]="isInvalid(field)"
-            (valueChange)="updateValue(field, $event)"
-          />
-        }
-
-        @case ('CHECKBOX') {
+        @case ('BOOLEAN') {
           <app-checkbox-field
             [id]="'dynamic-field-' + field.name"
             [config]="{ label: field.label, required: field.required }"
