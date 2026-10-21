@@ -38,39 +38,21 @@
   }
 }
 
+// Title and item name centered; the close button stays in the corner.
 .modal-header {
-  display: flex;
-  align-items: flex-start;
-  gap: $space-3;
-  padding: $space-5 $space-5 $space-4 $space-6;
+  position: relative;
+  padding: $space-6 $space-6 $space-4;
+  text-align: center;
 }
 
-.modal-icon {
-  display: grid;
-  flex-shrink: 0;
-  place-items: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-color: $color-info-light;
-  color: $color-turquoise;
-
-  mat-icon {
-    width: 22px;
-    height: 22px;
-    font-size: 22px;
-  }
-
-  .modal-danger & {
-    background-color: $color-danger-light;
-    color: $color-danger;
-  }
+.modal-close {
+  position: absolute;
+  top: $space-3;
+  right: $space-3;
 }
 
 .modal-heading {
-  flex: 1;
-  min-width: 0;
-  padding-top: $space-1;
+  padding: 0 $space-6;
 }
 
 .modal-title {
@@ -115,9 +97,22 @@
   padding: $space-4 $space-6;
 }
 
+// Confirmation modals: the message and the buttons are centered under the title.
+.modal-sm {
+  .modal-content {
+    text-align: center;
+  }
+
+  .modal-actions {
+    justify-content: center;
+    border-top: none;
+    padding-top: 0;
+  }
+}
+
 @media (max-width: 480px) {
   .modal-header {
-    padding: $space-4;
+    padding: $space-5 $space-4 $space-3;
   }
 
   .modal-content {

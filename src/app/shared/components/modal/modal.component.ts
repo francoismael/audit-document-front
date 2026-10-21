@@ -1,5 +1,4 @@
-import { Component, computed, input, output } from '@angular/core';
-import { MatIconModule } from '@angular/material/icon';
+import { Component, input, output } from '@angular/core';
 
 import { ButtonComponent } from '../button/button.component';
 import { IconButtonComponent } from '../icon-button/icon-button.component';
@@ -8,7 +7,7 @@ import { ModalSize, ModalVariant } from './modal.interface';
 @Component({
   selector: 'app-modal',
   standalone: true,
-  imports: [ButtonComponent, IconButtonComponent, MatIconModule],
+  imports: [ButtonComponent, IconButtonComponent],
   templateUrl: './modal.component.html',
   styleUrl: './modal.component.scss',
   host: {
@@ -19,8 +18,6 @@ export class ModalComponent {
   readonly title = input.required<string>();
   // Short line under the title, for example the name of the edited item.
   readonly description = input<string>('');
-  // Material icon shown next to the title. A danger modal shows a warning icon by default.
-  readonly icon = input<string>('');
   readonly isOpen = input<boolean>(false);
   readonly confirmText = input<string>('Confirmer');
   readonly cancelText = input<string>('Annuler');
@@ -30,8 +27,6 @@ export class ModalComponent {
 
   readonly confirmed = output<void>();
   readonly cancelled = output<void>();
-
-  readonly headerIcon = computed(() => this.icon() || (this.confirmVariant() === 'danger' ? 'warning_amber' : ''));
 
   onConfirm(): void {
     if (!this.loading()) {

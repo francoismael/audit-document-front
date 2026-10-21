@@ -39,13 +39,13 @@ describe('ModalComponent', () => {
     expect(element.querySelector('[role="dialog"]')).toBeNull();
   });
 
-  it('should show a warning icon and a danger button for a danger modal', () => {
+  it('should show the item name under the title and a danger button, without any icon', () => {
     fixture.componentRef.setInput('confirmVariant', 'danger');
     fixture.componentRef.setInput('confirmText', 'Supprimer');
     fixture.componentRef.setInput('description', 'Date de début');
     fixture.detectChanges();
 
-    expect(element.querySelector('.modal-icon')?.textContent).toContain('warning_amber');
+    expect(element.querySelector('mat-icon:not(app-icon-button mat-icon)')).toBeNull();
     expect(element.querySelector('.modal-description')?.textContent).toContain('Date de début');
     expect(buttonByText('Supprimer')?.classList).toContain('button-danger');
   });
