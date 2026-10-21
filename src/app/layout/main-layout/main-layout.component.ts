@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
 import { HeaderComponent } from '../header/header.component';
@@ -9,6 +9,20 @@ import { SidebarComponent } from '../sidebar/sidebar.component';
   standalone: true,
   imports: [RouterOutlet, HeaderComponent, SidebarComponent],
   templateUrl: './main-layout.component.html',
-  styleUrl: './main-layout.component.scss'
+  styleUrl: './main-layout.component.scss',
+  host: {
+    '(document:keydown.escape)': 'closeSidebar()'
+  }
 })
-export class MainLayoutComponent {}
+export class MainLayoutComponent {
+  // Only used on small screens, where the sidebar is hidden by default.
+  readonly sidebarOpen = signal<boolean>(false);
+
+  toggleSidebar(): void {
+    this.sidebarOpen.update((open) => !open);
+  }
+
+  closeSidebar(): void {
+    this.sidebarOpen.set(false);
+  }
+}

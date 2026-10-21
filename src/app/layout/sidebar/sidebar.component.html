@@ -1,8 +1,13 @@
-<nav class="sidebar">
+<nav id="main-menu" class="sidebar" [class.open]="open()" aria-label="Menu principal">
   <ul class="sidebar-menu">
     @for (item of items; track item.route) {
       <li>
-        <a class="sidebar-link" [routerLink]="item.route" routerLinkActive="active">
+        <a
+          class="sidebar-link"
+          [routerLink]="item.route"
+          routerLinkActive="active"
+          (click)="linkClicked.emit()"
+        >
           {{ item.label }}
         </a>
       </li>

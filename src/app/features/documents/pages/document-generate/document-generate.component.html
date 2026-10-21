@@ -1,28 +1,107 @@
-@if (values(); as values) {
-  <app-page-header title="Aperçu du document" />
+@if (loading()) {
+  <app-loading message="Chargement du formulaire..." [fullPage]="true" />
+} @else if (errorMessage()) {
+  <app-page-header title="Générer un document" />
 
-  <app-document-preview [title]="documentTitle" [fields]="fields" [values]="values">
-    <app-button variant="outline" (clicked)="onEdit()">Modifier</app-button>
-    <app-button variant="warning" (clicked)="onDownload()">Télécharger DOCX</app-button>
-  </app-document-preview>
+  <app-empty-state
+    icon="document"
+    title="Document indisponible"
+    [description]="errorMessage() ?? ''"
+    actionLabel="Retour au catalogue"
+    (action)="openCatalog()"
+  />
 } @else {
-  <section class="document-generate">
-    <aside class="document-generate-brand">
-      <img
-        class="document-generate-logo"
-        src="images/logos/logo-mef.png"
-        alt="Logo du Ministère de l'Économie et des Finances"
-      >
-      <p class="document-generate-ministry">Ministère<br>Économie<br>et Finances</p>
-    </aside>
+  @if (form(); as form) {
+    @if (!form.template) {
+      <app-page-header [title]="form.documentType.nom" />
 
-    <div class="document-generate-form">
-      <app-dynamic-form
-        [title]="documentTitle"
-        description="Veuillez remplir les informations ci-dessous"
-        [fields]="fields"
-        (formSubmit)="onGenerate($event)"
+      <app-empty-state
+        icon="document"
+        title="Aucun modèle Word"
+        description="Ce type de document n'a pas encore de modèle Word. Téléversez-le dans sa configuration pour pouvoir générer des documents."
+        actionLabel="Configurer ce type"
+        (action)="openConfiguration()"
       />
-    </div>
-  </section>
+    } @else if (fields().length === 0) {
+      <app-page-header [title]="form.documentType.nom" />
+
+      <app-empty-state
+        icon="document"
+        title="Aucun champ configuré"
+        description="Ajoutez les champs du formulaire dans la configuration de ce type de document."
+        actionLabel="Configurer ce type"
+        (action)="openConfiguration()"
+      />
+    } @else if (generatedFile()) {
+      <app-page-header title="Document généré" />
+
+      <app-card
+        variant="elevated"
+        padding="lg"
+        [title]="generatedFile()?.fileName ?? ''"
+        description="Le document PDF a été généré et enregistré dans l'historique des documents."
+      >
+        <div class="document-generate-success-actions">
+          <app-button (clicked)="openPdf()">Ouvrir le PDF</app-button>
+          <app-button variant="secondary" (clicked)="downloadPdf()">Télécharger</app-button>
+          <app-button variant="outline" (clicked)="openHistory()">Voir dans l'historique</app-button>
+          <app-button variant="outline" (clicked)="openCatalog()">Retour aux documents</app-button>
+          <app-button variant="ghost" (clicked)="createAnotherDocument()">Créer un autre document</app-button>
+        </div>
+      </app-card>
+    } @else if (reviewing()) {
+      <app-page-header
+        title="Récapitulatif des informations"
+        description="Vérifiez les informations saisies avant de générer le document. Ce récapitulatif n'est pas un aperçu du document PDF final."
+      />
+
+      @if (generating()) {
+        <app-loading
+          size="sm"
+          message="Génération du PDF en cours… Cela peut prendre jusqu'à une vingtaine de secondes la première fois."
+        />
+      }
+
+      <app-document-preview
+        [title]="form.documentType.nom"
+        [fields]="fields()"
+        [values]="values()"
+        [extraRows]="summaryRows()"
+      >
+        <app-button variant="outline" [disabled]="generating()" (clicked)="onEdit()">Modifier</app-button>
+        <app-button [disabled]="generating()" (clicked)="onConfirmGeneration()">
+          {{ generating() ? 'Génération en cours…' : 'Générer le document' }}
+        </app-button>
+      </app-document-preview>
+    } @else {
+      <section class="document-generate">
+        <aside class="document-generate-brand">
+          <img
+            class="document-generate-logo"
+            src="images/logos/logo-mef.png"
+            alt="Logo du Ministère de l'Économie et des Finances"
+          >
+          <p class="document-generate-ministry">Ministère<br>Économie<br>et Finances</p>
+        </aside>
+
+        <div class="document-generate-form">
+          <app-dynamic-form
+            [title]="form.documentType.nom"
+            [description]="form.documentType.description ?? 'Veuillez remplir les informations ci-dessous.'"
+            [fields]="fields()"
+            [initialValues]="values()"
+            submitLabel="Vérifier les informations"
+            (formSubmit)="onReview($event)"
+          >
+            <app-select-field
+              [id]="'document-generate-mission'"
+              [config]="missionFieldConfig()"
+              [value]="missionId()"
+              (valueChange)="missionId.set($event)"
+            />
+          </app-dynamic-form>
+        </div>
+      </section>
+    }
+  }
 }

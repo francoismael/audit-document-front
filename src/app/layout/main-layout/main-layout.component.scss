@@ -13,7 +13,28 @@
 
   .main-layout-content {
     flex: 1;
+    min-width: 0;
     padding: $space-6;
     overflow-y: auto;
+  }
+
+  .main-layout-backdrop {
+    display: none;
+  }
+}
+
+@media (max-width: $breakpoint-tablet - 1px) {
+  .main-layout {
+    .main-layout-content {
+      padding: $space-4;
+    }
+
+    .main-layout-backdrop {
+      display: block;
+      position: fixed;
+      inset: $topbar-height 0 0 0;
+      z-index: 800;
+      background-color: $color-backdrop;
+    }
   }
 }

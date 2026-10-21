@@ -27,3 +27,15 @@ export function saveFile(content: Blob, fileName: string): void {
   // Revoking on the next tick lets the browser start the download first.
   setTimeout(() => URL.revokeObjectURL(url));
 }
+
+const OPENED_FILE_LIFETIME_MS = 60_000;
+
+// Opens a file (a PDF for instance) in a new browser tab.
+export function openFile(content: Blob): void {
+  const url = URL.createObjectURL(content);
+
+  window.open(url, '_blank', 'noopener');
+
+  // The new tab needs the URL while it loads the file.
+  setTimeout(() => URL.revokeObjectURL(url), OPENED_FILE_LIFETIME_MS);
+}

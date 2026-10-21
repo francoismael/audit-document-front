@@ -37,6 +37,33 @@
 
   .document-generate-form {
     flex: 1;
+    min-width: 0;
     padding: $space-6 * 2;
+  }
+}
+
+.document-generate-success-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-3;
+}
+
+@media (max-width: $breakpoint-tablet - 1px) {
+  .document-generate {
+    flex-direction: column;
+
+    .document-generate-brand {
+      flex-direction: row;
+      width: auto;
+      padding: $space-4;
+    }
+
+    .document-generate-logo {
+      width: 56px;
+    }
+
+    .document-generate-form {
+      padding: $space-5;
+    }
   }
 }

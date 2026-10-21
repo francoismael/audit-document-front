@@ -1,0 +1,46 @@
+@use 'variables' as *;
+
+.document-catalog-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: $space-4;
+  margin-bottom: $space-5;
+
+  .document-catalog-search {
+    flex: 1 1 320px;
+    max-width: 480px;
+  }
+
+  .document-catalog-count {
+    margin: 0;
+    color: $color-text-muted;
+    font-size: 13px;
+  }
+}
+
+.document-catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: $space-5;
+}
+
+.document-catalog-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: $space-3;
+
+  .document-catalog-code {
+    padding: $space-1 $space-2;
+
+    border-radius: $radius-sm;
+    background-color: $color-background;
+    color: $color-text-muted;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+}

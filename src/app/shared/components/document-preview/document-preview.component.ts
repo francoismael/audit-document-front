@@ -5,6 +5,7 @@ import {
   DynamicFieldValue,
   DynamicFormValues
 } from '../../interfaces/dynamic-field.interface';
+import { DocumentPreviewRow } from './document-preview.interface';
 
 @Component({
   selector: 'app-document-preview',
@@ -16,6 +17,8 @@ export class DocumentPreviewComponent {
   readonly title = input.required<string>();
   readonly fields = input.required<DynamicField[]>();
   readonly values = input.required<DynamicFormValues>();
+  // Rows that are not form fields (for example the linked mission), shown first.
+  readonly extraRows = input<DocumentPreviewRow[]>([]);
 
   displayValue(field: DynamicField): string {
     const value: DynamicFieldValue | undefined = this.values()[field.name];

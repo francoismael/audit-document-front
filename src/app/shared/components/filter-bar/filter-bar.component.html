@@ -1,7 +1,7 @@
 <section class="filter-bar" aria-label="Filtres des résultats">
   <div class="filter-search">
     <app-search-input
-      id="filter-search"
+      [id]="'filter-search'"
       [placeholder]="placeholder()"
       [value]="search()"
       (valueChange)="onSearchChange($event)"
@@ -10,7 +10,7 @@
 
   <div class="filter-status">
     <app-select-field
-      id="filter-status"
+      [id]="'filter-status'"
       [config]="statusConfig()"
       [value]="status()"
       (valueChange)="onStatusChange($event)"

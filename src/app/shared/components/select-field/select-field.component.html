@@ -19,12 +19,13 @@
       [attr.aria-describedby]="invalid() ? id() + '-error' : null"
       (change)="onValueChange($event)"
     >
-      <option value="" disabled>
+      <!-- [selected] on each option keeps the choice when the options render after the value. -->
+      <option value="" [disabled]="!config().allowEmpty" [selected]="!value()">
         {{ config().placeholder ?? 'Sélectionner une option' }}
       </option>
 
       @for (option of config().options; track option.value) {
-        <option [value]="option.value">
+        <option [value]="option.value" [selected]="option.value === value()">
           {{ option.label }}
         </option>
       }

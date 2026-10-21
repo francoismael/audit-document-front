@@ -1,4 +1,21 @@
 <header class="header">
+  <button
+    class="header-menu-button"
+    type="button"
+    aria-controls="main-menu"
+    [attr.aria-expanded]="menuOpen()"
+    [attr.aria-label]="menuOpen() ? 'Fermer le menu' : 'Ouvrir le menu'"
+    (click)="menuToggle.emit()"
+  >
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      @if (menuOpen()) {
+        <path d="M6 6l12 12M18 6 6 18" />
+      } @else {
+        <path d="M4 7h16M4 12h16M4 17h16" />
+      }
+    </svg>
+  </button>
+
   <div class="header-brand">
     <img
       class="header-logo"
@@ -6,10 +23,5 @@
       alt="Logo du Ministère de l'Économie et des Finances"
     >
     <span class="header-title">Ministère de l'Économie et des Finances</span>
-  </div>
-
-  <div class="header-user">
-    <span class="header-user-name">Admin</span>
-    <span class="header-avatar"></span>
   </div>
 </header>

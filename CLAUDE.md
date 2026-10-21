@@ -67,6 +67,7 @@ Créer les dossiers au fur et à mesure des besoins. Les fonctionnalités prévu
 - Composants génériques et réutilisables : `shared/components/`. Ils servent uniquement à l'affichage : ils reçoivent des données en `input` et émettent des événements en `output` (`valueChange`, `clicked`…), sans appeler de service.
 - **Toujours réutiliser les composants de `shared/components/`** (`app-button`, `app-card`, `app-data-table`, `app-modal`, `app-form-field`, `app-page-header`…) au lieu de réécrire leur HTML et leur SCSS dans une page ou un composant métier. Avant d'écrire un élément d'interface, vérifier si un composant partagé existe déjà. Si un même bloc revient à plusieurs endroits, en faire un composant réutilisable plutôt que de dupliquer le code.
 - Composants métier : dans le dossier `features/<feature>/components/` correspondant ; pages : `features/<feature>/pages/`.
+- Les composants de champ partagés (`app-form-field`, `app-select-field`, `app-search-input`…) ont un input `id` qu'ils posent sur leur `<input>` ou `<select>`. **Toujours le passer en liaison** : `[id]="'mission-select'"`, jamais `id="mission-select"`. Un attribut statique est aussi posé sur la balise du composant, ce qui crée deux éléments avec le même id et casse le lien `<label for>`.
 - Séparer clairement l'affichage, la logique métier (services) et les appels API.
 - Commencer par les composants visuels réutilisables, puis assembler les pages.
 

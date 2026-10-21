@@ -3,6 +3,13 @@
     <h2 class="document-preview-title">{{ title() }}</h2>
 
     <dl class="document-preview-list">
+      @for (row of extraRows(); track row.label) {
+        <div class="document-preview-row">
+          <dt class="document-preview-label">{{ row.label }}</dt>
+          <dd class="document-preview-value">{{ row.value }}</dd>
+        </div>
+      }
+
       @for (field of fields(); track field.name) {
         <div class="document-preview-row">
           <dt class="document-preview-label">{{ field.label }}</dt>

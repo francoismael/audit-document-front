@@ -11,15 +11,23 @@
     </header>
   }
 
+  <ng-content />
+
   <div class="dynamic-form-fields">
     @for (field of fields(); track field.name) {
       @switch (field.type) {
         @case ('TEXTAREA') {
           <app-textarea-field
             [id]="'dynamic-field-' + field.name"
-            [config]="{ label: field.label, placeholder: field.placeholder, required: field.required }"
+            [config]="{
+              label: field.label,
+              placeholder: field.placeholder,
+              required: field.required,
+              disabled: loading(),
+              errorMessage: errorFor(field) ?? undefined
+            }"
             [value]="textValue(field)"
-            [invalid]="isInvalid(field)"
+            [invalid]="errorFor(field) !== null"
             (valueChange)="updateValue(field, $event)"
           />
         }
@@ -27,9 +35,8 @@
         @case ('BOOLEAN') {
           <app-checkbox-field
             [id]="'dynamic-field-' + field.name"
-            [config]="{ label: field.label, required: field.required }"
+            [config]="{ label: field.label, disabled: loading() }"
             [checked]="isChecked(field)"
-            [invalid]="isInvalid(field)"
             (valueChange)="updateValue(field, $event)"
           />
         }
@@ -37,9 +44,16 @@
         @default {
           <app-form-field
             [id]="'dynamic-field-' + field.name"
-            [config]="{ label: field.label, placeholder: field.placeholder, required: field.required, type: inputType(field) }"
+            [config]="{
+              label: field.label,
+              placeholder: field.placeholder,
+              required: field.required,
+              type: inputType(field),
+              disabled: loading(),
+              errorMessage: errorFor(field) ?? undefined
+            }"
             [value]="textValue(field)"
-            [invalid]="isInvalid(field)"
+            [invalid]="errorFor(field) !== null"
             (valueChange)="updateValue(field, $event)"
           />
         }
@@ -48,7 +62,12 @@
   </div>
 
   <div class="dynamic-form-actions">
-    <app-button variant="outline" (clicked)="onReset()">{{ resetLabel() }}</app-button>
-    <app-button type="submit">{{ submitLabel() }}</app-button>
+    <app-button variant="outline" [disabled]="loading()" (clicked)="onReset()">
+      {{ resetLabel() }}
+    </app-button>
+
+    <app-button type="submit" [disabled]="loading()">
+      {{ loading() ? loadingLabel() : submitLabel() }}
+    </app-button>
   </div>
 </form>

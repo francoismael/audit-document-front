@@ -1,0 +1,63 @@
+<app-page-header
+  title="Documents d'audit"
+  description="Choisissez un type de document pour en générer un nouveau."
+/>
+
+@if (loading()) {
+  <app-loading message="Chargement des types de documents..." [fullPage]="true" />
+} @else if (errorMessage()) {
+  <app-empty-state
+    icon="document"
+    title="Impossible de charger le catalogue"
+    [description]="errorMessage() ?? ''"
+    actionLabel="Réessayer"
+    (action)="loadDocumentTypes()"
+  />
+} @else if (activeTypes().length === 0) {
+  <app-empty-state
+    icon="folder"
+    title="Aucun type de document disponible"
+    description="Créez un type de document et téléversez son modèle Word pour le proposer dans ce catalogue."
+    actionLabel="Gérer les types de documents"
+    (action)="openDocumentTypes()"
+  />
+} @else {
+  <div class="document-catalog-toolbar">
+    <div class="document-catalog-search">
+      <app-search-input
+        [id]="'document-catalog-search'"
+        placeholder="Rechercher par nom ou par code..."
+        [value]="search()"
+        (valueChange)="search.set($event)"
+      />
+    </div>
+
+    <p class="document-catalog-count">{{ countLabel() }}</p>
+  </div>
+
+  @if (filteredTypes().length === 0) {
+    <app-empty-state
+      icon="search"
+      title="Aucun résultat"
+      [description]="'Aucun type de document ne correspond à « ' + search().trim() + ' ».'"
+    />
+  } @else {
+    <div class="document-catalog-grid">
+      @for (documentType of filteredTypes(); track documentType.id) {
+        <app-card
+          variant="elevated"
+          [title]="documentType.nom"
+          [description]="documentType.description ?? ''"
+        >
+          <div class="document-catalog-card-footer">
+            <span class="document-catalog-code">{{ documentType.code }}</span>
+
+            <app-button size="sm" (clicked)="openGenerator(documentType)">
+              Créer un document
+            </app-button>
+          </div>
+        </app-card>
+      }
+    </div>
+  }
+}

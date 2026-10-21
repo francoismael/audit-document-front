@@ -1,4 +1,3 @@
-
 export interface SelectFieldOption {
   label: string;
   value: string;
@@ -11,4 +10,6 @@ export interface SelectFieldConfig {
   required?: boolean;
   disabled?: boolean;
   errorMessage?: string;
+  // Lets the user pick the placeholder again to clear an optional choice.
+  allowEmpty?: boolean;
 }
