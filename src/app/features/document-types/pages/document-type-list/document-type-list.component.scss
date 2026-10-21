@@ -1,0 +1,12 @@
+@use 'variables' as *;
+
+.document-type-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: $space-1;
+}
+
+.delete-hint {
+  color: $color-text-muted;
+  font-size: 0.9rem;
+}

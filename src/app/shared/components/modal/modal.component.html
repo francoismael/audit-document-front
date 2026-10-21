@@ -1,27 +1,29 @@
 @if (isOpen()) {
-  <div
-    class="modal-backdrop"
-    (click)="onBackdropClick($event)"
-    (keydown)="onKeydown($event)"
-  >
+  <div class="modal-backdrop" (click)="onBackdropClick($event)">
     <section
       class="modal"
+      [class.modal-sm]="size() === 'sm'"
+      [class.modal-lg]="size() === 'lg'"
+      [class.modal-danger]="confirmVariant() === 'danger'"
       role="dialog"
       aria-modal="true"
       [attr.aria-label]="title()"
     >
       <header class="modal-header">
-        <h2 class="modal-title">{{ title() }}</h2>
+        @if (headerIcon()) {
+          <span class="modal-icon" aria-hidden="true">
+            <mat-icon>{{ headerIcon() }}</mat-icon>
+          </span>
+        }
 
-        <button
-          class="modal-close"
-          type="button"
-          aria-label="Fermer la fenêtre"
-          [disabled]="loading()"
-          (click)="onCancel()"
-        >
-          &times;
-        </button>
+        <div class="modal-heading">
+          <h2 class="modal-title">{{ title() }}</h2>
+          @if (description()) {
+            <p class="modal-description">{{ description() }}</p>
+          }
+        </div>
+
+        <app-icon-button icon="close" label="Fermer la fenêtre" [disabled]="loading()" (clicked)="onCancel()" />
       </header>
 
       <div class="modal-content">
@@ -29,29 +31,12 @@
       </div>
 
       <footer class="modal-actions">
-        <button
-          class="modal-button modal-button-cancel"
-          type="button"
-          [disabled]="loading()"
-          (click)="onCancel()"
-        >
+        <app-button variant="outline" [disabled]="loading()" (clicked)="onCancel()">
           {{ cancelText() }}
-        </button>
-
-        <button
-          class="modal-button"
-          [class.modal-button-primary]="confirmVariant() === 'primary'"
-          [class.modal-button-danger]="confirmVariant() === 'danger'"
-          type="button"
-          [disabled]="loading()"
-          (click)="onConfirm()"
-        >
-          @if (loading()) {
-            Traitement...
-          } @else {
-            {{ confirmText() }}
-          }
-        </button>
+        </app-button>
+        <app-button [variant]="confirmVariant()" [disabled]="loading()" (clicked)="onConfirm()">
+          {{ loading() ? 'Traitement...' : confirmText() }}
+        </app-button>
       </footer>
     </section>
   </div>

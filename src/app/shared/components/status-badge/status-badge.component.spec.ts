@@ -19,7 +19,18 @@ describe('StatusBadgeComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  it('should show the default label of the status', () => {
+    expect(fixture.nativeElement.textContent.trim()).toBe('En attente');
+  });
+
+  it('should show a custom label while keeping the status colors', () => {
+    fixture.componentRef.setInput('status', 'approved');
+    fixture.componentRef.setInput('label', 'Actif');
+    fixture.detectChanges();
+
+    const badge: HTMLElement = fixture.nativeElement.querySelector('.status-badge');
+    expect(badge.textContent?.trim()).toBe('Actif');
+    expect(badge.classList).toContain('status-badge-approved');
+    expect(component.label()).toBe('Actif');
   });
 });

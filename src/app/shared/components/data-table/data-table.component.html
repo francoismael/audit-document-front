@@ -17,7 +17,11 @@
             <tr>
               @for (column of columns(); track column.key) {
                 <td [class]="getColumnAlign(column)">
-                  {{ formatCell(row[column.key]) }}
+                  @if (cellTemplate(column); as template) {
+                    <ng-container [ngTemplateOutlet]="template" [ngTemplateOutletContext]="{ $implicit: row }" />
+                  } @else {
+                    {{ formatCell(row[column.key]) }}
+                  }
                 </td>
               }
             </tr>

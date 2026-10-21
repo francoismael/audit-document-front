@@ -1,10 +1,84 @@
 <app-page-header
   title="Types de documents"
-  description="Gérez les types de documents proposés dans le catalogue."
+  description="Gérez les types de documents proposés dans le catalogue : leur nom, leur statut, leur modèle Word et leurs champs."
+>
+  <app-button (clicked)="openCreateForm()">Créer un type de document</app-button>
+</app-page-header>
+
+@if (loading()) {
+  <app-loading message="Chargement des types de documents..." [fullPage]="true" />
+} @else if (errorMessage()) {
+  <app-empty-state
+    icon="document"
+    title="Impossible de charger les types de documents"
+    [description]="errorMessage() ?? ''"
+    actionLabel="Réessayer"
+    (action)="loadDocumentTypes()"
+  />
+} @else if (documentTypes().length === 0) {
+  <app-empty-state
+    icon="folder"
+    title="Aucun type de document"
+    description="Créez un premier type, puis ajoutez-lui un modèle Word et des champs pour le proposer dans le catalogue."
+    actionLabel="Créer un type de document"
+    (action)="openCreateForm()"
+  />
+} @else {
+  <app-data-table [columns]="columns" [rows]="rows()">
+    <ng-template appDataTableCell="actif" let-row>
+      <app-status-badge
+        size="sm"
+        [status]="row['actif'] ? 'approved' : 'cancelled'"
+        [label]="row['actif'] ? 'Actif' : 'Inactif'"
+      />
+    </ng-template>
+
+    <ng-template appDataTableCell="actions" let-row>
+      @if (findDocumentType(row); as documentType) {
+        <div class="document-type-actions">
+          <app-icon-button
+            icon="settings"
+            variant="primary"
+            label="Configurer le modèle et les champs"
+            (clicked)="openConfiguration(documentType)"
+          />
+          <app-icon-button icon="edit" label="Modifier" (clicked)="openEditForm(documentType)" />
+          <app-icon-button
+            [icon]="documentType.actif ? 'toggle_on' : 'toggle_off'"
+            [label]="documentType.actif ? 'Désactiver' : 'Activer'"
+            [disabled]="statusChangingId() === documentType.id"
+            (clicked)="toggleStatus(documentType)"
+          />
+          <app-icon-button icon="delete" variant="danger" label="Supprimer" (clicked)="askDelete(documentType)" />
+        </div>
+      }
+    </ng-template>
+  </app-data-table>
+}
+
+<!-- The configuration of a type (child route :id) opens as a drawer over the list. -->
+<router-outlet (activate)="onPanelOpened($event)" />
+
+<app-document-type-form-modal
+  [open]="formOpen()"
+  [documentType]="editedType()"
+  [saving]="saving()"
+  (submitted)="saveDocumentType($event)"
+  (cancelled)="closeForm()"
 />
 
-<app-empty-state
-  icon="folder"
-  title="Page en préparation"
-  description="Cette fonctionnalité est en cours de développement."
-/>
+<app-modal
+  title="Supprimer le type de document"
+  icon="delete"
+  size="sm"
+  [description]="typeToDelete()?.nom ?? ''"
+  confirmText="Supprimer"
+  confirmVariant="danger"
+  [isOpen]="typeToDelete() !== null"
+  [loading]="deleting()"
+  (confirmed)="confirmDelete()"
+  (cancelled)="cancelDelete()"
+>
+  <p>Ce type sera supprimé avec ses champs et son modèle Word. <strong>Cette action est définitive.</strong></p>
+  <p class="delete-hint">S'il a déjà servi à générer des documents, la suppression sera refusée : désactivez-le plutôt.</p>
+</app-modal>

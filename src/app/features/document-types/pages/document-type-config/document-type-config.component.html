@@ -1,10 +1,202 @@
-<app-page-header
-  title="Configuration du type de document"
-  description="Modèle Word, champs du formulaire et vérification de la correspondance."
-/>
+<app-side-panel
+  [eyebrow]="'Type de document #' + documentTypeId()"
+  [title]="documentType()?.nom ?? 'Configuration du type de document'"
+  (closed)="close()"
+>
+  @if (documentType(); as documentType) {
+    <div panel-badges class="config-badges">
+      <app-status-badge
+        size="sm"
+        [status]="documentType.actif ? 'approved' : 'cancelled'"
+        [label]="documentType.actif ? 'Actif' : 'Inactif'"
+      />
+      <span class="config-chip">{{ documentType.code }}</span>
+      <span class="config-chip">{{ template() ? 'Modèle v' + template()?.version : 'Sans modèle' }}</span>
+    </div>
+  }
 
-<app-empty-state
-  icon="document"
-  title="Page en préparation"
-  description="Cette fonctionnalité est en cours de développement."
-/>
+  @if (documentType()) {
+    <app-tabs panel-tabs [tabs]="tabs()" [activeTab]="activeTab()" (tabChange)="selectTab($event)" />
+  }
+
+  @if (documentType()) {
+    <ng-container panel-footer>
+      <app-button variant="outline" (clicked)="typeFormOpen.set(true)">Modifier</app-button>
+      <app-button class="config-footer-main" [fullWidth]="true" [disabled]="!canGenerate()" (clicked)="openGeneration()">
+        Tester la génération
+      </app-button>
+    </ng-container>
+  }
+
+  @if (loading()) {
+    <app-loading message="Chargement de la configuration..." />
+  } @else if (errorMessage()) {
+    <app-empty-state
+      icon="document"
+      title="Impossible de charger ce type de document"
+      [description]="errorMessage() ?? ''"
+      actionLabel="Fermer"
+      (action)="close()"
+    />
+  } @else {
+    @if (documentType(); as documentType) {
+      @switch (activeTab()) {
+        @case ('details') {
+          @if (!canGenerate()) {
+            <p class="config-notice">
+              @if (!documentType.actif) {
+                Ce type est désactivé : il n'apparaît pas dans le catalogue et ne peut pas être généré.
+              } @else {
+                Téléversez un modèle Word pour pouvoir générer ce document.
+              }
+            </p>
+          }
+
+          @if (documentType.description) {
+            <p class="config-description">{{ documentType.description }}</p>
+          }
+
+          <section class="config-section">
+            <h3 class="config-section-title">Informations</h3>
+            <app-detail-row label="Code">{{ documentType.code }}</app-detail-row>
+            <app-detail-row label="Statut">{{ documentType.actif ? 'Actif' : 'Inactif' }}</app-detail-row>
+            <app-detail-row label="Date de création">{{ documentType.dateCreation | date: 'dd/MM/yyyy' }}</app-detail-row>
+            <app-detail-row label="Champs du formulaire">{{ fields().length }}</app-detail-row>
+            <app-detail-row label="Format généré">PDF</app-detail-row>
+          </section>
+
+          <section class="config-section">
+            <h3 class="config-section-title">Modèle Word</h3>
+
+            @if (template(); as template) {
+              <div class="config-file">
+                <span class="config-file-tile" aria-hidden="true">DOCX</span>
+                <div class="config-file-text">
+                  <span class="config-file-name">{{ template.nomFichierOriginal }}</span>
+                  <span class="config-file-meta">
+                    Version {{ template.version }} · {{ template.taille | fileSize }} · {{ template.dateUpload | date: 'dd/MM/yyyy à HH:mm' }}
+                  </span>
+                </div>
+                @if (!replacingTemplate()) {
+                  <app-icon-button icon="upload_file" variant="primary" label="Remplacer le modèle" (clicked)="replacingTemplate.set(true)" />
+                }
+              </div>
+            }
+
+            @if (showUploader()) {
+              <div class="config-upload">
+                <app-file-upload
+                  [acceptedExtensions]="['.docx']"
+                  [maxSizeMB]="10"
+                  [disabled]="uploading()"
+                  [title]="template() ? 'Nouveau modèle Word' : 'Aucun modèle pour ce type'"
+                  [description]="template() ? 'Le nouveau fichier devient la version active ; l\'ancien est conservé.' : 'Déposez le fichier .docx qui servira à générer ce document.'"
+                  (fileSelected)="pendingFile.set($event)"
+                  (fileRemoved)="pendingFile.set(null)"
+                />
+                <div class="config-upload-actions">
+                  @if (template()) {
+                    <app-button variant="ghost" size="sm" [disabled]="uploading()" (clicked)="cancelTemplateReplacement()">Annuler</app-button>
+                  }
+                  <app-button size="sm" [disabled]="!pendingFile() || uploading()" (clicked)="uploadTemplate()">
+                    {{ uploading() ? 'Téléversement...' : 'Téléverser le modèle' }}
+                  </app-button>
+                </div>
+              </div>
+            }
+          </section>
+        }
+
+        @case ('fields') {
+          <div class="config-toolbar">
+            <p class="config-hint">Dans l'ordre de saisie. <span class="config-required">*</span> champ obligatoire.</p>
+            <app-button size="sm" (clicked)="openFieldForm(null)">Ajouter un champ</app-button>
+          </div>
+
+          @if (fields().length === 0) {
+            <app-empty-state
+              icon="document"
+              title="Aucun champ"
+              description="Ajoutez un champ pour chaque variable du modèle Word."
+            />
+          } @else {
+            <ul class="config-fields">
+              @for (field of fields(); track field.id) {
+                <li class="config-field">
+                  <span class="config-field-order">{{ field.ordre }}</span>
+                  <div class="config-field-text">
+                    <span class="config-field-label">
+                      {{ field.libelle }}
+                      @if (field.obligatoire) {
+                        <span class="config-required" title="Champ obligatoire">*</span>
+                      }
+                    </span>
+                    <span class="config-field-meta">
+                      <code class="config-variable">{{ field.nom }}</code>
+                      {{ fieldTypeLabels[field.type] }}
+                    </span>
+                  </div>
+                  <div class="config-field-actions">
+                    <app-icon-button icon="edit" label="Modifier" (clicked)="openFieldForm(field)" />
+                    <app-icon-button icon="delete" variant="danger" label="Supprimer" (clicked)="askFieldDeletion(field)" />
+                  </div>
+                </li>
+              }
+            </ul>
+          }
+        }
+
+        @case ('check') {
+          <div class="config-toolbar">
+            <p class="config-hint">Chaque champ doit avoir sa variable dans le modèle Word, et inversement.</p>
+            <app-button size="sm" variant="secondary" [disabled]="!template() || validating()" (clicked)="validateTemplate()">
+              {{ validating() ? 'Vérification...' : 'Vérifier le modèle' }}
+            </app-button>
+          </div>
+
+          @if (validation(); as validation) {
+            <app-template-check [validation]="validation" />
+          } @else if (!template()) {
+            <p class="config-hint">Téléversez d'abord un modèle Word (onglet Détails).</p>
+          } @else {
+            <p class="config-hint">Lancez la vérification après chaque changement du modèle ou des champs.</p>
+          }
+        }
+      }
+
+      <app-document-type-form-modal
+        [open]="typeFormOpen()"
+        [documentType]="documentType"
+        [saving]="savingType()"
+        (submitted)="saveDocumentType($event)"
+        (cancelled)="typeFormOpen.set(false)"
+      />
+
+      <app-document-field-form-modal
+        [open]="fieldFormOpen()"
+        [documentTypeId]="documentType.id"
+        [field]="editedField()"
+        [takenNames]="takenFieldNames()"
+        [saving]="savingField()"
+        (submitted)="saveField($event)"
+        (cancelled)="closeFieldForm()"
+      />
+
+      <app-modal
+        title="Supprimer le champ"
+        icon="delete"
+        size="sm"
+        [description]="fieldToDelete()?.libelle ?? ''"
+        confirmText="Supprimer"
+        confirmVariant="danger"
+        [isOpen]="fieldToDelete() !== null"
+        [loading]="deletingField()"
+        (confirmed)="confirmFieldDeletion()"
+        (cancelled)="cancelFieldDeletion()"
+      >
+        <p>Ce champ sera retiré du formulaire de génération. <strong>Cette action est définitive.</strong></p>
+        <p class="delete-hint">Pensez à retirer aussi la variable <code class="config-variable">{{ fieldToDelete()?.nom }}</code> du modèle Word.</p>
+      </app-modal>
+    }
+  }
+</app-side-panel>

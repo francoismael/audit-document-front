@@ -1,0 +1,7 @@
+@use 'variables' as *;
+
+.document-type-form {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+}

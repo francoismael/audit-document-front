@@ -1,0 +1,34 @@
+<div class="side-panel-backdrop" (click)="onBackdropClick($event)">
+  <aside class="side-panel" [class.side-panel-expanded]="expanded()" role="dialog" [attr.aria-label]="title()">
+    <header class="side-panel-header">
+      <div class="side-panel-top">
+        <span class="side-panel-eyebrow">{{ eyebrow() }}</span>
+
+        <div class="side-panel-tools">
+          <app-icon-button
+            [icon]="expanded() ? 'close_fullscreen' : 'open_in_full'"
+            [label]="expanded() ? 'Réduire le panneau' : 'Agrandir le panneau'"
+            (clicked)="expanded.set(!expanded())"
+          />
+          <app-icon-button icon="close" label="Fermer le panneau" (clicked)="closed.emit()" />
+        </div>
+      </div>
+
+      <h2 class="side-panel-title">{{ title() }}</h2>
+
+      <div class="side-panel-badges">
+        <ng-content select="[panel-badges]" />
+      </div>
+
+      <ng-content select="[panel-tabs]" />
+    </header>
+
+    <div class="side-panel-body">
+      <ng-content />
+    </div>
+
+    <footer class="side-panel-footer">
+      <ng-content select="[panel-footer]" />
+    </footer>
+  </aside>
+</div>

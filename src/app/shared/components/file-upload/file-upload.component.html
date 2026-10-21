@@ -64,7 +64,7 @@
         <div class="file-details">
           <p class="file-name">{{ selectedFile()?.name }}</p>
           <p class="file-size">
-            {{ formatFileSize(selectedFile()?.size ?? 0) }}
+            {{ (selectedFile()?.size ?? 0) | fileSize }}
           </p>
           <span class="file-success">Fichier sélectionné</span>
         </div>

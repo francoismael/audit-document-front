@@ -1,0 +1,27 @@
+@use 'variables' as *;
+
+:host {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: $space-4;
+  border-bottom: 1px solid $color-light-gray;
+  padding: $space-3 0;
+  font-size: 0.9rem;
+}
+
+:host(:last-child) {
+  border-bottom: none;
+}
+
+.detail-row-label {
+  flex-shrink: 0;
+  color: $color-text-muted;
+}
+
+.detail-row-value {
+  color: $color-text;
+  font-weight: 600;
+  text-align: right;
+  overflow-wrap: anywhere;
+}

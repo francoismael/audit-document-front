@@ -1,0 +1,76 @@
+<app-modal
+  [title]="title()"
+  [description]="subtitle()"
+  [icon]="field() ? 'edit' : 'add'"
+  [isOpen]="open()"
+  [confirmText]="confirmText()"
+  [loading]="saving()"
+  (confirmed)="onConfirm()"
+  (cancelled)="cancelled.emit()"
+>
+  <div class="document-field-form">
+    <app-form-field
+      [id]="'document-field-libelle'"
+      [config]="{
+        label: 'Libellé',
+        placeholder: 'Ex. Date de début de la mission',
+        type: 'text',
+        required: true,
+        disabled: saving(),
+        errorMessage: visibleLibelleError() ?? undefined
+      }"
+      [value]="libelle()"
+      [invalid]="visibleLibelleError() !== null"
+      (valueChange)="libelle.set($event)"
+    />
+
+    <div>
+      <app-form-field
+        [id]="'document-field-nom'"
+        [config]="{
+          label: 'Nom technique',
+          placeholder: 'Ex. date_debut',
+          type: 'text',
+          required: true,
+          disabled: saving(),
+          errorMessage: visibleNomError() ?? undefined
+        }"
+        [value]="nom()"
+        [invalid]="visibleNomError() !== null"
+        (valueChange)="nom.set($event)"
+      />
+      <p class="document-field-hint">
+        Dans le modèle Word, la valeur du champ remplace <code>{{ templateVariable() }}</code>.
+        @if (field()) {
+          Si vous le renommez, pensez à modifier aussi le modèle.
+        }
+      </p>
+    </div>
+
+    <app-select-field
+      [id]="'document-field-type'"
+      [config]="{
+        label: 'Type',
+        placeholder: 'Choisir le type de saisie',
+        options: typeOptions,
+        required: true,
+        disabled: saving(),
+        errorMessage: visibleTypeError() ?? undefined
+      }"
+      [value]="type()"
+      [invalid]="visibleTypeError() !== null"
+      (valueChange)="type.set($event)"
+    />
+
+    <app-checkbox-field
+      [id]="'document-field-obligatoire'"
+      [config]="{
+        label: 'Champ obligatoire',
+        description: 'La génération est bloquée tant que ce champ n\'est pas rempli.',
+        disabled: saving()
+      }"
+      [checked]="obligatoire()"
+      (valueChange)="obligatoire.set($event)"
+    />
+  </div>
+</app-modal>

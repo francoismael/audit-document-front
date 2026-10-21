@@ -1,0 +1,65 @@
+@use 'variables' as *;
+
+.template-check {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+}
+
+.template-check-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: $space-3;
+  margin: 0;
+  color: $color-text;
+}
+
+.template-check-group {
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  padding: $space-3 $space-4;
+
+  h3 {
+    margin: 0 0 $space-1;
+    color: $color-primary;
+    font-size: 0.95rem;
+  }
+
+  p {
+    margin: 0 0 $space-2;
+    color: $color-text-muted;
+    font-size: 0.9rem;
+  }
+
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $space-2;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  code {
+    display: inline-block;
+    border-radius: $radius-sm;
+    padding: 2px $space-2;
+    background-color: $color-light-gray;
+    color: $color-primary;
+  }
+
+  &.template-check-error {
+    border-color: $color-danger;
+    background-color: $color-danger-light;
+
+    h3 {
+      color: $color-danger;
+    }
+
+    code {
+      background-color: $color-white;
+      color: $color-danger;
+    }
+  }
+}

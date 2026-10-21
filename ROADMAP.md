@@ -263,34 +263,43 @@ Décidé le 20/10/2026 : **le document généré est un PDF**, pas un fichier Wo
 
 Cette étape crée les briques réutilisées par tous les écrans de gestion qui suivent.
 
-- [ ] Ajouter une colonne d'actions à `app-data-table`.
-- [ ] Mettre au point le schéma « formulaire dans `app-modal` » et la confirmation avant suppression.
-- [ ] Tableau des types : nom, code, description, statut (`app-status-badge`) et date de création.
-- [ ] Bouton « Créer un type » : formulaire (code, nom, description) dans `app-modal` → `POST /document-types`. Après création, rediriger vers sa configuration.
-- [ ] Actions par ligne :
+- [x] **Cellules personnalisées dans `app-data-table`** : directive `appDataTableCell` (`shared/components/data-table/data-table-cell.directive.ts`). Une page fournit un gabarit pour une colonne (`<ng-template appDataTableCell="actif" let-row>…</ng-template>`) ; les autres colonnes restent en texte. Sert ici au statut et aux actions, et servira à tous les tableaux suivants.
+- [x] Correction du tableau partagé : `overflow-wrap: break-word` au lieu de `anywhere`, pour que les dates et les codes ne soient plus coupés au milieu.
+- [x] `app-status-badge` : input facultatif `label` pour remplacer le libellé en gardant les couleurs (« Actif » / « Inactif »).
+- [x] **Formulaire dans `app-modal`** : `DocumentTypeFormModalComponent` (`features/document-types/components/`), utilisé pour la création et la modification. Il se réinitialise à chaque ouverture (`linkedSignal`) et valide les champs : code obligatoire (lettres, chiffres, `_`, `-`, 100 caractères maximum), nom obligatoire (255 caractères maximum). Les valeurs sont nettoyées, et une description vide est envoyée comme `null`.
+- [x] **Confirmation avant suppression** avec `app-modal` (`confirmVariant="danger"`), qui rappelle qu'un type déjà utilisé ne peut pas être supprimé.
+- [x] `DocumentTypeService` : `create()`, `update()`, `changeStatus()`, `delete()`.
+- [x] Tableau des types : nom, code, description, statut (badge), date de création (jj/mm/aaaa) et actions. États chargement, erreur avec « Réessayer », et liste vide avec « Créer un type de document ».
+- [x] Bouton « Créer un type de document » → `POST /document-types`, puis redirection vers sa configuration (`/document-types/:id`).
+- [x] Actions par ligne :
   - « Configurer » : ouvre `/document-types/:id` ;
   - « Modifier » : modale pré-remplie → `PUT /document-types/{id}` ;
-  - « Activer » / « Désactiver » → `PATCH /document-types/{id}/statut` ;
-  - « Supprimer », avec confirmation → `DELETE /document-types/{id}`. Si le type a déjà servi, afficher le message du backend (409), qui propose de le désactiver.
-- **Validation :** un type créé apparaît dans la liste et dans le catalogue. Un type désactivé disparaît du catalogue.
+  - « Activer » / « Désactiver » → `PATCH /document-types/{id}/statut`, avec un message qui précise l'effet sur le catalogue ;
+  - « Supprimer », avec confirmation → `DELETE /document-types/{id}`. Si le type a déjà servi, le message du backend (409) s'affiche et le type reste dans la liste.
+- **Validation :** 80 tests unitaires OK. Parcours vérifié dans Chrome avec le backend réel : erreurs de validation, création (code mis en majuscules, accents corrects) puis redirection vers la configuration, modification, désactivation, suppression ; affichage vérifié sur ordinateur et tablette ; type de test supprimé.
 
 ### Étape 9 — Configuration d'un type (`/document-types/:id`)
 
-Page unique en 4 sections, chargées à partir de `GET /document-types/{id}/form`. La gestion des champs (ajout, modification, suppression dans une liste) sert de modèle aux listes des documents métier.
+Affichée dans un **tiroir qui glisse depuis la droite par-dessus la liste** (route enfant de `/document-types`), et non dans une page séparée. Onglets Détails / Champs / Vérification, actions Modifier et Tester la génération en bas du tiroir. Ce schéma liste + panneau de détail sert de modèle aux listes suivantes (historique, missions, documents métier).
 
-- [ ] **Informations :** code, nom, description et statut, avec un bouton « Modifier » qui réutilise la modale de l'étape 8.
-- [ ] **Modèle Word :**
+Panneau en 4 sections, chargées à partir de `GET /document-types/{id}/form`. La gestion des champs (ajout, modification, suppression dans une liste) sert de modèle aux listes des documents métier.
+
+- [x] **Informations :** code, nom, description et statut, avec un bouton « Modifier » qui réutilise la modale de l'étape 8.
+- [x] **Modèle Word :**
   - afficher le modèle actif (nom du fichier, version, date, taille) ;
   - téléverser ou remplacer le fichier avec `app-file-upload` (`.docx`, 10 Mo) → `POST /document-types/{id}/template`.
-- [ ] **Champs :**
+- [x] **Champs :**
   - tableau des champs (ordre, nom technique, libellé, type, obligatoire) ;
   - ajout et modification dans une modale → `POST /document-fields` et `PUT /document-fields/{id}` ;
   - suppression avec confirmation → `DELETE /document-fields/{id}` ;
   - type choisi dans une liste limitée à `TEXT / TEXTAREA / DATE / NUMBER / BOOLEAN` ;
   - nom technique contrôlé (`[A-Za-z0-9_]+`, le même motif que les variables `{{ }}` du modèle).
-- [ ] **Vérification :** bouton « Vérifier le modèle » → `GET .../template/validate-variables`. Afficher les variables détectées, les champs absents du modèle, les variables inconnues et un statut valide ou invalide.
-- [ ] **Tester :** bouton « Tester la génération » qui ouvre `/documents/generer/:id`.
+- [x] **Vérification :** bouton « Vérifier le modèle » → `GET .../template/validate-variables`. Afficher les variables détectées, les champs absents du modèle, les variables inconnues et un statut valide ou invalide.
+- [x] **Tester :** bouton « Tester la génération » qui ouvre `/documents/generer/:id`.
+- [x] Backend : le nom technique d'un champ est contrôlé (`[A-Za-z0-9_]+`, erreur 400) et un nom déjà utilisé dans le même type renvoie une erreur 409 claire, au lieu du message générique « lié à d'autres données » (`DocumentFieldService`). À reporter dans audit-document-spring.
+- [x] Briques réutilisables : `app-icon-button` (icônes Angular Material pour les actions des listes), pipe `fileSize`, `injectActionRunner()` (`core/http/action-runner.ts`) pour les appels API avec indicateur de chargement et toast d'erreur.
 - **Validation :** créer un type, téléverser un modèle, ajouter les champs, obtenir un statut valide, puis générer le document.
+- **Résultat :** build OK, 98 tests unitaires OK. Parcours complet validé dans Chrome sur le vrai backend (type temporaire supprimé à la fin) : téléversement, vérification invalide puis valide, ajout, modification, refus d'un doublon, suppression avec renumérotation, ouverture de la génération.
 
 ### Étape 10 — Historique des documents (`/document-history`)
 
@@ -479,3 +488,9 @@ Règles communes à ces 11 étapes :
 | 20/10/2026 | Étape 7 | Fait | Génération PDF avec LibreOffice (backend) et écran de génération (front), validés par curl et par les tests unitaires ; reporté dans audit-document-spring. Vérification navigateur impossible sur le poste à cause d'Avast, à revoir au déploiement |
 | 20/10/2026 | Feuille de route | Mise à jour | Les 12 documents métier n'ont pas de modèle Word : le front les affiche en reproduisant `Document.docx`. La dépendance backend « génération PDF des documents métier » est supprimée |
 | 20/10/2026 | Feuille de route | Décision | Documents métier : sortie papier et PDF par l'impression du navigateur (« Imprimer / PDF »), avec une mise en page d'impression A4 |
+| 21/10/2026 | Étape 8 | Fait | Écran « Types de documents » : tableau avec statut et actions, création et modification en fenêtre, activation et désactivation, suppression avec confirmation. Briques réutilisables : cellules personnalisées du tableau, badge à libellé libre |
+| 21/10/2026 | Étape 8 | Ajustement | Actions des listes en icônes Angular Material (`app-icon-button`, police `material-icons` servie localement) au lieu de grands boutons texte |
+| 21/10/2026 | Étape 9 | Fait | Page de configuration d'un type : informations, modèle Word (téléversement et remplacement, vérification automatique), champs (ajout, modification, suppression), vérification du modèle, test de la génération. Backend : contrôle du nom technique et des doublons |
+| 21/10/2026 | Étape 9 | Ajustement | La configuration s'ouvre dans un panneau latéral (`app-side-panel`) à droite de la liste au lieu d'une page séparée ; tableau des champs resserré (obligatoire = `*`). Icônes affichées en texte chez l'utilisateur : serveur `ng serve` lancé avant l'ajout de la police, à relancer |
+| 21/10/2026 | Étape 9 | Ajustement | D'après la maquette de l'utilisateur : le détail devient un tiroir par-dessus la liste (fond assombri, agrandissable), en-tête avec badges, onglets Détails / Champs / Vérification, lignes libellé-valeur, carte du fichier modèle, champs en liste compacte, actions en pied. Nouveaux composants partagés `app-tabs` et `app-detail-row` |
+| 21/10/2026 | Étape 9 | Ajustement | Nouveau design des fenêtres (`app-modal`) : icône colorée (rouge pour une suppression), sous-titre avec le nom de l'élément, fond flouté, animation, boutons `app-button`, fermeture par Échap, tailles `sm / md / lg` |

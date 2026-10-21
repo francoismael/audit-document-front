@@ -40,7 +40,8 @@
 
   td {
     color: $color-text;
-    overflow-wrap: anywhere;
+    // Only breaks a word when it cannot fit, so dates and codes stay readable.
+    overflow-wrap: break-word;
   }
 
   tbody tr {

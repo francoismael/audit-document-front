@@ -1,5 +1,13 @@
 export type DynamicFieldType = 'TEXT' | 'TEXTAREA' | 'DATE' | 'NUMBER' | 'BOOLEAN';
 
+export const DYNAMIC_FIELD_TYPE_LABELS: Record<DynamicFieldType, string> = {
+  TEXT: 'Texte court',
+  TEXTAREA: 'Texte long',
+  DATE: 'Date',
+  NUMBER: 'Nombre',
+  BOOLEAN: 'Oui / Non'
+};
+
 export interface DynamicField {
   name: string;
   label: string;

@@ -58,15 +58,18 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/document-types/pages/document-type-list/document-type-list.component').then(
             (m) => m.DocumentTypeListComponent
-          )
-      },
-      {
-        path: 'document-types/:id',
-        title: pageTitle('Configuration du type de document'),
-        loadComponent: () =>
-          import('./features/document-types/pages/document-type-config/document-type-config.component').then(
-            (m) => m.DocumentTypeConfigComponent
-          )
+          ),
+        children: [
+          {
+            // Opens in a side panel next to the list.
+            path: ':id',
+            title: pageTitle('Configuration du type de document'),
+            loadComponent: () =>
+              import('./features/document-types/pages/document-type-config/document-type-config.component').then(
+                (m) => m.DocumentTypeConfigComponent
+              )
+          }
+        ]
       },
       {
         path: 'templates',

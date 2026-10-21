@@ -1,0 +1,57 @@
+@use 'variables' as *;
+
+:host {
+  display: inline-flex;
+}
+
+.icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 34px;
+  height: 34px;
+  padding: 0;
+
+  border: 1px solid transparent;
+  border-radius: $radius-sm;
+  background-color: transparent;
+  color: $color-primary;
+  cursor: pointer;
+
+  transition:
+    background-color 160ms ease,
+    color 160ms ease;
+
+  mat-icon {
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+  }
+
+  &:hover:not(:disabled) {
+    background-color: $color-light-gray;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-turquoise;
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  &.icon-button-primary {
+    color: $color-turquoise;
+  }
+
+  &.icon-button-danger {
+    color: $color-danger;
+
+    &:hover:not(:disabled) {
+      background-color: $color-danger-light;
+    }
+  }
+}

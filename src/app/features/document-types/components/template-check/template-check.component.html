@@ -1,0 +1,50 @@
+<div class="template-check">
+  <p class="template-check-status">
+    <app-status-badge
+      [status]="validation().valid ? 'approved' : 'rejected'"
+      [label]="validation().valid ? 'Modèle valide' : 'Modèle invalide'"
+    />
+    @if (validation().valid) {
+      Chaque champ a sa variable dans « {{ validation().templateName }} », et chaque variable a son champ.
+    } @else {
+      Le modèle « {{ validation().templateName }} » et les champs ne correspondent pas : le document généré serait incomplet.
+    }
+  </p>
+
+  @if (validation().missingFields.length > 0) {
+    <section class="template-check-group template-check-error">
+      <h3>Champs absents du modèle</h3>
+      <p>Ajoutez ces variables dans le fichier Word, ou supprimez les champs inutiles.</p>
+      <ul>
+        @for (name of validation().missingFields; track name) {
+          <li><code>{{ toVariable(name) }}</code></li>
+        }
+      </ul>
+    </section>
+  }
+
+  @if (validation().unknownVariables.length > 0) {
+    <section class="template-check-group template-check-error">
+      <h3>Variables sans champ</h3>
+      <p>Créez un champ portant ce nom technique, ou retirez la variable du fichier Word.</p>
+      <ul>
+        @for (name of validation().unknownVariables; track name) {
+          <li><code>{{ toVariable(name) }}</code></li>
+        }
+      </ul>
+    </section>
+  }
+
+  <section class="template-check-group">
+    <h3>Variables détectées dans le modèle ({{ validation().variablesInTemplate.length }})</h3>
+    @if (validation().variablesInTemplate.length > 0) {
+      <ul>
+        @for (name of validation().variablesInTemplate; track name) {
+          <li><code>{{ name }}</code></li>
+        }
+      </ul>
+    } @else {
+      <p>Aucune variable <code>{{ toVariable('…') }}</code> trouvée dans le fichier.</p>
+    }
+  </section>
+</div>

@@ -1,0 +1,54 @@
+<app-modal
+  [title]="title()"
+  [description]="subtitle()"
+  [icon]="documentType() ? 'edit' : 'add'"
+  [isOpen]="open()"
+  [confirmText]="confirmText()"
+  [loading]="saving()"
+  (confirmed)="onConfirm()"
+  (cancelled)="cancelled.emit()"
+>
+  <div class="document-type-form">
+    <app-form-field
+      [id]="'document-type-code'"
+      [config]="{
+        label: 'Code',
+        placeholder: 'Ex. FICHE_SUIVI (enregistré en majuscules)',
+        type: 'text',
+        required: true,
+        disabled: saving(),
+        errorMessage: visibleCodeError() ?? undefined
+      }"
+      [value]="code()"
+      [invalid]="visibleCodeError() !== null"
+      (valueChange)="code.set($event)"
+    />
+
+    <app-form-field
+      [id]="'document-type-nom'"
+      [config]="{
+        label: 'Nom',
+        placeholder: 'Ex. Fiche de suivi',
+        type: 'text',
+        required: true,
+        disabled: saving(),
+        errorMessage: visibleNomError() ?? undefined
+      }"
+      [value]="nom()"
+      [invalid]="visibleNomError() !== null"
+      (valueChange)="nom.set($event)"
+    />
+
+    <app-textarea-field
+      [id]="'document-type-description'"
+      [config]="{
+        label: 'Description',
+        placeholder: 'À quoi sert ce document ?',
+        rows: 3,
+        disabled: saving()
+      }"
+      [value]="description()"
+      (valueChange)="description.set($event)"
+    />
+  </div>
+</app-modal>

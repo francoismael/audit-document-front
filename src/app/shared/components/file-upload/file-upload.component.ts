@@ -1,8 +1,11 @@
 import { Component, input, output, signal } from '@angular/core';
 
+import { FileSizePipe } from '../../pipes/file-size.pipe';
+
 @Component({
   selector: 'app-file-upload',
   standalone: true,
+  imports: [FileSizePipe],
   templateUrl: './file-upload.component.html',
   styleUrl: './file-upload.component.scss'
 })
@@ -75,18 +78,6 @@ export class FileUploadComponent {
     this.selectedFile.set(null);
     this.errorMessage.set('');
     this.fileRemoved.emit();
-  }
-
-  formatFileSize(size: number): string {
-    if (size < 1024) {
-      return `${size} octets`;
-    }
-
-    if (size < 1024 * 1024) {
-      return `${(size / 1024).toFixed(1)} Ko`;
-    }
-
-    return `${(size / (1024 * 1024)).toFixed(2)} Mo`;
   }
 
   get acceptAttribute(): string {

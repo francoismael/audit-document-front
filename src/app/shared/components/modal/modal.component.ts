@@ -1,21 +1,37 @@
-import { Component, input, output } from '@angular/core';
+import { Component, computed, input, output } from '@angular/core';
+import { MatIconModule } from '@angular/material/icon';
+
+import { ButtonComponent } from '../button/button.component';
+import { IconButtonComponent } from '../icon-button/icon-button.component';
+import { ModalSize, ModalVariant } from './modal.interface';
 
 @Component({
   selector: 'app-modal',
   standalone: true,
+  imports: [ButtonComponent, IconButtonComponent, MatIconModule],
   templateUrl: './modal.component.html',
-  styleUrl: './modal.component.scss'
+  styleUrl: './modal.component.scss',
+  host: {
+    '(document:keydown.escape)': 'onEscape()'
+  }
 })
 export class ModalComponent {
   readonly title = input.required<string>();
+  // Short line under the title, for example the name of the edited item.
+  readonly description = input<string>('');
+  // Material icon shown next to the title. A danger modal shows a warning icon by default.
+  readonly icon = input<string>('');
   readonly isOpen = input<boolean>(false);
   readonly confirmText = input<string>('Confirmer');
   readonly cancelText = input<string>('Annuler');
-  readonly confirmVariant = input<'primary' | 'danger'>('primary');
+  readonly confirmVariant = input<ModalVariant>('primary');
+  readonly size = input<ModalSize>('md');
   readonly loading = input<boolean>(false);
 
   readonly confirmed = output<void>();
   readonly cancelled = output<void>();
+
+  readonly headerIcon = computed(() => this.icon() || (this.confirmVariant() === 'danger' ? 'warning_amber' : ''));
 
   onConfirm(): void {
     if (!this.loading()) {
@@ -35,8 +51,8 @@ export class ModalComponent {
     }
   }
 
-  onKeydown(event: KeyboardEvent): void {
-    if (event.key === 'Escape') {
+  onEscape(): void {
+    if (this.isOpen()) {
       this.onCancel();
     }
   }

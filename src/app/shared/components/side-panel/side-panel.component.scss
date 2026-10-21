@@ -1,0 +1,104 @@
+@use 'variables' as *;
+
+.side-panel-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 950;
+  background-color: $color-backdrop;
+  animation: side-panel-fade-in 0.2s ease-out;
+}
+
+.side-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  width: min(560px, 100%);
+  background-color: $color-white;
+  box-shadow: $shadow-panel;
+  animation: side-panel-slide-in 0.25s ease-out;
+  transition: width 0.2s ease-out;
+
+  &.side-panel-expanded {
+    width: min(1040px, 100%);
+  }
+}
+
+.side-panel-header {
+  border-bottom: 1px solid $color-border;
+  padding: $space-4 $space-6 0;
+}
+
+.side-panel-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-3;
+}
+
+.side-panel-eyebrow {
+  color: $color-text-muted;
+  font-size: 0.8rem;
+}
+
+.side-panel-tools {
+  display: flex;
+  gap: $space-1;
+}
+
+.side-panel-title {
+  margin: $space-2 0 0;
+  color: $color-primary;
+  font-size: 1.35rem;
+  overflow-wrap: break-word;
+}
+
+.side-panel-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-2;
+  margin: $space-2 0 $space-4;
+
+  &:empty {
+    display: none;
+  }
+}
+
+.side-panel-body {
+  flex: 1;
+  padding: $space-5 $space-6;
+  overflow-y: auto;
+}
+
+.side-panel-footer {
+  display: flex;
+  gap: $space-3;
+  border-top: 1px solid $color-border;
+  padding: $space-4 $space-6;
+
+  &:empty {
+    display: none;
+  }
+}
+
+@keyframes side-panel-slide-in {
+  from {
+    transform: translateX(100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes side-panel-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}

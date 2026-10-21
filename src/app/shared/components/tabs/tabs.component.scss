@@ -1,0 +1,40 @@
+@use 'variables' as *;
+
+.tabs {
+  display: flex;
+  gap: $space-5;
+  overflow-x: auto;
+}
+
+.tab {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: $space-2 0 $space-3;
+  background: none;
+  color: $color-text-muted;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+
+  &:hover {
+    color: $color-primary;
+  }
+
+  &.tab-active {
+    border-bottom-color: $color-primary;
+    color: $color-primary;
+  }
+}
+
+.tab-count {
+  border-radius: $radius-sm;
+  padding: 0 $space-2;
+  background-color: $color-light-gray;
+  color: $color-primary;
+  font-size: 0.75rem;
+}
