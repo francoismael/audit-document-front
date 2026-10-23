@@ -1,0 +1,133 @@
+@if (mission(); as mission) {
+  <app-document-toolbar
+    title="Déclarations d'indépendance"
+    [description]="description()"
+    [printable]="!!selected()?.declaration"
+  />
+
+  @if (declarants().length === 0) {
+    <app-empty-state
+      icon="users"
+      title="Aucun membre dans l'équipe d'audit"
+      description="Ajoutez l'équipe de la DAI à la mission (Modifier la mission) : chaque membre signe sa déclaration d'indépendance."
+    />
+  } @else {
+    <div class="declarations-layout">
+      <ul class="declarations-list no-print">
+        @for (declarant of declarants(); track declarant.member.personneId) {
+          <li
+            class="declarations-item"
+            [class.declarations-item-selected]="declarant.member.personneId === selectedPersonneId()"
+          >
+            <button class="declarations-select" type="button" (click)="select(declarant)">
+              <span class="declarations-name">{{ fullName(declarant.member) }}</span>
+              <span class="declarations-meta">{{ declarant.member.fonction ?? roleLabels[declarant.member.roles] }}</span>
+              @if (declarant.declaration; as declaration) {
+                <span class="declarations-state declarations-state-done">Signée le {{ declaration.dateDeclaration | date: 'dd/MM/yyyy' }}</span>
+              } @else {
+                <span class="declarations-state">À établir</span>
+              }
+            </button>
+
+            <div class="declarations-actions">
+              @if (declarant.declaration) {
+                <app-icon-button icon="edit" label="Modifier la date" (clicked)="openForm(declarant)" />
+                <app-icon-button icon="delete" variant="danger" label="Supprimer" (clicked)="deletionFor.set(declarant)" />
+              } @else {
+                <app-button size="sm" (clicked)="openForm(declarant)">Établir</app-button>
+              }
+            </div>
+          </li>
+        }
+      </ul>
+
+      @if (selected(); as selected) {
+        <app-document-sheet>
+          <h1>Lettre de déclaration d'indépendance et de conflits d'intérêts</h1>
+
+          <div class="declaration-identity">
+            <p class="document-info"><strong>Nom :</strong> {{ selected.member.nom }}</p>
+            <p class="document-info"><strong>Prénom(s) :</strong> {{ selected.member.prenom }}</p>
+            <p class="document-info"><strong>IM :</strong> {{ selected.declaration?.matricule || '……………' }}</p>
+            <p class="document-info"><strong>Fonction :</strong> {{ selected.member.fonction || '……………' }}</p>
+            <p class="document-info"><strong>Service :</strong> {{ selected.member.services || '……………' }}</p>
+          </div>
+
+          <p>
+            Cette lettre est établie conformément aux Normes Internationales d'Audit Interne ou Global Internal Audit
+            Standards (GIAS 2024), notamment le Domaine II : Éthique et professionnalisme, Principe 2 : Faire preuve
+            d'objectivité, ainsi que la norme 2.1 Objectivité individuelle et la norme 2.2 Garantir l'objectivité.
+          </p>
+          <p>En effet, les auditeurs internes :</p>
+          <ul>
+            <li>
+              doivent veiller à leur objectivité professionnelle en toutes circonstances, c'est-à-dire qu'ils doivent
+              adopter un état d'esprit impartial et non biaisé et formuler des jugements fondés sur une évaluation
+              équilibrée de tous les éléments pertinents ;
+            </li>
+            <li>
+              ne doivent accepter aucune proposition, matérielle ou immatérielle, telle qu'un cadeau, une récompense ou
+              une faveur, qui peut compromettre ou risquer de compromettre leur objectivité ;
+            </li>
+            <li>
+              doivent éviter les conflits d'intérêts et ne doivent pas être indûment influencés par leurs propres
+              intérêts ou ceux d'autres personnes, y compris la direction générale ou d'autres personnes en position
+              d'autorité ou par l'environnement politique, ou d'autres aspects de leur environnement ;
+            </li>
+            <li>doivent s'abstenir d'auditer des activités spécifiques dont ils étaient auparavant responsables.</li>
+          </ul>
+          <p>
+            En outre, les Normes internationales de l'audit interne définissent comme situations de conflits d'intérêts
+            « des situations dans lesquelles un auditeur interne a un intérêt professionnel ou personnel qui peut
+            l'empêcher d'exercer ses responsabilités d'audit interne de façon impartiale. Les conflits d'intérêts peuvent
+            créer des situations susceptibles d'entamer la confiance dans l'auditeur interne, la fonction d'audit interne
+            et la profession d'audit interne, même si aucun acte contraire à l'éthique ou inapproprié n'a été commis ».
+          </p>
+          <p>
+            Au regard des dispositions ci-dessus, je déclare, pour la mission n° {{ mission.numero }}
+            « {{ mission.intitule }} », être indépendant(e) et ne me trouver dans aucune situation de conflit d'intérêts.
+          </p>
+          <p>Par ailleurs, je m'interdis formellement de :</p>
+          <ul>
+            <li>
+              divulguer, d'utiliser ou exploiter, directement ou indirectement, les informations recueillies à l'occasion
+              de mes fonctions à des fins autres que celles de la mission, ni au profit de tiers non autorisés, sauf
+              dispositions spécifiques prévues par la loi ou sauf autorisation écrite de ma hiérarchie ;
+            </li>
+            <li>
+              accepter tout cadeau ou avantages, quelle qu'en soit la nature, émanant des audités ou de toute autre partie
+              prenante, pouvant compromettre en apparence mon indépendance et mon objectivité.
+            </li>
+          </ul>
+
+          <p class="document-date">
+            Antananarivo, le {{ (selected.declaration?.dateDeclaration | date: 'dd/MM/yyyy') ?? '……………………' }}
+          </p>
+        </app-document-sheet>
+      }
+    </div>
+  }
+
+  <app-declaration-form-modal
+    [open]="formFor() !== null"
+    [declarant]="formFor() ? fullName(formFor()!.member) : ''"
+    [date]="formFor()?.declaration?.dateDeclaration ?? ''"
+    [saving]="saving()"
+    (submitted)="saveDeclaration($event)"
+    (cancelled)="formFor.set(null)"
+  />
+
+  <app-modal
+    title="Supprimer la déclaration"
+    confirmText="Supprimer"
+    confirmVariant="danger"
+    size="sm"
+    [description]="deletionFor() ? fullName(deletionFor()!.member) : ''"
+    [isOpen]="deletionFor() !== null"
+    [loading]="deleting()"
+    (confirmed)="confirmDeletion()"
+    (cancelled)="deletionFor.set(null)"
+  >
+    <p>La déclaration d'indépendance de cette personne sera supprimée. <strong>Cette action est définitive.</strong></p>
+  </app-modal>
+}

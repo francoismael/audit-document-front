@@ -1,0 +1,49 @@
+@use 'variables' as *;
+
+// Stays visible under the pinned workspace title while the document scrolls.
+:host {
+  position: sticky;
+  top: $workspace-header-height - $content-padding;
+  z-index: 10;
+  display: block;
+  padding-bottom: $space-4;
+  background-color: $color-background;
+
+  @media (max-width: $breakpoint-tablet - 1px) {
+    top: $workspace-header-height - $content-padding-tablet;
+  }
+}
+
+.document-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-3;
+  border-radius: $radius-lg;
+  padding: $space-4 $space-5;
+  background-color: $color-white;
+  box-shadow: $shadow-card;
+}
+
+.document-toolbar-heading {
+  min-width: 0;
+}
+
+.document-toolbar-title {
+  margin: 0;
+  color: $color-primary;
+  font-size: 1.15rem;
+}
+
+.document-toolbar-description {
+  margin: $space-1 0 0;
+  color: $color-text-muted;
+  font-size: 0.9rem;
+}
+
+.document-toolbar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-2;
+}

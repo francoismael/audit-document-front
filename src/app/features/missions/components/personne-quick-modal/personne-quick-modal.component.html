@@ -1,0 +1,52 @@
+<app-modal
+  title="Nouvelle personne"
+  description="Elle sera ajoutée à l'équipe avec le rôle choisi."
+  confirmText="Créer"
+  [isOpen]="open()"
+  [loading]="saving()"
+  (confirmed)="onConfirm()"
+  (cancelled)="cancelled.emit()"
+>
+  <div class="quick-form">
+    <div class="quick-form-row">
+      <app-form-field
+        [id]="'personne-nom'"
+        [config]="{ label: 'Nom', type: 'text', required: true, disabled: saving(), errorMessage: visibleNomError() ?? undefined }"
+        [value]="nom()"
+        [invalid]="visibleNomError() !== null"
+        (valueChange)="nom.set($event)"
+      />
+      <app-form-field
+        [id]="'personne-prenom'"
+        [config]="{
+          label: 'Prénom',
+          type: 'text',
+          required: true,
+          disabled: saving(),
+          errorMessage: visiblePrenomError() ?? undefined
+        }"
+        [value]="prenom()"
+        [invalid]="visiblePrenomError() !== null"
+        (valueChange)="prenom.set($event)"
+      />
+    </div>
+    <app-form-field
+      [id]="'personne-matricule'"
+      [config]="{ label: 'Matricule', placeholder: 'Facultatif', type: 'text', disabled: saving() }"
+      [value]="matricule()"
+      (valueChange)="matricule.set($event)"
+    />
+    <app-form-field
+      [id]="'personne-fonction'"
+      [config]="{ label: 'Fonction', placeholder: 'Ex. Auditeur interne', type: 'text', disabled: saving() }"
+      [value]="fonction()"
+      (valueChange)="fonction.set($event)"
+    />
+    <app-form-field
+      [id]="'personne-services'"
+      [config]="{ label: 'Service', placeholder: 'Ex. Direction de l\'Audit Interne', type: 'text', disabled: saving() }"
+      [value]="services()"
+      (valueChange)="services.set($event)"
+    />
+  </div>
+</app-modal>

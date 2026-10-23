@@ -1,0 +1,55 @@
+@if (store.loading()) {
+  <app-loading message="Ouverture du dossier d'audit..." [fullPage]="true" />
+} @else if (store.errorMessage()) {
+  <app-empty-state
+    icon="folder"
+    title="Impossible d'ouvrir le dossier"
+    [description]="store.errorMessage() ?? ''"
+    actionLabel="Retour aux missions"
+    (action)="backToMissions()"
+  />
+} @else if (store.mission()) {
+  @if (store.mission(); as mission) {
+    <header class="workspace-header no-print">
+      <app-icon-button icon="arrow_back" label="Retour à la mission" (clicked)="backToMission()" />
+      <div class="workspace-heading">
+        <span class="workspace-eyebrow">Dossier d'audit · Mission n° {{ mission.numero }}</span>
+        <h1 class="workspace-title">{{ mission.intitule }}</h1>
+      </div>
+    </header>
+
+    <div class="workspace-layout">
+      <nav class="workspace-nav no-print" aria-label="Documents du dossier">
+        <ol>
+          @for (item of navigation(); track item.label) {
+            <li>
+              @if (item.slug) {
+                <a
+                  class="workspace-nav-item"
+                  [routerLink]="item.slug"
+                  routerLinkActive="active"
+                  [class.workspace-nav-done]="item.state === 'done'"                >
+                  <span class="workspace-nav-state" aria-hidden="true"></span>
+                  <span class="workspace-nav-label">{{ item.label }}</span>
+                  @if (item.hint) {
+                    <span class="workspace-nav-hint">{{ item.hint }}</span>
+                  }
+                </a>
+              } @else {
+                <span class="workspace-nav-item workspace-nav-later" [attr.title]="'Disponible à l\'étape ' + item.step">
+                  <span class="workspace-nav-state" aria-hidden="true"></span>
+                  <span class="workspace-nav-label">{{ item.label }}</span>
+                  <span class="workspace-nav-hint">{{ item.hint }}</span>
+                </span>
+              }
+            </li>
+          }
+        </ol>
+      </nav>
+
+      <section class="workspace-document">
+        <router-outlet />
+      </section>
+    </div>
+  }
+}

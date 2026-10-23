@@ -1,0 +1,45 @@
+@use 'variables' as *;
+
+.mission-filters {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) auto;
+  align-items: end;
+  gap: $space-4;
+  margin-bottom: $space-5;
+  border-radius: $radius-lg;
+  padding: $space-4 $space-5;
+  background-color: $color-white;
+  box-shadow: $shadow-card;
+
+  @media (max-width: $breakpoint-tablet - 1px) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.mission-name {
+  border: none;
+  padding: 0;
+  background: none;
+  color: $color-primary;
+  font: inherit;
+  font-weight: 600;
+  text-align: left;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+
+  &:hover {
+    color: $color-turquoise;
+    text-decoration: underline;
+  }
+}
+
+.mission-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: $space-1;
+}
+
+.delete-hint {
+  color: $color-text-muted;
+  font-size: 0.9rem;
+}

@@ -1,0 +1,88 @@
+@use 'variables' as *;
+
+.detail-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-2;
+}
+
+.detail-chip {
+  border-radius: $radius-sm;
+  padding: 2px $space-2;
+  background-color: $color-light-gray;
+  color: $color-primary;
+  font-size: 0.75rem;
+  font-weight: 600;
+
+  &.detail-chip-format {
+    background-color: $color-danger-light;
+    color: $color-danger;
+  }
+}
+
+.detail-footer-main {
+  flex: 1;
+}
+
+.detail-section {
+  margin-bottom: $space-6;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.detail-section-title {
+  margin: 0 0 $space-2;
+  color: $color-text-muted;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.detail-file {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  padding: $space-3;
+}
+
+.detail-file-tile {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: $radius-sm;
+  background-color: $color-danger-light;
+  color: $color-danger;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.detail-file-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.detail-file-name {
+  color: $color-text;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.detail-file-meta {
+  color: $color-text-muted;
+  font-size: 0.8rem;
+}
+
+.delete-hint {
+  color: $color-text-muted;
+  font-size: 0.9rem;
+}

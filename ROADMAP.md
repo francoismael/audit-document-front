@@ -303,63 +303,83 @@ Panneau en 4 sections, chargées à partir de `GET /document-types/{id}/form`. L
 
 ### Étape 10 — Historique des documents (`/document-history`)
 
-- [ ] `DocumentHistoryService` → `GET /documents-generes`, `GET /documents-generes/{id}`, `GET /documents-generes/{id}/download` et `DELETE /documents-generes/{id}`.
-- [ ] Tableau : nom du fichier, type, mission, date de génération et taille.
-- [ ] Filtres par type de document et par mission (paramètres de l'API), plus une recherche locale sur le nom du fichier.
-- [ ] Actions par ligne :
-  - « Détails » : modale avec le récapitulatif des `valeurs` saisies (réutilise `app-document-preview`) ;
-  - « Télécharger » ;
-  - « Supprimer », avec confirmation.
+- [x] `DocumentHistoryService` → `GET /documents-generes` (filtres facultatifs), `GET /documents-generes/{id}`, `GET /documents-generes/{id}/download` et `DELETE /documents-generes/{id}`, plus `saveCopy()` qui télécharge et enregistre le fichier avec son nom.
+- [x] Tableau : nom du fichier (cliquable), type, mission, date de génération, taille et nombre de documents affichés.
+- [x] Filtres par type de document et par mission (paramètres de l'API), recherche locale sans accents sur le nom du fichier, le type et la mission, bouton « Réinitialiser ».
+- [x] Actions par ligne en icônes : voir le détail, télécharger, supprimer (avec confirmation).
+- [x] Détail dans le **tiroir** (route enfant `/document-history/:id`, et non une fenêtre) : onglet Détails (type, mission, date, version du modèle, format, taille, carte du fichier) et onglet Valeurs saisies (`app-document-preview` avec les libellés actuels du type ; les valeurs d'un champ supprimé restent visibles sous leur nom technique, et tout reste lisible si le type a été supprimé). Pied : Supprimer et Télécharger.
+- [x] « Voir dans l'historique » (écran de succès de la génération) ouvre directement le tiroir du document généré.
+- [x] `normalizeForSearch()` déplacé dans `shared/utils/search.ts` (catalogue et historique).
 - **Validation :** un document généré à l'étape 7 apparaît en tête de liste et se retélécharge à l'identique.
+- **Résultat :** build OK, 122 tests unitaires OK. Vérifié dans Chrome sur le vrai backend avec un document de test (généré par l'API puis supprimé depuis le tiroir) : en tête de liste, recherche, filtre mission, tiroir et valeurs, PDF retéléchargé identique octet par octet, suppression (404 ensuite).
 
 ### Étape 11 — Missions d'audit (`/missions`) : la base des documents métier
 
-L'ordre de mission correspond à la mission elle-même : sa gestion couvre ce premier document.
+L'ordre de mission correspond à la mission elle-même : sa gestion couvre ce premier document. Adapté aux règles d'interface décidées depuis : création et modification dans une **fenêtre** (grande taille), détail dans le **tiroir** (`/missions/:id`), et non dans des pages séparées.
 
-- [ ] `MissionService`, `PersonneService` et `StructureService` connectés aux API existantes.
-- [ ] **Liste :** tableau (numéro, intitulé, structure, dates), recherche, et suppression avec confirmation.
-- [ ] **Création et modification** (`/missions/nouvelle`, `/missions/:id/modifier`) :
-  - champs : intitulé, objet, dates et structure (liste déroulante) ;
-  - équipe : ajout de personnes avec un rôle parmi les 5 valeurs fixes ;
-  - les représentants de l'entité auditée sont ajoutés comme `POINT_FOCAL`.
-- [ ] Création rapide dans une modale (décidé le 19/10/2026), sans page de référentiel séparée :
-  - à côté de la liste des structures, un bouton « + » ouvre une modale (nom, description) → `POST /structures`, puis la nouvelle structure est sélectionnée automatiquement ;
-  - à côté de la liste des personnes, un bouton « + » ouvre une modale (nom, prénom, matricule, fonction, service) → `POST /personnes`, puis la nouvelle personne est ajoutée à l'équipe.
-- [ ] **Détail** (`/missions/:id`) : informations, équipe groupée par rôle, avancement (`GET /statistiques/avancement`), documents générés pour cette mission (`GET /documents-generes?missionId=`).
-- [ ] **Onglets des documents métier** sur la page de détail, un onglet par document dans l'ordre d'un audit (routes enfants `/missions/:id/<document>`). Chaque onglet est rempli à son étape (12 à 22) ; en attendant, il affiche « Page en préparation ».
-- [ ] Listes de personnes selon les formulaires : source `/mission-personnes/mission/{id}` filtrée par rôle, en envoyant `personneId` ou `missionPersonneId` selon le formulaire (règle décidée le 19/10/2026).
+- [x] `MissionService` (liste, détail, création, modification, suppression, équipe `/mission-personnes/mission/{id}`), `PersonneService`, `StructureService` et `StatisticsService` (`/statistiques`, `/statistiques/avancement`).
+- [x] **Liste :** tableau (numéro, intitulé cliquable, structure, période, statut, taille de l'équipe), recherche sans accents, filtre par statut (À venir, En cours, Terminée, Sans dates : même règle que les statistiques du backend), icônes voir, modifier, supprimer (avec confirmation : les documents générés restent dans l'historique).
+- [x] **Création et modification** (`MissionFormModalComponent`) : intitulé, objet, structure, dates de début, de fin et de signature ; équipe : personne + rôle parmi les 5 valeurs fixes (groupée par rôle), une même personne ne peut pas avoir deux fois le même rôle ; rappel « les représentants de l'entité auditée ont le rôle Point focal ». Contrôles : intitulé et structure obligatoires, date de fin après la date de début.
+- [x] Création rapide dans une fenêtre par-dessus le formulaire : « + » à côté des structures (nom, description → sélectionnée automatiquement) et à côté des personnes (nom, prénom, matricule, fonction, service → ajoutée à l'équipe si un rôle est déjà choisi). Échap ne ferme que la fenêtre du dessus.
+- [x] **Détail** dans le tiroir : onglets Informations (ordre de mission), Équipe (groupée par rôle), Dossier d'audit (avancement et les 12 documents dans l'ordre de l'audit, avec leur état) et Documents générés (ouvrent le tiroir de l'historique). Pied : Modifier, Générer un document.
+- [ ] **Saisie des documents métier** : reportée aux étapes 12 à 22. L'onglet Dossier d'audit liste déjà les documents et l'étape qui les apportera. **À décider à l'étape 12** : où afficher la saisie d'un document métier (tiroir agrandi, ou espace de travail dédié pour les documents longs comme le rapport).
+- [x] Listes de personnes pour les formulaires : `MissionService.getTeam()` renvoie l'équipe avec `missionPersonneId` (règle du 19/10/2026), prêt pour les étapes 12 et suivantes.
+- [x] Backend :
+  - `MissionRequestValidator` : intitulé obligatoire (500 caractères maximum), structure obligatoire, ordre des dates, pas de doublon personne + rôle (erreurs 400 claires au lieu d'erreurs techniques) ;
+  - modification de l'équipe **sans recréer les membres conservés** : leur `missionPersonneId` reste le même (il est utilisé par les fiches de test et le PV d'affirmation, que l'ancien « tout supprimer puis recréer » aurait cassés) ;
+  - `GET /missions` et `GET /missions/{id}` renvoient maintenant le `missionPersonneId` de chaque membre (il était vide) ;
+  - création d'une personne (nom et prénom obligatoires) et d'une structure (nom obligatoire) contrôlée.
+  - **À reporter dans audit-document-spring.**
 - **Validation :** créer une mission avec son équipe, la modifier, générer un document lié, puis supprimer la mission (le document reste dans l'historique).
+- **Résultat :** build OK, 142 tests unitaires OK, tests backend OK. Parcours complet validé dans Chrome sur le vrai backend : erreurs du formulaire vide, structure et personne créées à la volée, mission n° 005 créée et ouverte dans le tiroir, équipe modifiée (le chef de mission garde son `missionPersonneId`), document généré visible dans l'onglet, mission supprimée (404) et document conservé sans mission. Données de test supprimées.
 
 ### Étapes 12 à 22 — Documents métier d'une mission
 
 Règles communes à ces 11 étapes :
 
-- chaque document est un onglet de la page de détail de la mission (étape 11), avec sa liste, son formulaire de création et de modification, et sa suppression avec confirmation ;
+- **espace de travail de la mission** (décidé le 22/10/2026) : la saisie des documents se fait dans une page pleine largeur propre à la mission (par exemple `/missions/:id/dossier/<document>`), ouverte par un bouton « Ouvrir le dossier » du tiroir de la mission. À gauche, les 12 documents dans l'ordre de l'audit avec leur état ; à droite, le document choisi en pleine largeur (liste, formulaire, aperçu A4 et « Imprimer / PDF »). Le tiroir reste réservé à la consultation. Cet espace est mis en place au début de l'étape 12 ;
+- chaque document a sa liste, son formulaire de création et de modification, et sa suppression avec confirmation ;
 - au début de chaque étape, relire le contrôleur, les DTO et le service du backend pour calquer les modèles TypeScript et repérer les règles métier (messages d'erreur, contraintes d'unicité) ;
 - les listes internes d'un document (objectifs, participants, questions, lignes…) réutilisent le schéma « ajout, modification, suppression dans une liste » mis au point à l'étape 9. Si le même bloc revient dans plusieurs documents, en faire un composant partagé ;
 - les personnes viennent de l'équipe de la mission, filtrée par rôle (`DIRECTEUR_AUDIT_INTERNE`, `CHEF_MISSION`, `SUPERVISEUR`, `AUDITEUR`, `POINT_FOCAL`) ;
 - quand l'API ne propose pas de filtre par mission, filtrer la liste côté front sur `missionId`, et noter le besoin d'un endpoint dédié en section 4 ;
 - **pas de modèle Word pour ces documents** (décidé le 20/10/2026) : le front affiche chaque document en reproduisant la mise en forme et le texte de `Document.docx` (en-tête du ministère, titres, formules, tableaux), remplis avec les données de la mission. Un composant partagé de « feuille de document » (format A4, en-tête officiel) sert aux 12 documents. **Sortie papier et PDF** (décidé le 20/10/2026) : un bouton « Imprimer / PDF » ouvre la fenêtre d'impression du navigateur (`window.print()`), où l'utilisateur choisit une imprimante ou « Enregistrer en PDF ». Une feuille de style d'impression (`@media print`, format A4) masque le menu, le header et les boutons pour ne garder que le document. Aucune bibliothèque supplémentaire.
 
+#### Espace de travail de la mission (début de l'étape 12)
+
+- [x] Route `/missions/:id/dossier/<document>` (`MissionWorkspaceComponent`) ouverte par « Ouvrir le dossier » dans le tiroir de la mission ; l'onglet « Dossier d'audit » du tiroir ouvre directement chaque document disponible.
+- [x] Menu des 12 documents dans l'ordre de l'audit avec leur état (rempli, en partie, à faire) ; les documents des étapes suivantes sont grisés avec leur numéro d'étape.
+- [x] `AuditFileStore` : la mission et ses documents chargés une fois, partagés par les pages (le backend n'a pas de filtre par mission : les listes sont filtrées côté front).
+- [x] Briques partagées : `app-document-sheet` (feuille A4, en-tête du ministère, typographie des documents) et `app-document-toolbar` (titre, actions, « Imprimer / PDF »). Feuille de style d'impression `src/styles/_print.scss` : seule la feuille est imprimée (menu, en-tête, navigation et boutons masqués, mise en page libérée pour imprimer plusieurs pages).
+- [x] **Ordre de mission** : établi automatiquement à partir de la mission (numéro N° xxx-année-MEF/DAI, date de signature, chefs de mission, auditeurs, directeur, superviseurs, structure), texte de `Document.docx`.
+
 #### Étape 12 — Termes de référence (TDR)
 
-- [ ] API : `/tdrs` (`GET`, `POST`, `GET /{id}`, `PUT /{id}`, `DELETE /{id}`). Un seul TDR par mission.
-- [ ] Champs : contexte, compétence, périmètre, période d'observation, lieu, méthodologie, résultats attendus, livrables.
-- [ ] Liste interne : **objectifs** (description ; numéro `OBJ-01`… attribué par le backend).
-- **Validation :** créer, modifier et supprimer le TDR d'une mission, ajouter et retirer des objectifs.
+- [x] API : `/tdrs` (un seul TDR par mission).
+- [x] Saisie en pleine largeur : contexte, compétence, périmètre, période d'observation, lieu, méthodologie (préremplie avec les 3 phases), résultats attendus, livrables (prérempli) ; textes d'aide repris de `Document.docx`.
+- [x] Liste interne des **objectifs** : ajout, modification, retrait ; un objectif conservé garde son numéro `OBJ-xx` (vérifié).
+- [x] Aperçu A4 fidèle à `Document.docx` (sections, objectifs numérotés, « [À compléter] » pour les parties vides), impression, suppression avec confirmation.
+- [x] Backend : mission obligatoire et description obligatoire pour chaque objectif (`MissionDocumentRules`).
+- [x] **Date du TDR** (décidé le 23/10/2026, option A) : champ `dateTdr` ajouté au backend (colonne `date_tdr`, facultative) et au formulaire (aujourd'hui proposé pour un nouveau TDR) ; affichée en haut du document « Antananarivo, le … ». Même logique à appliquer aux autres documents qui ont une date en en-tête.
 
 #### Étape 13 — Déclarations d'indépendance
 
-- [ ] API : `/declarations-independance` (`GET`, `POST`, `GET /{id}`, `PUT /{id}`, `DELETE /{id}`).
-- [ ] Champs : personne déclarante (équipe de la mission, `personneId`) et date de déclaration.
-- **Validation :** une déclaration par membre de l'équipe, visible dans la liste de la mission.
+- [x] API : `/declarations-independance`.
+- [x] Une carte par membre de l'équipe d'audit (une seule fois par personne, point focal exclu) : « Signée le … » ou « À établir », établir (date proposée : aujourd'hui), modifier la date, supprimer.
+- [x] Règle décidée le 23/10/2026 : le document est **terminé dès qu'un auditeur a fait sa déclaration** ; les autres auditeurs peuvent encore établir la leur. Pas de compteur « x / y » : le menu affiche le nombre de déclarations.
+- [x] Aperçu de la **lettre** du membre choisi, texte complet de `Document.docx` (nom, prénoms, IM, fonction, service, mission, date). Phrase complétée : « je déclare, pour la mission n° … « … », être indépendant(e) et ne me trouver dans aucune situation de conflit d'intérêts ».
+- [x] Backend : personne et date obligatoires, la personne doit appartenir à l'équipe d'audit de la mission (pas un point focal), une seule déclaration par personne et par mission (409 clair).
 
 #### Étape 14 — PV de réunion d'ouverture
 
-- [ ] API : `/reunions` avec `type: OUVERTURE` (une seule réunion de ce type par mission).
-- [ ] Champs : date, heures de début et de fin, lieu, observations, points abordés par la DAI (introduction, présentation de la mission, méthodologie) et par les interlocuteurs (introduction, processus, organisation).
-- [ ] Liste interne : **participants** (personne, rôle, `ENTITE_AUDITEE` ou `EQUIPE_DAI`).
-- **Validation :** créer le PV d'ouverture avec ses participants, le modifier et le supprimer.
+- [x] API : `/reunions` avec `type: OUVERTURE` (une seule par mission).
+- [x] Saisie : date (obligatoire), début, fin et levée de séance, lieu, points abordés par la DAI et par les interlocuteurs (préremplis avec la trame de `Document.docx`), observations.
+- [x] **Présents** : cases à cocher prises dans l'équipe de la mission, « Représentants de l'entité auditée » = points focaux (`ENTITE_AUDITEE`), « Équipe de la DAI » = les autres membres (`EQUIPE_DAI`) ; message et lien vers la mission s'il n'y a aucun point focal.
+- [x] Aperçu A4 du PV (objet, horaires, présents des deux côtés, points abordés, « La séance a été levée à … », secrétaire de séance), impression, suppression.
+- [x] Backend : chaque participant doit être dans l'équipe de la mission, un représentant de l'entité auditée doit être point focal et un membre DAI ne doit pas l'être, pas de doublon, type `ENTITE_AUDITEE` ou `EQUIPE_DAI`.
+
+- **Résultat (étapes 12 à 14) :** build OK, 168 tests unitaires OK, tests backend OK. Parcours validé dans Chrome sur le vrai backend avec une mission temporaire (supprimée ensuite) : ouverture du dossier depuis le tiroir, ordre de mission, TDR créé avec 2 objectifs puis modifié (OBJ-02 garde son identifiant), déclaration établie (1 / 2), PV d'ouverture avec point focal et équipe DAI ; règles backend vérifiées (point focal refusé pour une déclaration et dans l'équipe DAI, déclaration en double refusée) ; PDF produits par Chrome : seule la feuille du document est imprimée.
+- Toutes les corrections backend des étapes 9 à 14 sont reportées dans `audit-document-spring` (compilation et tests OK).
 
 #### Étape 15 — Fiches d'interview
 
@@ -494,3 +514,13 @@ Règles communes à ces 11 étapes :
 | 21/10/2026 | Étape 9 | Ajustement | La configuration s'ouvre dans un panneau latéral (`app-side-panel`) à droite de la liste au lieu d'une page séparée ; tableau des champs resserré (obligatoire = `*`). Icônes affichées en texte chez l'utilisateur : serveur `ng serve` lancé avant l'ajout de la police, à relancer |
 | 21/10/2026 | Étape 9 | Ajustement | D'après la maquette de l'utilisateur : le détail devient un tiroir par-dessus la liste (fond assombri, agrandissable), en-tête avec badges, onglets Détails / Champs / Vérification, lignes libellé-valeur, carte du fichier modèle, champs en liste compacte, actions en pied. Nouveaux composants partagés `app-tabs` et `app-detail-row` |
 | 21/10/2026 | Étape 9 | Ajustement | Nouveau design des fenêtres (`app-modal`) : icône colorée (rouge pour une suppression), sous-titre avec le nom de l'élément, fond flouté, animation, boutons `app-button`, fermeture par Échap, tailles `sm / md / lg` |
+| 22/10/2026 | Étape 10 | Fait | Historique : tableau, filtres type et mission, recherche, téléchargement, suppression, détail dans le tiroir (détails et valeurs saisies). « Voir dans l'historique » ouvre le document généré |
+| 22/10/2026 | Étape 11 | Fait | Missions : liste, recherche, filtre statut, création et modification en fenêtre (équipe par rôle, création rapide de structure et de personne), détail en tiroir (ordre de mission, équipe, dossier d'audit, documents générés), suppression. Backend : validation des missions, personnes et structures, équipe modifiée sans recréer les membres, `missionPersonneId` renvoyé |
+| 22/10/2026 | Interface | Ajustement | Recherche sans bouton « Rechercher » : filtrage automatique 300 ms après la frappe (ou Entrée), petit indicateur de chargement dans le champ. Icône Material devant chaque entrée du menu |
+| 22/10/2026 | Feuille de route | Décision | Étapes 12 à 22 : saisie des documents métier dans un **espace de travail de la mission** (page pleine largeur), le tiroir restant pour la consultation |
+| 23/10/2026 | Backend spring | Report | Corrections des étapes 9 à 14 reportées dans audit-document-spring : contrôle des champs, validation des missions, personnes et structures, équipe modifiée sans recréer les membres, missionPersonneId renvoyé, règles des TDR, déclarations et réunions |
+| 23/10/2026 | Étapes 12 à 14 | Fait | Espace de travail de la mission (menu des 12 documents, feuille A4, impression), ordre de mission, TDR avec objectifs, déclarations d'indépendance, PV de réunion d'ouverture. Backend : `MissionDocumentRules` |
+| 23/10/2026 | Étapes 12 à 14 | Ajustement | Déclarations : terminé dès la première déclaration (plus de « x / y »). Documents : logo minitere_economie_et_finance.png et en-tête centrés, lignes « Nom : … » compactes, date de fin à droite sans nom après. Titre de l'espace de travail et barre du document fixés au défilement |
+| 23/10/2026 | Impression | Ajustement | Plus d'en-tête ni de pied de page du navigateur dans les documents imprimés (date et heure, titre d'onglet, adresse localhost, numéro de page) : page sans marge, marges blanches portées par la feuille du document et répétées sur chaque page. Vérifié sur un PDF de 2 pages produit avec en-têtes du navigateur activés |
+| 23/10/2026 | Étape 12 | Ajustement | Date du TDR enregistrée et affichée en en-tête (back, spring, front). Espace de 22 px sous le titre fixé de l'espace de travail |
+| 23/10/2026 | Backend | Correction | Création de mission : le numéro venant de la séquence `mission_numero_seq` pouvait déjà exister (numéros saisis à la main, ex. 007) et la création échouait ; les numéros déjà pris sont maintenant sautés (back et spring) |

@@ -21,12 +21,63 @@ export const routes: Routes = [
           )
       },
       {
+        // Workspace of a mission: its business documents in full width. Declared before "missions" and its drawer.
+        path: 'missions/:id/dossier',
+        title: pageTitle('Dossier d\'audit'),
+        loadComponent: () =>
+          import('./features/audit-file/pages/mission-workspace/mission-workspace.component').then(
+            (m) => m.MissionWorkspaceComponent
+          ),
+        children: [
+          { path: '', redirectTo: 'ordre-de-mission', pathMatch: 'full' },
+          {
+            path: 'ordre-de-mission',
+            loadComponent: () =>
+              import('./features/audit-file/pages/ordre-mission-document/ordre-mission-document.component').then(
+                (m) => m.OrdreMissionDocumentComponent
+              )
+          },
+          {
+            path: 'tdr',
+            loadComponent: () =>
+              import('./features/audit-file/pages/tdr-document/tdr-document.component').then(
+                (m) => m.TdrDocumentComponent
+              )
+          },
+          {
+            path: 'declarations',
+            loadComponent: () =>
+              import('./features/audit-file/pages/declarations-document/declarations-document.component').then(
+                (m) => m.DeclarationsDocumentComponent
+              )
+          },
+          {
+            path: 'pv-ouverture',
+            loadComponent: () =>
+              import('./features/audit-file/pages/pv-ouverture-document/pv-ouverture-document.component').then(
+                (m) => m.PvOuvertureDocumentComponent
+              )
+          }
+        ]
+      },
+      {
         path: 'missions',
         title: pageTitle('Missions d\'audit'),
         loadComponent: () =>
           import('./features/missions/pages/mission-list/mission-list.component').then(
             (m) => m.MissionListComponent
-          )
+          ),
+        children: [
+          {
+            // Opens as a drawer over the list.
+            path: ':id',
+            title: pageTitle('Mission d\'audit'),
+            loadComponent: () =>
+              import('./features/missions/pages/mission-detail/mission-detail.component').then(
+                (m) => m.MissionDetailComponent
+              )
+          }
+        ]
       },
       {
         path: 'documents',
@@ -50,7 +101,18 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/document-history/pages/document-history/document-history.component').then(
             (m) => m.DocumentHistoryComponent
-          )
+          ),
+        children: [
+          {
+            // Opens as a drawer over the list.
+            path: ':id',
+            title: pageTitle('Document généré'),
+            loadComponent: () =>
+              import(
+                './features/document-history/pages/generated-document-detail/generated-document-detail.component'
+              ).then((m) => m.GeneratedDocumentDetailComponent)
+          }
+        ]
       },
       {
         path: 'document-types',

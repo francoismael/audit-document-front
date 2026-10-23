@@ -1,0 +1,57 @@
+@if (mission(); as mission) {
+  <app-document-toolbar
+    title="Ordre de mission"
+    description="Établi à partir de la mission : son équipe, sa structure et sa date de signature."
+  >
+    <app-button variant="outline" (clicked)="editMission()">Modifier la mission</app-button>
+  </app-document-toolbar>
+
+  <app-document-sheet
+    [reference]="'Antananarivo, le ' + ((mission.dateSignature | date: 'dd/MM/yyyy') ?? '…………………')"
+  >
+    <p class="ordre-reference">{{ reference() }}</p>
+    <h1>Ordre de mission</h1>
+
+    <p>Le Ministre de l'Économie et des Finances ordonne :</p>
+
+    <p><strong>{{ chefs().length > 1 ? 'Les Chefs de mission' : 'Le Chef de mission' }} :</strong></p>
+    <ul class="ordre-names">
+      @for (chef of chefs(); track chef.missionPersonneId) {
+        <li>{{ fullName(chef) }}</li>
+      } @empty {
+        <li class="document-placeholder">[Chef de mission à désigner]</li>
+      }
+    </ul>
+
+    <p><strong>Ainsi que les équipes d'audit :</strong></p>
+    <ul class="ordre-names">
+      @for (auditeur of auditeurs(); track auditeur.missionPersonneId) {
+        <li>{{ fullName(auditeur) }}</li>
+      } @empty {
+        <li class="document-placeholder">[Auditeurs à désigner]</li>
+      }
+    </ul>
+
+    <p>{{ assignmentText() }}</p>
+
+    <p>
+      Ils seront amenés à faire des descentes auprès de
+      @if (mission.structureNom) {
+        {{ mission.structureNom }},
+      } @else {
+        <span class="document-placeholder">[structure à auditer]</span>,
+      }
+      à compter de la date de signature du présent ordre de mission.
+    </p>
+
+    <p>
+      Ils se doivent d'accomplir toutes les diligences nécessaires pour la bonne exécution de la mission et la
+      collaboration des responsables concernés ainsi que leur disponibilité à la demande des auditeurs est un facteur
+      déterminant pour faciliter la démarche.
+    </p>
+
+    <p>Cet ordre de mission est délivré pour servir et faire valoir ce que de droit.</p>
+
+    <p class="ordre-signature">Le Ministre de l'Économie et des Finances,</p>
+  </app-document-sheet>
+}

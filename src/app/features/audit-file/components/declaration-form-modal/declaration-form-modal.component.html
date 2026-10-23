@@ -1,0 +1,27 @@
+<app-modal
+  size="sm"
+  confirmText="Enregistrer"
+  [title]="title()"
+  [description]="declarant()"
+  [isOpen]="open()"
+  [loading]="saving()"
+  (confirmed)="onConfirm()"
+  (cancelled)="cancelled.emit()"
+>
+  <div class="declaration-form">
+    <app-form-field
+      [id]="'declaration-date'"
+      [config]="{
+        label: 'Date de la déclaration',
+        type: 'date',
+        required: true,
+        disabled: saving(),
+        errorMessage: dateError() ?? undefined
+      }"
+      [value]="dateDeclaration()"
+      [invalid]="dateError() !== null"
+      (valueChange)="dateDeclaration.set($event)"
+    />
+    <p class="declaration-form-hint">La lettre reprend le nom, le matricule, la fonction et le service enregistrés pour cette personne.</p>
+  </div>
+</app-modal>

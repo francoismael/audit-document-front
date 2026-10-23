@@ -27,6 +27,9 @@ $color-info-light: #E3F1F5;
 
 /* Typography */
 $font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+// Printed business documents (Document.docx).
+$font-document: 'Times New Roman', Times, serif;
+$color-document-text: #000000;
 
 /* Spacing */
 $space-1: 4px;
@@ -43,6 +46,13 @@ $radius-lg: 14px;
 
 /* Layout */
 $sidebar-width: 240px;
+// Pinned title of the mission workspace; the document toolbar is pinned just below it.
+// Space between the pinned title and the document toolbar below it.
+$workspace-header-gap: 22px;
+$workspace-header-height: 88px + $workspace-header-gap;
+// Inner margin of the page area (main layout). A pinned element sticks inside it: its offset must remove it.
+$content-padding: $space-6;
+$content-padding-tablet: $space-4;
 $topbar-height: 64px;
 $breakpoint-tablet: 992px;
 $color-backdrop: rgba($color-dark, 0.45);

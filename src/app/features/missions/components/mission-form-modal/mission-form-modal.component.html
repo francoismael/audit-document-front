@@ -1,0 +1,159 @@
+<app-modal
+  size="lg"
+  [title]="title()"
+  [description]="subtitle()"
+  [confirmText]="confirmText()"
+  [isOpen]="open()"
+  [loading]="saving()"
+  (confirmed)="onConfirm()"
+  (cancelled)="cancelled.emit()"
+>
+  <div class="mission-form">
+    <section class="mission-form-section">
+      <h3 class="mission-form-title">Mission</h3>
+
+      <app-form-field
+        [id]="'mission-intitule'"
+        [config]="{
+          label: 'Intitulé',
+          placeholder: 'Ex. Audit de la gestion financière et comptable',
+          type: 'text',
+          required: true,
+          disabled: saving(),
+          errorMessage: visibleIntituleError() ?? undefined
+        }"
+        [value]="intitule()"
+        [invalid]="visibleIntituleError() !== null"
+        (valueChange)="intitule.set($event)"
+      />
+
+      <app-textarea-field
+        [id]="'mission-objet'"
+        [config]="{ label: 'Objet', placeholder: 'Objectif de la mission', rows: 3, disabled: saving() }"
+        [value]="objet()"
+        (valueChange)="objet.set($event)"
+      />
+
+      <div class="mission-form-with-action">
+        <app-select-field
+          [id]="'mission-structure'"
+          [config]="{
+            label: 'Structure auditée',
+            placeholder: 'Choisir la structure',
+            options: structureOptions(),
+            required: true,
+            disabled: saving(),
+            errorMessage: visibleStructureError() ?? undefined
+          }"
+          [value]="structureId()"
+          [invalid]="visibleStructureError() !== null"
+          (valueChange)="structureId.set($event)"
+        />
+        <app-icon-button
+          icon="add_business"
+          variant="primary"
+          label="Créer une structure"
+          [disabled]="saving()"
+          (clicked)="structureFormOpen.set(true)"
+        />
+      </div>
+
+      <div class="mission-form-dates">
+        <app-form-field
+          [id]="'mission-date-debut'"
+          [config]="{ label: 'Date de début', type: 'date', disabled: saving() }"
+          [value]="dateDebut()"
+          (valueChange)="dateDebut.set($event)"
+        />
+        <app-form-field
+          [id]="'mission-date-fin'"
+          [config]="{ label: 'Date de fin', type: 'date', disabled: saving(), errorMessage: visibleDateFinError() ?? undefined }"
+          [value]="dateFin()"
+          [invalid]="visibleDateFinError() !== null"
+          (valueChange)="dateFin.set($event)"
+        />
+        <app-form-field
+          [id]="'mission-date-signature'"
+          [config]="{ label: 'Date de signature', type: 'date', disabled: saving() }"
+          [value]="dateSignature()"
+          (valueChange)="dateSignature.set($event)"
+        />
+      </div>
+    </section>
+
+    <section class="mission-form-section">
+      <h3 class="mission-form-title">Équipe ({{ team().length }})</h3>
+      <p class="mission-form-hint">Les représentants de l'entité auditée ont le rôle « Point focal ».</p>
+
+      <div class="mission-form-member">
+        <div class="mission-form-with-action mission-form-member-person">
+          <app-select-field
+            [id]="'mission-member-personne'"
+            [config]="{ label: 'Personne', placeholder: 'Choisir une personne', options: personneOptions(), disabled: saving() }"
+            [value]="newMemberId()"
+            (valueChange)="newMemberId.set($event)"
+          />
+          <app-icon-button
+            icon="person_add"
+            variant="primary"
+            label="Créer une personne"
+            [disabled]="saving()"
+            (clicked)="personneFormOpen.set(true)"
+          />
+        </div>
+        <app-select-field
+          [id]="'mission-member-role'"
+          [config]="{ label: 'Rôle', placeholder: 'Choisir le rôle', options: roleOptions, disabled: saving() }"
+          [value]="newMemberRole()"
+          (valueChange)="newMemberRole.set($event)"
+        />
+        <app-button variant="secondary" [disabled]="saving()" (clicked)="addMember()">Ajouter</app-button>
+      </div>
+
+      @if (memberError()) {
+        <p class="mission-form-error" role="alert">{{ memberError() }}</p>
+      }
+
+      @if (teamRows().length === 0) {
+        <p class="mission-form-empty">Aucun membre pour l'instant.</p>
+      } @else {
+        <ul class="mission-form-team">
+          @for (member of teamRows(); track member.personneId + member.roles) {
+            <li class="mission-form-team-item">
+              <div class="mission-form-team-text">
+                <span class="mission-form-team-name">
+                  {{ member.personne ? member.personne.nom + ' ' + member.personne.prenom : 'Personne n° ' + member.personneId }}
+                </span>
+                @if (member.personne?.fonction; as fonction) {
+                  <span class="mission-form-team-meta">{{ fonction }}</span>
+                }
+              </div>
+              <span class="mission-form-role">{{ roleLabels[member.roles] }}</span>
+              <app-icon-button
+                icon="close"
+                variant="danger"
+                label="Retirer de l'équipe"
+                [disabled]="saving()"
+                (clicked)="removeMember(member)"
+              />
+            </li>
+          }
+        </ul>
+      }
+    </section>
+  </div>
+</app-modal>
+
+<app-structure-quick-modal
+  [open]="structureFormOpen()"
+  [saving]="savingStructure()"
+  (submitted)="createStructure($event)"
+  (cancelled)="structureFormOpen.set(false)"
+/>
+
+<app-personne-quick-modal
+  [open]="personneFormOpen()"
+  [saving]="savingPersonne()"
+  (submitted)="createPersonne($event)"
+  (cancelled)="personneFormOpen.set(false)"
+/>

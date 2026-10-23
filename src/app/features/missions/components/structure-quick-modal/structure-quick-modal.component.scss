@@ -1,0 +1,8 @@
+@use 'variables' as *;
+
+.quick-form {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+  text-align: left;
+}

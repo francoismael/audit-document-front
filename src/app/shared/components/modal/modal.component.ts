@@ -1,8 +1,11 @@
-import { Component, input, output } from '@angular/core';
+import { Component, DestroyRef, effect, inject, input, output } from '@angular/core';
 
 import { ButtonComponent } from '../button/button.component';
 import { IconButtonComponent } from '../icon-button/icon-button.component';
 import { ModalSize, ModalVariant } from './modal.interface';
+
+// Open modals, the most recent last: Escape only closes the one on top (a quick creation over a form).
+const openModals: ModalComponent[] = [];
 
 @Component({
   selector: 'app-modal',
@@ -28,6 +31,18 @@ export class ModalComponent {
   readonly confirmed = output<void>();
   readonly cancelled = output<void>();
 
+  constructor() {
+    effect(() => {
+      if (this.isOpen()) {
+        openModals.push(this);
+      } else {
+        this.removeFromOpenModals();
+      }
+    });
+
+    inject(DestroyRef).onDestroy(() => this.removeFromOpenModals());
+  }
+
   onConfirm(): void {
     if (!this.loading()) {
       this.confirmed.emit();
@@ -47,8 +62,16 @@ export class ModalComponent {
   }
 
   onEscape(): void {
-    if (this.isOpen()) {
+    if (this.isOpen() && openModals[openModals.length - 1] === this) {
       this.onCancel();
+    }
+  }
+
+  private removeFromOpenModals(): void {
+    const index = openModals.indexOf(this);
+
+    if (index >= 0) {
+      openModals.splice(index, 1);
     }
   }
 }

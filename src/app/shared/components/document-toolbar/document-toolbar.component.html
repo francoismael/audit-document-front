@@ -1,0 +1,15 @@
+<div class="document-toolbar no-print">
+  <div class="document-toolbar-heading">
+    <h2 class="document-toolbar-title">{{ title() }}</h2>
+    @if (description()) {
+      <p class="document-toolbar-description">{{ description() }}</p>
+    }
+  </div>
+
+  <div class="document-toolbar-actions">
+    <ng-content />
+    @if (printable()) {
+      <app-button variant="secondary" (clicked)="print()">Imprimer / PDF</app-button>
+    }
+  </div>
+</div>

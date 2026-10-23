@@ -1,0 +1,15 @@
+@use 'variables' as *;
+
+.ordre-reference {
+  font-weight: 700;
+}
+
+.ordre-names {
+  list-style: none;
+  padding-left: $space-6;
+}
+
+.ordre-signature {
+  margin-top: $space-6;
+  text-align: right;
+}

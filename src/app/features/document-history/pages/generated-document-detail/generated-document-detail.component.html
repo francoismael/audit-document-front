@@ -1,0 +1,99 @@
+<app-side-panel
+  [eyebrow]="'Document généré #' + documentId()"
+  [title]="document()?.nomFichier ?? 'Document généré'"
+  (closed)="close()"
+>
+  @if (document(); as document) {
+    <div panel-badges class="detail-badges">
+      <span class="detail-chip detail-chip-format">{{ format() }}</span>
+      <span class="detail-chip">{{ document.documentTypeNom }}</span>
+      @if (document.missionNumero) {
+        <span class="detail-chip">{{ document.missionNumero }}</span>
+      }
+    </div>
+  }
+
+  @if (document()) {
+    <app-tabs panel-tabs [tabs]="tabs()" [activeTab]="activeTab()" (tabChange)="selectTab($event)" />
+  }
+
+  @if (document()) {
+    <ng-container panel-footer>
+      <app-button variant="outline" [disabled]="deleting()" (clicked)="confirmingDeletion.set(true)">Supprimer</app-button>
+      <app-button class="detail-footer-main" [fullWidth]="true" [disabled]="downloading()" (clicked)="downloadDocument()">
+        {{ downloading() ? 'Téléchargement...' : 'Télécharger .' + format().toLowerCase() }}
+      </app-button>
+    </ng-container>
+  }
+
+  @if (loading()) {
+    <app-loading message="Chargement du document..." />
+  } @else if (errorMessage()) {
+    <app-empty-state
+      icon="document"
+      title="Impossible de charger ce document"
+      [description]="errorMessage() ?? ''"
+      actionLabel="Fermer"
+      (action)="close()"
+    />
+  } @else {
+    @if (document(); as document) {
+      @switch (activeTab()) {
+        @case ('details') {
+          <section class="detail-section">
+            <h3 class="detail-section-title">Informations</h3>
+            <app-detail-row label="Type de document">{{ document.documentTypeNom }}</app-detail-row>
+            <app-detail-row label="Mission">
+              {{ document.missionNumero ? document.missionNumero + ' — ' + document.missionIntitule : 'Aucune' }}
+            </app-detail-row>
+            <app-detail-row label="Date de génération">{{ document.dateGeneration | date: 'dd/MM/yyyy à HH:mm' }}</app-detail-row>
+            <app-detail-row label="Version du modèle">{{ document.templateVersion ?? '—' }}</app-detail-row>
+            <app-detail-row label="Format">{{ format() }}</app-detail-row>
+            <app-detail-row label="Taille">{{ document.taille | fileSize }}</app-detail-row>
+          </section>
+
+          <section class="detail-section">
+            <h3 class="detail-section-title">Fichier</h3>
+            <div class="detail-file">
+              <span class="detail-file-tile" aria-hidden="true">{{ format() }}</span>
+              <div class="detail-file-text">
+                <span class="detail-file-name">{{ document.nomFichier }}</span>
+                <span class="detail-file-meta">Fichier généré · {{ document.taille | fileSize }}</span>
+              </div>
+              <app-icon-button
+                icon="download"
+                variant="primary"
+                label="Télécharger"
+                [disabled]="downloading()"
+                (clicked)="downloadDocument()"
+              />
+            </div>
+          </section>
+        }
+
+        @case ('values') {
+          @if (previewFields().length === 0) {
+            <app-empty-state icon="document" title="Aucune valeur" description="Ce document a été généré sans saisie." />
+          } @else {
+            <app-document-preview [title]="document.documentTypeNom" [fields]="previewFields()" [values]="previewValues()" />
+          }
+        }
+      }
+
+      <app-modal
+        title="Supprimer le document"
+        confirmText="Supprimer"
+        confirmVariant="danger"
+        size="sm"
+        [description]="document.nomFichier"
+        [isOpen]="confirmingDeletion()"
+        [loading]="deleting()"
+        (confirmed)="confirmDeletion()"
+        (cancelled)="confirmingDeletion.set(false)"
+      >
+        <p>Le fichier et sa ligne d'historique seront supprimés. <strong>Cette action est définitive.</strong></p>
+        <p class="delete-hint">Les statistiques ne compteront plus ce document.</p>
+      </app-modal>
+    }
+  }
+</app-side-panel>

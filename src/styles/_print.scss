@@ -1,0 +1,32 @@
+// "Imprimer / PDF": only the document sheet is printed, on A4 pages.
+// No page margin: the browser prints its header and footer (date, page title, address, page number)
+// inside the margins, so without margins there is nothing of them. The white space is given by the
+// document sheet itself, repeated on every page.
+@page {
+  size: A4;
+  margin: 0;
+}
+
+@media print {
+  body {
+    background: none;
+  }
+
+  // Everything around the document: menu, header, workspace navigation, buttons, toasts.
+  app-header,
+  app-sidebar,
+  .toast-stack,
+  .no-print {
+    display: none !important;
+  }
+
+  // The layout scrolls inside a full-height block on screen: let the pages flow instead.
+  .main-layout,
+  .main-layout-body,
+  .main-layout-content {
+    display: block !important;
+    height: auto !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+}

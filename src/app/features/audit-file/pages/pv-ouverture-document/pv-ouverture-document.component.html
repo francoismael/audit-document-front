@@ -1,0 +1,225 @@
+@if (mission(); as mission) {
+  @if (editing()) {
+    <app-document-toolbar
+      [title]="reunion() ? 'Modifier le PV de réunion d\'ouverture' : 'Rédiger le PV de réunion d\'ouverture'"
+      description="Les points abordés sont préremplis avec la trame de Document.docx : adaptez-les au compte rendu."
+      [printable]="false"
+    >
+      <app-button variant="outline" [disabled]="saving()" (clicked)="cancelEditing()">Annuler</app-button>
+      <app-button [disabled]="saving()" (clicked)="save()">{{ saving() ? 'Enregistrement...' : 'Enregistrer' }}</app-button>
+    </app-document-toolbar>
+
+    <form class="pv-form" (submit)="$event.preventDefault()">
+      <section class="pv-form-section">
+        <h3>Séance</h3>
+        <div class="pv-form-grid">
+          <app-form-field
+            [id]="'pv-date'"
+            [config]="{ label: 'Date de la réunion', type: 'date', required: true, errorMessage: dateError() ?? undefined }"
+            [value]="draft().dateReunion"
+            [invalid]="dateError() !== null"
+            (valueChange)="updateField('dateReunion', $event)"
+          />
+          <app-form-field
+            [id]="'pv-lieu'"
+            [config]="{ label: 'Lieu', type: 'text', placeholder: 'Ex. Salle de réunion de la DRH' }"
+            [value]="draft().lieu"
+            (valueChange)="updateField('lieu', $event)"
+          />
+          <app-form-field
+            [id]="'pv-debut'"
+            [config]="{ label: 'Début de séance', type: 'time' }"
+            [value]="draft().heureDebut"
+            (valueChange)="updateField('heureDebut', $event)"
+          />
+          <app-form-field
+            [id]="'pv-fin'"
+            [config]="{ label: 'Fin de séance', type: 'time', errorMessage: heureFinError() ?? undefined }"
+            [value]="draft().heureFin"
+            [invalid]="heureFinError() !== null"
+            (valueChange)="updateField('heureFin', $event)"
+          />
+          <app-form-field
+            [id]="'pv-levee'"
+            [config]="{ label: 'Séance levée à', type: 'time' }"
+            [value]="draft().heureLevee"
+            (valueChange)="updateField('heureLevee', $event)"
+          />
+        </div>
+      </section>
+
+      <section class="pv-form-section">
+        <h3>Présents</h3>
+        <div class="pv-form-columns">
+          <div class="pv-form-group">
+            <h4>Représentants de l'entité auditée</h4>
+            @for (member of entiteMembers(); track member.personneId) {
+              <app-checkbox-field
+                [id]="'pv-entite-' + member.personneId"
+                [config]="{ label: member.nom + ' ' + member.prenom, description: member.fonction ?? roleLabels[member.roles] }"
+                [checked]="selectedEntite().has(member.personneId)"
+                (valueChange)="toggleParticipant('ENTITE_AUDITEE', member.personneId, $event)"
+              />
+            } @empty {
+              <div class="pv-form-notice">
+                <p>Aucun point focal dans l'équipe de la mission. Ajoutez les représentants de la structure auditée avec le rôle « Point focal ».</p>
+                <app-button size="sm" variant="outline" (clicked)="editMission()">Modifier la mission</app-button>
+              </div>
+            }
+          </div>
+
+          <div class="pv-form-group">
+            <h4>Équipe de la Direction de l'Audit Interne</h4>
+            @for (member of daiMembers(); track member.personneId) {
+              <app-checkbox-field
+                [id]="'pv-dai-' + member.personneId"
+                [config]="{ label: member.nom + ' ' + member.prenom, description: member.fonction ?? roleLabels[member.roles] }"
+                [checked]="selectedDai().has(member.personneId)"
+                (valueChange)="toggleParticipant('EQUIPE_DAI', member.personneId, $event)"
+              />
+            } @empty {
+              <p class="pv-form-hint">Aucun membre de la DAI dans l'équipe de la mission.</p>
+            }
+          </div>
+        </div>
+      </section>
+
+      <section class="pv-form-section">
+        <h3>Points abordés par la DAI</h3>
+        <app-textarea-field
+          [id]="'pv-dai-introduction'"
+          [config]="{ label: 'Introduction', rows: 4 }"
+          [value]="draft().pointsDaiIntroduction"
+          (valueChange)="updateField('pointsDaiIntroduction', $event)"
+        />
+        <app-textarea-field
+          [id]="'pv-dai-presentation'"
+          [config]="{ label: 'Présentation de la mission', rows: 4 }"
+          [value]="draft().pointsDaiPresentationMission"
+          (valueChange)="updateField('pointsDaiPresentationMission', $event)"
+        />
+        <app-textarea-field
+          [id]="'pv-dai-methodologie'"
+          [config]="{ label: 'Méthodologie et déroulement', rows: 6 }"
+          [value]="draft().pointsDaiMethodologie"
+          (valueChange)="updateField('pointsDaiMethodologie', $event)"
+        />
+      </section>
+
+      <section class="pv-form-section">
+        <h3>Points abordés par les interlocuteurs</h3>
+        <app-textarea-field
+          [id]="'pv-interlocuteurs-introduction'"
+          [config]="{ label: 'Introduction', rows: 3 }"
+          [value]="draft().pointsInterlocuteursIntroduction"
+          (valueChange)="updateField('pointsInterlocuteursIntroduction', $event)"
+        />
+        <app-textarea-field
+          [id]="'pv-interlocuteurs-processus'"
+          [config]="{ label: 'Processus interne / bref historique', rows: 3 }"
+          [value]="draft().pointsInterlocuteursProcessus"
+          (valueChange)="updateField('pointsInterlocuteursProcessus', $event)"
+        />
+        <app-textarea-field
+          [id]="'pv-interlocuteurs-organisation'"
+          [config]="{ label: 'Organisation interne', rows: 4 }"
+          [value]="draft().pointsInterlocuteursOrganisation"
+          (valueChange)="updateField('pointsInterlocuteursOrganisation', $event)"
+        />
+        <app-textarea-field
+          [id]="'pv-observations'"
+          [config]="{ label: 'Observations', rows: 3, placeholder: 'Facultatif' }"
+          [value]="draft().observations"
+          (valueChange)="updateField('observations', $event)"
+        />
+      </section>
+    </form>
+  } @else if (reunion()) {
+    @if (reunion(); as reunion) {
+      <app-document-toolbar
+        title="PV de réunion d'ouverture"
+        [description]="reunion.participants.length + ' participant(s)'"
+      >
+        <app-button variant="outline" (clicked)="confirmingDeletion.set(true)">Supprimer</app-button>
+        <app-button variant="outline" (clicked)="startEditing()">Modifier</app-button>
+      </app-document-toolbar>
+
+      <app-document-sheet [reference]="'- ' + ((reunion.dateReunion | date: 'dd/MM/yyyy') ?? '……') + ' -'">
+        <h1>Procès-verbal de réunion d'ouverture</h1>
+
+        <div class="pv-header">
+          <p class="document-info"><strong>Objet :</strong> Réunion de lancement de la mission « {{ mission.intitule }} »</p>
+          <p class="document-info"><strong>Début de séance :</strong> {{ formatTime(reunion.heureDebut) }}</p>
+          <p class="document-info"><strong>Fin de séance :</strong> {{ formatTime(reunion.heureFin) }}</p>
+          <p class="document-info"><strong>Lieu :</strong> {{ reunion.lieu || '……………………' }}</p>
+        </div>
+
+        <h2>Présents</h2>
+        <h3>Représentants de l'entité auditée</h3>
+        <ul>
+          @for (participant of entiteParticipants(); track participant.id) {
+            <li>{{ describe(participant) }}</li>
+          } @empty {
+            <li>[Aucun représentant indiqué]</li>
+          }
+        </ul>
+        <h3>Équipe de la Direction de l'Audit Interne</h3>
+        <ul>
+          @for (participant of daiParticipants(); track participant.id) {
+            <li>{{ describe(participant) }}</li>
+          } @empty {
+            <li>[Aucun membre indiqué]</li>
+          }
+        </ul>
+
+        <h2>Les principaux points abordés</h2>
+        <h3>Par la DAI</h3>
+        <p><strong>Introduction :</strong></p>
+        <p class="document-text">{{ reunion.pointsDaiIntroduction || '—' }}</p>
+        <p><strong>Présentation de la mission :</strong></p>
+        <p class="document-text">{{ reunion.pointsDaiPresentationMission || '—' }}</p>
+        <p><strong>Méthodologie et déroulement :</strong></p>
+        <p class="document-text">{{ reunion.pointsDaiMethodologie || '—' }}</p>
+
+        <h3>Par les interlocuteurs</h3>
+        <p><strong>Introduction :</strong></p>
+        <p class="document-text">{{ reunion.pointsInterlocuteursIntroduction || '—' }}</p>
+        <p><strong>Présentation du processus interne / bref historique :</strong></p>
+        <p class="document-text">{{ reunion.pointsInterlocuteursProcessus || '—' }}</p>
+        <p><strong>Organisation interne :</strong></p>
+        <p class="document-text">{{ reunion.pointsInterlocuteursOrganisation || '—' }}</p>
+
+        @if (reunion.observations) {
+          <h3>Observations</h3>
+          <p class="document-text">{{ reunion.observations }}</p>
+        }
+
+        <p class="pv-closing">La séance a été levée à {{ formatTime(reunion.heureLevee) }}.</p>
+        <p class="pv-secretary">Le secrétaire de séance</p>
+      </app-document-sheet>
+
+      <app-modal
+        title="Supprimer le PV d'ouverture"
+        confirmText="Supprimer"
+        confirmVariant="danger"
+        size="sm"
+        [description]="'Mission n° ' + mission.numero"
+        [isOpen]="confirmingDeletion()"
+        [loading]="deleting()"
+        (confirmed)="confirmDeletion()"
+        (cancelled)="confirmingDeletion.set(false)"
+      >
+        <p>Le procès-verbal et la liste des présents seront supprimés. <strong>Cette action est définitive.</strong></p>
+      </app-modal>
+    }
+  } @else {
+    <app-document-toolbar title="PV de réunion d'ouverture" [printable]="false" />
+    <app-empty-state
+      icon="document"
+      title="Pas encore de PV d'ouverture"
+      description="Rédigez le procès-verbal de la réunion de lancement : séance, présents et principaux points abordés."
+      actionLabel="Rédiger le PV"
+      (action)="startEditing()"
+    />
+  }
+}

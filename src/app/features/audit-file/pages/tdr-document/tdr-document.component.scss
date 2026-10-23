@@ -1,0 +1,98 @@
+@use 'variables' as *;
+
+.tdr-form {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+}
+
+.tdr-form-section {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+  border-radius: $radius-lg;
+  padding: $space-5;
+  background-color: $color-white;
+  box-shadow: $shadow-card;
+
+  h3 {
+    margin: 0;
+    color: $color-text-muted;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+}
+
+.tdr-form-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-3;
+}
+
+.tdr-form-hint {
+  margin: -$space-2 0 0;
+  color: $color-text-muted;
+  font-size: 0.85rem;
+}
+
+.tdr-form-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: $space-4;
+
+  @media (max-width: 640px) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.tdr-objectif {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-3;
+
+  app-textarea-field {
+    flex: 1;
+    min-width: 0;
+  }
+
+  app-icon-button {
+    margin-top: $space-6;
+  }
+}
+
+.tdr-objectif-number {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  margin-top: $space-6;
+  border-radius: 50%;
+  background-color: $color-light-gray;
+  color: $color-primary;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.tdr-form-empty {
+  margin: 0;
+  color: $color-text-muted;
+}
+
+.tdr-form-error {
+  margin: 0;
+  color: $color-danger;
+  font-size: 0.85rem;
+}
+
+.tdr-objectifs {
+  list-style: none;
+  padding-left: 0;
+
+  li {
+    margin-bottom: $space-1;
+  }
+}

@@ -1,0 +1,129 @@
+@use 'variables' as *;
+
+.workspace-header {
+  position: sticky;
+  // Pinned against the very top of the page area, over its inner margin.
+  top: -$content-padding;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  height: $workspace-header-height;
+  margin-top: -$content-padding;
+  padding-top: $content-padding;
+  padding-bottom: $workspace-header-gap;
+  background-color: $color-background;
+
+  @media (max-width: $breakpoint-tablet - 1px) {
+    top: -$content-padding-tablet;
+    margin-top: -$content-padding-tablet;
+    padding-top: $content-padding-tablet;
+  }
+}
+
+.workspace-heading {
+  min-width: 0;
+}
+
+.workspace-title,
+.workspace-eyebrow {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.workspace-eyebrow {
+  color: $color-text-muted;
+  font-size: 0.85rem;
+}
+
+.workspace-title {
+  margin: $space-1 0 0;
+  color: $color-primary;
+  font-size: 1.5rem;
+  overflow-wrap: anywhere;
+}
+
+.workspace-layout {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  align-items: start;
+  gap: $space-5;
+
+  @media (max-width: $breakpoint-tablet - 1px) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  @media print {
+    display: block;
+  }
+}
+
+.workspace-nav {
+  position: sticky;
+  top: $workspace-header-height - $content-padding;
+  border-radius: $radius-lg;
+  padding: $space-2;
+  background-color: $color-white;
+  box-shadow: $shadow-card;
+
+  ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+}
+
+.workspace-nav-item {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  border-radius: $radius-sm;
+  padding: $space-2 $space-3;
+  color: $color-text;
+  font-size: 0.9rem;
+  text-decoration: none;
+
+  &:hover:not(.workspace-nav-later) {
+    background-color: $color-background;
+  }
+
+  &.active {
+    background-color: $color-info-light;
+    color: $color-primary;
+    font-weight: 700;
+  }
+
+  &.workspace-nav-later {
+    color: $color-text-muted;
+    cursor: default;
+  }
+}
+
+.workspace-nav-state {
+  flex-shrink: 0;
+  width: 10px;
+  height: 10px;
+  border: 2px solid $color-border;
+  border-radius: 50%;
+
+  .workspace-nav-done & {
+    border-color: $color-green;
+    background-color: $color-green;
+  }}
+
+.workspace-nav-label {
+  flex: 1;
+  min-width: 0;
+}
+
+.workspace-nav-hint {
+  flex-shrink: 0;
+  color: $color-text-muted;
+  font-size: 0.75rem;
+}
+
+.workspace-document {
+  min-width: 0;
+}

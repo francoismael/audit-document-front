@@ -1,10 +1,105 @@
 <app-page-header
   title="Missions d'audit"
-  description="Consultez, créez et suivez les missions d'audit."
+  description="Créez les missions (l'ordre de mission), composez leur équipe et suivez leur dossier d'audit."
+>
+  <app-button (clicked)="openCreateForm()">Nouvelle mission</app-button>
+</app-page-header>
+
+<section class="mission-filters" aria-label="Filtres des missions">
+  <app-search-input
+    [id]="'mission-search'"
+    placeholder="Numéro, intitulé ou structure..."
+    [value]="search()"
+    [loading]="loading()"
+    (search)="search.set($event)"
+  />
+
+  <app-select-field
+    [id]="'mission-status'"
+    [config]="{ label: 'Statut', placeholder: 'Tous les statuts', options: statusOptions, allowEmpty: true }"
+    [value]="statusFilter()"
+    (valueChange)="statusFilter.set($event)"
+  />
+
+  <app-button variant="ghost" [disabled]="!hasFilters()" (clicked)="resetFilters()">Réinitialiser</app-button>
+</section>
+
+@if (loading()) {
+  <app-loading message="Chargement des missions..." [fullPage]="true" />
+} @else if (errorMessage()) {
+  <app-empty-state
+    icon="folder"
+    title="Impossible de charger les missions"
+    [description]="errorMessage() ?? ''"
+    actionLabel="Réessayer"
+    (action)="reloadMissions()"
+  />
+} @else if (rows().length === 0) {
+  @if (hasFilters()) {
+    <app-empty-state
+      icon="search"
+      title="Aucune mission ne correspond"
+      description="Modifiez la recherche ou le statut pour voir d'autres missions."
+      actionLabel="Réinitialiser les filtres"
+      (action)="resetFilters()"
+    />
+  } @else {
+    <app-empty-state
+      icon="folder"
+      title="Aucune mission"
+      description="Créez une première mission : c'est l'ordre de mission, point de départ du dossier d'audit."
+      actionLabel="Nouvelle mission"
+      (action)="openCreateForm()"
+    />
+  }
+} @else {
+  <app-data-table [columns]="columns" [rows]="rows()">
+    <ng-template appDataTableCell="intitule" let-row>
+      @if (findMission(row); as mission) {
+        <button class="mission-name" type="button" (click)="openDetail(mission)">{{ mission.intitule }}</button>
+      }
+    </ng-template>
+
+    <ng-template appDataTableCell="status" let-row>
+      @if (findMission(row); as mission) {
+        <app-status-badge size="sm" [status]="statusBadge(mission)" [label]="statusLabel(mission)" />
+      }
+    </ng-template>
+
+    <ng-template appDataTableCell="actions" let-row>
+      @if (findMission(row); as mission) {
+        <div class="mission-actions">
+          <app-icon-button icon="visibility" variant="primary" label="Voir la mission" (clicked)="openDetail(mission)" />
+          <app-icon-button icon="edit" label="Modifier" (clicked)="openEditForm(mission)" />
+          <app-icon-button icon="delete" variant="danger" label="Supprimer" (clicked)="askDelete(mission)" />
+        </div>
+      }
+    </ng-template>
+  </app-data-table>
+}
+
+<!-- The detail of a mission (child route :id) opens as a drawer over the list. -->
+<router-outlet (activate)="onPanelOpened($event)" />
+
+<app-mission-form-modal
+  [open]="formOpen()"
+  [mission]="editedMission()"
+  [saving]="saving()"
+  (submitted)="saveMission($event)"
+  (cancelled)="formOpen.set(false)"
 />
 
-<app-empty-state
-  icon="folder"
-  title="Page en préparation"
-  description="Cette fonctionnalité est en cours de développement."
-/>
+<app-modal
+  title="Supprimer la mission"
+  confirmText="Supprimer"
+  confirmVariant="danger"
+  size="sm"
+  [description]="missionToDelete() ? 'N° ' + missionToDelete()?.numero + ' — ' + missionToDelete()?.intitule : ''"
+  [isOpen]="missionToDelete() !== null"
+  [loading]="deleting()"
+  (confirmed)="confirmDelete()"
+  (cancelled)="missionToDelete.set(null)"
+>
+  <p>La mission et son équipe seront supprimées. <strong>Cette action est définitive.</strong></p>
+  <p class="delete-hint">Les documents déjà générés restent dans l'historique, sans mission associée.</p>
+</app-modal>

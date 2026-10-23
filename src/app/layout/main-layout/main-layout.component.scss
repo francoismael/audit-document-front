@@ -14,7 +14,7 @@
   .main-layout-content {
     flex: 1;
     min-width: 0;
-    padding: $space-6;
+    padding: $content-padding;
     overflow-y: auto;
   }
 
@@ -26,7 +26,7 @@
 @media (max-width: $breakpoint-tablet - 1px) {
   .main-layout {
     .main-layout-content {
-      padding: $space-4;
+      padding: $content-padding-tablet;
     }
 
     .main-layout-backdrop {

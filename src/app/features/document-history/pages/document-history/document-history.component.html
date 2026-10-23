@@ -1,10 +1,111 @@
 <app-page-header
   title="Historique des documents"
-  description="Retrouvez et retéléchargez les documents générés."
-/>
+  description="Tous les documents générés, du plus récent au plus ancien. Retrouvez, retéléchargez ou supprimez un document."
+>
+  <app-button (clicked)="openCatalog()">Générer un document</app-button>
+</app-page-header>
 
-<app-empty-state
-  icon="document"
-  title="Page en préparation"
-  description="Cette fonctionnalité est en cours de développement."
-/>
+<section class="history-filters" aria-label="Filtres de l'historique">
+  <div class="history-search">
+    <app-search-input
+      [id]="'history-search'"
+      placeholder="Nom du fichier, type ou mission..."
+      [value]="search()"
+      [loading]="loading()"
+      (search)="search.set($event)"
+    />
+  </div>
+
+  <app-select-field
+    [id]="'history-type'"
+    [config]="{ label: 'Type de document', placeholder: 'Tous les types', options: typeOptions(), allowEmpty: true }"
+    [value]="typeFilter()"
+    (valueChange)="typeFilter.set($event)"
+  />
+
+  <app-select-field
+    [id]="'history-mission'"
+    [config]="{ label: 'Mission', placeholder: 'Toutes les missions', options: missionOptions(), allowEmpty: true }"
+    [value]="missionFilter()"
+    (valueChange)="missionFilter.set($event)"
+  />
+
+  <app-button variant="ghost" [disabled]="!hasFilters()" (clicked)="resetFilters()">Réinitialiser</app-button>
+</section>
+
+@if (loading()) {
+  <app-loading message="Chargement de l'historique..." [fullPage]="true" />
+} @else if (errorMessage()) {
+  <app-empty-state
+    icon="document"
+    title="Impossible de charger l'historique"
+    [description]="errorMessage() ?? ''"
+    actionLabel="Réessayer"
+    (action)="reloadDocuments()"
+  />
+} @else if (rows().length === 0) {
+  @if (hasFilters()) {
+    <app-empty-state
+      icon="search"
+      title="Aucun document ne correspond"
+      description="Modifiez la recherche ou les filtres pour voir d'autres documents."
+      actionLabel="Réinitialiser les filtres"
+      (action)="resetFilters()"
+    />
+  } @else {
+    <app-empty-state
+      icon="folder"
+      title="Aucun document généré"
+      description="Les documents que vous générez depuis le catalogue apparaîtront ici."
+      actionLabel="Générer un document"
+      (action)="openCatalog()"
+    />
+  }
+} @else {
+  <p class="history-count">{{ rows().length }} document{{ rows().length > 1 ? 's' : '' }}</p>
+
+  <app-data-table [columns]="columns" [rows]="rows()">
+    <ng-template appDataTableCell="nomFichier" let-row>
+      @if (findDocument(row); as document) {
+        <button class="history-name" type="button" (click)="openDetail(document)">{{ document.nomFichier }}</button>
+      }
+    </ng-template>
+
+    <ng-template appDataTableCell="taille" let-row>
+      {{ +(row['taille'] ?? 0) | fileSize }}
+    </ng-template>
+
+    <ng-template appDataTableCell="actions" let-row>
+      @if (findDocument(row); as document) {
+        <div class="history-actions">
+          <app-icon-button icon="visibility" variant="primary" label="Voir le détail" (clicked)="openDetail(document)" />
+          <app-icon-button
+            icon="download"
+            label="Télécharger"
+            [disabled]="downloadingId() === document.id"
+            (clicked)="downloadDocument(document)"
+          />
+          <app-icon-button icon="delete" variant="danger" label="Supprimer" (clicked)="askDelete(document)" />
+        </div>
+      }
+    </ng-template>
+  </app-data-table>
+}
+
+<!-- The detail of a document (child route :id) opens as a drawer over the list. -->
+<router-outlet (activate)="onPanelOpened($event)" />
+
+<app-modal
+  title="Supprimer le document"
+  confirmText="Supprimer"
+  confirmVariant="danger"
+  size="sm"
+  [description]="documentToDelete()?.nomFichier ?? ''"
+  [isOpen]="documentToDelete() !== null"
+  [loading]="deleting()"
+  (confirmed)="confirmDelete()"
+  (cancelled)="documentToDelete.set(null)"
+>
+  <p>Le fichier et sa ligne d'historique seront supprimés. <strong>Cette action est définitive.</strong></p>
+  <p class="delete-hint">Les statistiques ne compteront plus ce document.</p>
+</app-modal>

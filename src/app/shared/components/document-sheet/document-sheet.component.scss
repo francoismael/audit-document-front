@@ -1,0 +1,133 @@
+@use 'variables' as *;
+
+:host {
+  display: block;
+}
+
+// Proportions of an A4 page, with the margins of a printed document.
+.document-sheet {
+  max-width: 210mm;
+  min-height: 297mm;
+  margin: 0 auto;
+  padding: 8mm 18mm 20mm;
+  background-color: $color-white;
+  box-shadow: $shadow-card;
+  color: $color-document-text;
+  font-family: $font-document;
+  font-size: 12pt;
+  line-height: 1.5;
+
+  @media (max-width: $breakpoint-tablet - 1px) {
+    min-height: auto;
+    padding: $space-6 $space-5;
+  }
+
+  // The page has no margin (see _print.scss): the sheet gives it, on each printed page ("clone").
+  @media print {
+    max-width: none;
+    min-height: auto;
+    padding: 10mm 18mm 18mm;
+    box-shadow: none;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+  }
+}
+
+// Logo and name of the Ministry, centered at the top of every document.
+.document-sheet-header {
+  margin-bottom: $space-5;
+  text-align: center;
+
+  p {
+    margin: 0;
+    font-size: 12.5pt;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+}
+
+// The image has a wide transparent border: the negative margins bring the drawing closer to the top and to the text.
+.document-sheet-logo {
+  display: block;
+  width: 128px;
+  height: 128px;
+  margin: -$space-3 auto (-$space-3);
+  object-fit: contain;
+}
+
+// Place and date or reference, on its own line at the right.
+.document-sheet-reference {
+  margin: 0 0 $space-4;
+  font-size: 11pt;
+  text-align: right;
+  white-space: pre-line;
+}
+
+// Common typography of the documents, applied to the projected content.
+.document-sheet-body {
+  ::ng-deep {
+    h1 {
+      margin: $space-4 0 $space-5;
+      font-size: 13pt;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    h2 {
+      margin: $space-5 0 $space-2;
+      font-size: 12pt;
+      text-transform: uppercase;
+    }
+
+    h3 {
+      margin: $space-3 0 $space-1;
+      font-size: 12pt;
+    }
+
+    p {
+      margin: 0 0 $space-2;
+      text-align: justify;
+    }
+
+    ul,
+    ol {
+      margin: 0 0 $space-2;
+      padding-left: $space-6;
+    }
+
+    .document-text {
+      white-space: pre-line;
+    }
+
+    // "Nom : RAKOTOBE": the value follows the label, without a wide gap.
+    .document-info {
+      margin: 0 0 $space-1;
+      text-align: left;
+    }
+
+    // Place and date at the end of a document: on the right, after a few blank lines, nothing after it.
+    .document-date {
+      margin-top: $space-6 * 2;
+      text-align: right;
+    }
+
+    .document-placeholder {
+      color: $color-text-muted;
+      font-style: italic;
+    }
+
+    table {
+      width: 100%;
+      margin: $space-2 0 $space-4;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      border: 1px solid $color-document-text;
+      padding: $space-1 $space-2;
+      text-align: left;
+      vertical-align: top;
+    }
+  }
+}

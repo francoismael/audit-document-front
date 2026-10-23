@@ -9,6 +9,7 @@ import { EmptyStateComponent } from '../../../../shared/components/empty-state/e
 import { LoadingComponent } from '../../../../shared/components/loading/loading.component';
 import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
 import { SearchInputComponent } from '../../../../shared/components/search-input/search-input.component';
+import { normalizeForSearch } from '../../../../shared/utils/search';
 import { DocumentType } from '../../../document-types/models/document-type.model';
 import { DocumentTypeService } from '../../../document-types/services/document-type.service';
 
@@ -41,7 +42,7 @@ export class DocumentCatalogComponent {
   );
 
   readonly filteredTypes = computed(() => {
-    const query = normalize(this.search().trim());
+    const query = normalizeForSearch(this.search().trim());
 
     if (!query) {
       return this.activeTypes();
@@ -49,7 +50,7 @@ export class DocumentCatalogComponent {
 
     return this.activeTypes().filter(
       (documentType) =>
-        normalize(documentType.nom).includes(query) || normalize(documentType.code).includes(query)
+        normalizeForSearch(documentType.nom).includes(query) || normalizeForSearch(documentType.code).includes(query)
     );
   });
 
@@ -95,9 +96,4 @@ export class DocumentCatalogComponent {
   openDocumentTypes(): void {
     this.router.navigate(['/document-types']);
   }
-}
-
-// Case and accent insensitive comparison, so "electronique" matches "Électronique".
-function normalize(value: string): string {
-  return value.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
 }

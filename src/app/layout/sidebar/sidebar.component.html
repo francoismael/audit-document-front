@@ -8,7 +8,8 @@
           routerLinkActive="active"
           (click)="linkClicked.emit()"
         >
-          {{ item.label }}
+          <mat-icon class="sidebar-icon" aria-hidden="true">{{ item.icon }}</mat-icon>
+          <span>{{ item.label }}</span>
         </a>
       </li>
     }

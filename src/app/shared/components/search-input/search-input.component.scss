@@ -105,46 +105,21 @@
     }
   }
 
-  .search-input-button {
+  // Small spinner shown in place of the clear button while the search runs.
+  .search-input-loader {
     flex-shrink: 0;
-    min-height: 36px;
-    padding: $space-2 $space-3;
-
-    border: none;
-    border-radius: $radius-sm;
-    background: $color-primary;
-    color: $color-white;
-
-    font: inherit;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.2s ease;
-
-    &:hover:not(:disabled) {
-      background: $color-turquoise;
-    }
-
-    &:disabled {
-      cursor: not-allowed;
-      opacity: 0.6;
-    }
-
-    &:focus-visible {
-      outline: 2px solid $color-turquoise;
-      outline-offset: 2px;
-    }
+    width: 18px;
+    height: 18px;
+    margin: 0 $space-1;
+    border: 2px solid $color-light-gray;
+    border-top-color: $color-turquoise;
+    border-radius: 50%;
+    animation: search-input-spin 0.7s linear infinite;
   }
 }
 
-@media (max-width: 480px) {
-  .search-input {
-    .search-input-control {
-      flex-wrap: wrap;
-    }
-
-    .search-input-button {
-      flex: 1;
-    }
+@keyframes search-input-spin {
+  to {
+    transform: rotate(360deg);
   }
 }

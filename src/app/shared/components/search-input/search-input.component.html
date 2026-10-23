@@ -25,7 +25,7 @@
       class="search-input-field"
       type="search"
       [id]="id()"
-      [value]="value()"
+      [value]="text()"
       [placeholder]="placeholder()"
       [disabled]="disabled()"
       autocomplete="off"
@@ -33,24 +33,12 @@
       (keydown)="onKeydown($event)"
     />
 
-    @if (value().length > 0 && !disabled()) {
-      <button
-        class="search-input-clear"
-        type="button"
-        aria-label="Effacer la recherche"
-        (click)="clearSearch()"
-      >
+    @if (waiting() || loading()) {
+      <span class="search-input-loader" role="status" aria-label="Recherche en cours"></span>
+    } @else if (text().length > 0 && !disabled()) {
+      <button class="search-input-clear" type="button" aria-label="Effacer la recherche" (click)="clearSearch()">
         &times;
       </button>
     }
-
-    <button
-      class="search-input-button"
-      type="button"
-      [disabled]="disabled()"
-      (click)="onSearch()"
-    >
-      Rechercher
-    </button>
   </div>
 </div>

@@ -1,0 +1,33 @@
+<app-modal
+  title="Nouvelle structure"
+  description="Elle sera sélectionnée pour la mission."
+  confirmText="Créer"
+  size="sm"
+  [isOpen]="open()"
+  [loading]="saving()"
+  (confirmed)="onConfirm()"
+  (cancelled)="cancelled.emit()"
+>
+  <div class="quick-form">
+    <app-form-field
+      [id]="'structure-nom'"
+      [config]="{
+        label: 'Nom',
+        placeholder: 'Ex. Direction Générale du Budget',
+        type: 'text',
+        required: true,
+        disabled: saving(),
+        errorMessage: visibleNomError() ?? undefined
+      }"
+      [value]="nom()"
+      [invalid]="visibleNomError() !== null"
+      (valueChange)="nom.set($event)"
+    />
+    <app-textarea-field
+      [id]="'structure-descriptions'"
+      [config]="{ label: 'Description', placeholder: 'Facultatif', rows: 3, disabled: saving() }"
+      [value]="descriptions()"
+      (valueChange)="descriptions.set($event)"
+    />
+  </div>
+</app-modal>

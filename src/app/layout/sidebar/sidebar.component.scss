@@ -24,7 +24,9 @@
   }
 
   .sidebar-link {
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: $space-3;
     padding: $space-3 $space-4;
 
     border-radius: $radius-sm;
@@ -46,7 +48,19 @@
 
     &.active {
       background-color: $color-green;
+
+      .sidebar-icon {
+        color: $color-white;
+      }
     }
+  }
+
+  .sidebar-icon {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    color: rgba($color-white, 0.75);
+    font-size: 20px;
   }
 }
 

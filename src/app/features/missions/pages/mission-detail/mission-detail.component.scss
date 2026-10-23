@@ -1,0 +1,185 @@
+@use 'variables' as *;
+
+.mission-badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: $space-2;
+}
+
+.mission-chip {
+  border-radius: $radius-sm;
+  padding: 2px $space-2;
+  background-color: $color-light-gray;
+  color: $color-primary;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.mission-footer-main {
+  flex: 1;
+}
+
+.mission-objet {
+  margin: 0 0 $space-5;
+  color: $color-text-muted;
+  line-height: 1.5;
+}
+
+.mission-section {
+  margin-bottom: $space-6;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.mission-section-title {
+  margin: 0 0 $space-2;
+  color: $color-text-muted;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.mission-list {
+  margin: 0;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  padding: 0;
+  list-style: none;
+}
+
+.mission-list-item {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  border-bottom: 1px solid $color-light-gray;
+  padding: $space-3 $space-4;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &.mission-list-link {
+    padding: 0;
+  }
+}
+
+.mission-list-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.mission-list-name {
+  color: $color-text;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.mission-list-meta {
+  color: $color-text-muted;
+  font-size: 0.8rem;
+}
+
+.mission-avatar {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: $color-info-light;
+  color: $color-turquoise;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.mission-progress-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.mission-progress-value {
+  color: $color-primary;
+  font-weight: 700;
+}
+
+.mission-progress {
+  width: 100%;
+  height: 10px;
+  border: none;
+  border-radius: $radius-sm;
+  overflow: hidden;
+  background-color: $color-light-gray;
+  appearance: none;
+
+  &::-webkit-progress-bar {
+    background-color: $color-light-gray;
+  }
+
+  &::-webkit-progress-value {
+    border-radius: $radius-sm;
+    background-color: $color-green;
+  }
+
+  &::-moz-progress-bar {
+    border-radius: $radius-sm;
+    background-color: $color-green;
+  }
+}
+
+.mission-file-state {
+  flex-shrink: 0;
+  width: 12px;
+  height: 12px;
+  border: 2px solid $color-border;
+  border-radius: 50%;
+
+  &.mission-file-done {
+    border-color: $color-green;
+    background-color: $color-green;
+  }
+}
+
+.mission-file-label {
+  flex-shrink: 0;
+  border-radius: $radius-sm;
+  padding: 2px $space-2;
+  background-color: $color-light-gray;
+  color: $color-text-muted;
+  font-size: 0.75rem;
+  font-weight: 600;
+
+  &.mission-file-label-done {
+    background-color: $color-success-light;
+    color: $color-green;
+  }
+}
+
+.mission-document {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  border: none;
+  padding: $space-3 $space-4;
+  background: none;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+
+  &:hover {
+    background-color: $color-background;
+
+    .mission-list-name {
+      color: $color-turquoise;
+    }
+  }
+}

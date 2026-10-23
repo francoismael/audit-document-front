@@ -163,8 +163,10 @@ export class DocumentGenerateComponent {
     }
   }
 
+  // Opens the drawer of the new document when its id is known.
   openHistory(): void {
-    this.router.navigate(['/document-history']);
+    const documentId = this.generatedFile()?.documentId;
+    this.router.navigate(documentId ? ['/document-history', documentId] : ['/document-history']);
   }
 
   createAnotherDocument(): void {

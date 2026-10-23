@@ -1,0 +1,172 @@
+<app-side-panel
+  [eyebrow]="mission() ? 'Mission n° ' + mission()?.numero : 'Mission'"
+  [title]="mission()?.intitule ?? 'Mission d\'audit'"
+  (closed)="close()"
+>
+  @if (mission(); as mission) {
+    <div panel-badges class="mission-badges">
+      <app-status-badge size="sm" [status]="statusBadge()" [label]="statusLabel()" />
+      @if (mission.structureNom) {
+        <span class="mission-chip">{{ mission.structureNom }}</span>
+      }
+    </div>
+  }
+
+  @if (mission()) {
+    <app-tabs panel-tabs [tabs]="tabs()" [activeTab]="activeTab()" (tabChange)="selectTab($event)" />
+  }
+
+  @if (mission()) {
+    <ng-container panel-footer>
+      <app-button variant="outline" (clicked)="formOpen.set(true)">Modifier</app-button>
+      <app-button class="mission-footer-main" [fullWidth]="true" (clicked)="openWorkspace()">Ouvrir le dossier</app-button>
+    </ng-container>
+  }
+
+  @if (loading()) {
+    <app-loading message="Chargement de la mission..." />
+  } @else if (errorMessage()) {
+    <app-empty-state
+      icon="folder"
+      title="Impossible de charger cette mission"
+      [description]="errorMessage() ?? ''"
+      actionLabel="Fermer"
+      (action)="close()"
+    />
+  } @else {
+    @if (mission(); as mission) {
+      @switch (activeTab()) {
+        @case ('informations') {
+          @if (mission.objet) {
+            <p class="mission-objet">{{ mission.objet }}</p>
+          }
+
+          <section class="mission-section">
+            <h3 class="mission-section-title">Ordre de mission</h3>
+            <app-detail-row label="Numéro">{{ mission.numero }}</app-detail-row>
+            <app-detail-row label="Structure auditée">{{ mission.structureNom ?? '—' }}</app-detail-row>
+            <app-detail-row label="Statut">{{ statusLabel() }}</app-detail-row>
+            <app-detail-row label="Date de début">{{ (mission.dateDebut | date: 'dd/MM/yyyy') ?? '—' }}</app-detail-row>
+            <app-detail-row label="Date de fin">{{ (mission.dateFin | date: 'dd/MM/yyyy') ?? '—' }}</app-detail-row>
+            <app-detail-row label="Date de signature">{{ (mission.dateSignature | date: 'dd/MM/yyyy') ?? '—' }}</app-detail-row>
+            <app-detail-row label="Membres de l'équipe">{{ mission.personnes.length }}</app-detail-row>
+          </section>
+        }
+
+        @case ('team') {
+          @if (teamByRole().length === 0) {
+            <app-empty-state
+              icon="users"
+              title="Aucun membre"
+              description="Ajoutez l'équipe d'audit et les points focaux avec « Modifier »."
+            />
+          } @else {
+            @for (group of teamByRole(); track group.role) {
+              <section class="mission-section">
+                <h3 class="mission-section-title">{{ group.label }} ({{ group.members.length }})</h3>
+                <ul class="mission-list">
+                  @for (member of group.members; track member.missionPersonneId) {
+                    <li class="mission-list-item">
+                      <span class="mission-avatar" aria-hidden="true">{{ member.nom.charAt(0) }}{{ member.prenom.charAt(0) }}</span>
+                      <div class="mission-list-text">
+                        <span class="mission-list-name">{{ member.nom }} {{ member.prenom }}</span>
+                        <span class="mission-list-meta">
+                          {{ member.fonction ?? 'Fonction non renseignée' }}{{ member.services ? ' · ' + member.services : '' }}
+                        </span>
+                      </div>
+                    </li>
+                  }
+                </ul>
+              </section>
+            }
+          }
+        }
+
+        @case ('file') {
+          @if (loaded()?.progress; as progress) {
+            <section class="mission-section">
+              <div class="mission-progress-head">
+                <h3 class="mission-section-title">Avancement</h3>
+                <span class="mission-progress-value">
+                  {{ progress.documentsCompletes }} / {{ progress.documentsAttendus }} · {{ progress.pourcentage }} %
+                </span>
+              </div>
+              <progress class="mission-progress" [value]="progress.pourcentage" max="100">{{ progress.pourcentage }} %</progress>
+            </section>
+          }
+
+          <section class="mission-section">
+            <h3 class="mission-section-title">Documents du dossier</h3>
+            <ul class="mission-list">
+              @for (document of auditFile(); track document.label) {
+                <li class="mission-list-item">
+                  <span
+                    class="mission-file-state"
+                    [class.mission-file-done]="document.status === 'done'"
+                    aria-hidden="true"
+                  ></span>
+                  <div class="mission-list-text">
+                    <span class="mission-list-name">{{ document.label }}</span>
+                    <span class="mission-list-meta">
+                      @if (document.step === null) {
+                        La mission elle-même.
+                      } @else if (document.slug) {
+                        Dans le dossier d'audit.
+                      } @else {
+                        Saisie disponible à l'étape {{ document.step }}.
+                      }
+                    </span>
+                  </div>
+                  <span class="mission-file-label" [class.mission-file-label-done]="document.status === 'done'">
+                    @switch (document.status) {
+                      @case ('done') { Rempli }
+                      @case ('todo') { À remplir }
+                      @default { {{ document.slug ? 'Disponible' : 'À venir' }} }
+                    }
+                  </span>
+                  @if (document.slug; as slug) {
+                    <app-icon-button icon="arrow_forward" variant="primary" label="Ouvrir le document" (clicked)="openWorkspace(slug)" />
+                  }
+                </li>
+              }
+            </ul>
+          </section>
+        }
+
+        @case ('documents') {
+          @if (loaded()?.documents?.length) {
+            <ul class="mission-list">
+              @for (document of loaded()?.documents ?? []; track document.id) {
+                <li class="mission-list-item mission-list-link">
+                  <button class="mission-document" type="button" (click)="openDocument(document)">
+                    <span class="mission-list-name">{{ document.nomFichier }}</span>
+                    <span class="mission-list-meta">
+                      {{ document.documentTypeNom }} · {{ document.dateGeneration | date: 'dd/MM/yyyy HH:mm' }} ·
+                      {{ document.taille | fileSize }}
+                    </span>
+                  </button>
+                </li>
+              }
+            </ul>
+          } @else {
+            <app-empty-state
+              icon="document"
+              title="Aucun document généré"
+              description="Les documents générés en choisissant cette mission apparaîtront ici."
+              actionLabel="Générer un document"
+              (action)="openCatalog()"
+            />
+          }
+        }
+      }
+
+      <app-mission-form-modal
+        [open]="formOpen()"
+        [mission]="mission"
+        [saving]="saving()"
+        (submitted)="saveMission($event)"
+        (cancelled)="formOpen.set(false)"
+      />
+    }
+  }
+</app-side-panel>

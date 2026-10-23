@@ -28,7 +28,7 @@
         [id]="'document-catalog-search'"
         placeholder="Rechercher par nom ou par code..."
         [value]="search()"
-        (valueChange)="search.set($event)"
+        (search)="search.set($event)"
       />
     </div>
 

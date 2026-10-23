@@ -1,0 +1,184 @@
+@if (mission(); as mission) {
+  @if (editing()) {
+    <app-document-toolbar
+      [title]="tdr() ? 'Modifier les termes de référence' : 'Rédiger les termes de référence'"
+      description="Les textes d'aide reprennent les consignes de Document.docx."
+      [printable]="false"
+    >
+      <app-button variant="outline" [disabled]="saving()" (clicked)="cancelEditing()">Annuler</app-button>
+      <app-button [disabled]="saving()" (clicked)="save()">{{ saving() ? 'Enregistrement...' : 'Enregistrer' }}</app-button>
+    </app-document-toolbar>
+
+    <form class="tdr-form" (submit)="$event.preventDefault()">
+      <section class="tdr-form-section">
+        <h3>Date du document</h3>
+        <div class="tdr-form-row">
+          <app-form-field
+            [id]="'tdr-date'"
+            [config]="{ label: 'Date du TDR', type: 'date' }"
+            [value]="draft().dateTdr"
+            (valueChange)="updateField('dateTdr', $event)"
+          />
+        </div>
+      </section>
+
+      <section class="tdr-form-section">
+        <h3>Contexte et compétence</h3>
+        <app-textarea-field
+          [id]="'tdr-contexte'"
+          [config]="{ label: 'Contexte', rows: 4, placeholder: 'Raison, origine et initiateur de la mission ; bref circuit jusqu\'au choix de l\'entité auditée.' }"
+          [value]="draft().contexte"
+          (valueChange)="updateField('contexte', $event)"
+        />
+        <app-textarea-field
+          [id]="'tdr-competence'"
+          [config]="{ label: 'Compétence', rows: 3, placeholder: 'Base légale qui donne à la Direction de l\'Audit Interne le pouvoir et la légitimité de faire l\'audit.' }"
+          [value]="draft().competence"
+          (valueChange)="updateField('competence', $event)"
+        />
+      </section>
+
+      <section class="tdr-form-section">
+        <h3>Champ d'audit</h3>
+        <app-textarea-field
+          [id]="'tdr-perimetre'"
+          [config]="{ label: 'Périmètre', rows: 3, placeholder: 'Domaine sur lequel va porter la mission.' }"
+          [value]="draft().perimetre"
+          (valueChange)="updateField('perimetre', $event)"
+        />
+        <div class="tdr-form-row">
+          <app-form-field
+            [id]="'tdr-periode'"
+            [config]="{ label: 'Période d\'observation', type: 'text', placeholder: 'Ex. exercices 2024 et 2025' }"
+            [value]="draft().periodeObservation"
+            (valueChange)="updateField('periodeObservation', $event)"
+          />
+          <app-form-field
+            [id]="'tdr-lieu'"
+            [config]="{ label: 'Lieu', type: 'text', placeholder: 'Où se tiendront les travaux d\'audit' }"
+            [value]="draft().lieu"
+            (valueChange)="updateField('lieu', $event)"
+          />
+        </div>
+      </section>
+
+      <section class="tdr-form-section">
+        <div class="tdr-form-heading">
+          <h3>Objectifs de la mission ({{ objectifs().length }})</h3>
+          <app-button size="sm" variant="secondary" (clicked)="addObjectif()">Ajouter un objectif</app-button>
+        </div>
+        <p class="tdr-form-hint">Points sur lesquels l'audit cherche une assurance raisonnable. Formule type : « S'assurer que… ». Le numéro OBJ-xx est attribué à l'enregistrement.</p>
+
+        @for (objectif of objectifs(); track $index; let index = $index) {
+          <div class="tdr-objectif">
+            <span class="tdr-objectif-number">{{ index + 1 }}</span>
+            <app-textarea-field
+              [id]="'tdr-objectif-' + index"
+              [config]="{ label: 'Objectif ' + (index + 1), rows: 2, placeholder: 'S\'assurer que…' }"
+              [value]="objectif.descriptions"
+              [invalid]="showErrors() && !objectif.descriptions.trim()"
+              (valueChange)="updateObjectif(index, $event)"
+            />
+            <app-icon-button icon="delete" variant="danger" label="Retirer l'objectif" (clicked)="removeObjectif(index)" />
+          </div>
+        } @empty {
+          <p class="tdr-form-empty">Aucun objectif.</p>
+        }
+
+        @if (visibleObjectifsError()) {
+          <p class="tdr-form-error" role="alert">{{ visibleObjectifsError() }}</p>
+        }
+      </section>
+
+      <section class="tdr-form-section">
+        <h3>Déroulement et résultats</h3>
+        <app-textarea-field
+          [id]="'tdr-methodologie'"
+          [config]="{ label: 'Méthodologie de travail', rows: 8, placeholder: 'Tâches et résultats de chaque phase.' }"
+          [value]="draft().methodologieTravail"
+          (valueChange)="updateField('methodologieTravail', $event)"
+        />
+        <app-textarea-field
+          [id]="'tdr-resultats'"
+          [config]="{ label: 'Résultats attendus', rows: 3, placeholder: 'Confirmation de l\'assurance obtenue à partir des travaux effectués.' }"
+          [value]="draft().resultatsAttendus"
+          (valueChange)="updateField('resultatsAttendus', $event)"
+        />
+        <app-textarea-field
+          [id]="'tdr-livrables'"
+          [config]="{ label: 'Livrables', rows: 2 }"
+          [value]="draft().livrables"
+          (valueChange)="updateField('livrables', $event)"
+        />
+      </section>
+    </form>
+  } @else if (tdr()) {
+    @if (tdr(); as tdr) {
+      <app-document-toolbar title="Termes de référence" [description]="tdr.objectifs.length + ' objectif(s)'">
+        <app-button variant="outline" (clicked)="confirmingDeletion.set(true)">Supprimer</app-button>
+        <app-button variant="outline" (clicked)="startEditing()">Modifier</app-button>
+      </app-document-toolbar>
+
+      <app-document-sheet [reference]="'Antananarivo, le ' + ((tdr.dateTdr | date: 'dd/MM/yyyy') ?? '……………………')">
+        <h1>Termes de référence de la mission d'audit portant sur « {{ mission.intitule }} »</h1>
+
+        <h2>Objet</h2>
+        <p class="document-text">{{ mission.objet || mission.intitule }}</p>
+
+        <h2>Contexte</h2>
+        <p class="document-text">{{ tdr.contexte || '[À compléter]' }}</p>
+
+        <h2>Compétence</h2>
+        <p class="document-text">{{ tdr.competence || '[À compléter]' }}</p>
+
+        <h2>Champ d'audit</h2>
+        <p class="document-text">{{ tdr.perimetre || '[À compléter]' }}</p>
+        <p><strong>Période d'observation :</strong> {{ tdr.periodeObservation || '[À compléter]' }}</p>
+        <p><strong>Lieu :</strong> {{ tdr.lieu || '[À compléter]' }}</p>
+
+        <h2>Objectifs de la mission</h2>
+        @if (tdr.objectifs.length > 0) {
+          <ul class="tdr-objectifs">
+            @for (objectif of tdr.objectifs; track objectif.id) {
+              <li><strong>{{ objectif.numero }} :</strong> {{ objectif.descriptions }}</li>
+            }
+          </ul>
+        } @else {
+          <p>[À compléter]</p>
+        }
+
+        <h2>Méthodologie de travail</h2>
+        <p class="document-text">{{ tdr.methodologieTravail || '[À compléter]' }}</p>
+
+        <h2>Résultats attendus</h2>
+        <p class="document-text">{{ tdr.resultatsAttendus || '[À compléter]' }}</p>
+
+        <h2>Livrables</h2>
+        <p class="document-text">{{ tdr.livrables || '[À compléter]' }}</p>
+      </app-document-sheet>
+
+      <app-modal
+        title="Supprimer les termes de référence"
+        confirmText="Supprimer"
+        confirmVariant="danger"
+        size="sm"
+        [description]="'Mission n° ' + mission.numero"
+        [isOpen]="confirmingDeletion()"
+        [loading]="deleting()"
+        (confirmed)="confirmDeletion()"
+        (cancelled)="confirmingDeletion.set(false)"
+      >
+        <p>Le TDR et ses objectifs seront supprimés. <strong>Cette action est définitive.</strong></p>
+      </app-modal>
+    }
+  } @else {
+    <app-document-toolbar title="Termes de référence" [printable]="false" />
+    <app-empty-state
+      icon="document"
+      title="Pas encore de termes de référence"
+      description="Rédigez le TDR de la mission : contexte, compétence, champ d'audit, objectifs, méthodologie, résultats attendus et livrables."
+      actionLabel="Rédiger le TDR"
+      (action)="startEditing()"
+    />
+  }
+}
