@@ -13,9 +13,8 @@ import { FormFieldComponent } from '../../../../shared/components/form-field/for
 import { ModalComponent } from '../../../../shared/components/modal/modal.component';
 import { TextareaFieldComponent } from '../../../../shared/components/textarea-field/textarea-field.component';
 import { MISSION_ROLE_LABELS } from '../../../missions/models/mission-labels';
-import { MissionPersonne } from '../../../missions/models/mission-personne.model';
 import { OpeningReunionRequest, ParticipantType, Reunion, ReunionParticipant } from '../../models/reunion.model';
-import { AuditFileStore } from '../../services/audit-file.store';
+import { AuditFileStore, uniquePersons } from '../../services/audit-file.store';
 import { ReunionService } from '../../services/reunion.service';
 
 type PvTextField =
@@ -267,17 +266,4 @@ export class PvOuvertureDocumentComponent {
         'Présentation des textes et des lois réglementaires exploités par les acteurs.'
     };
   }
-}
-
-function uniquePersons(members: MissionPersonne[]): MissionPersonne[] {
-  const seen = new Set<number>();
-
-  return members.filter((member) => {
-    if (seen.has(member.personneId)) {
-      return false;
-    }
-
-    seen.add(member.personneId);
-    return true;
-  });
 }

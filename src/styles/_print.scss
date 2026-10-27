@@ -7,9 +7,21 @@
   margin: 0;
 }
 
+// Pages of the sheets in landscape (app-document-sheet orientation="landscape").
+@page landscape {
+  size: A4 landscape;
+  margin: 0;
+}
+
 @media print {
   body {
     background: none;
+  }
+
+  // A landscape sheet (work programme, table of constats) turns the whole printout to landscape:
+  // naming only the sheet would leave a blank portrait page for the elements before it.
+  body:has(.document-sheet-landscape) {
+    page: landscape;
   }
 
   // Everything around the document: menu, header, workspace navigation, buttons, toasts.

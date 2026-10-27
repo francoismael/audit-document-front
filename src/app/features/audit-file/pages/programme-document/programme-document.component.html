@@ -1,0 +1,199 @@
+@if (mission(); as mission) {
+  @if (editing()) {
+    <app-document-toolbar
+      [title]="programme() ? 'Modifier le programme de travail' : 'Établir le programme de travail'"
+      description="Une ligne par contrôle, rattachée à un objectif du TDR. Le numéro de contrôle est attribué à l'enregistrement."
+      [printable]="false"
+    >
+      <app-button variant="outline" [disabled]="saving()" (clicked)="cancelEditing()">Annuler</app-button>
+      <app-button [disabled]="saving()" (clicked)="save()">{{ saving() ? 'Enregistrement...' : 'Enregistrer' }}</app-button>
+    </app-document-toolbar>
+
+    <form class="file-form" (submit)="$event.preventDefault()">
+      <section class="file-form-section">
+        <div class="file-form-heading">
+          <h3>Lignes du programme ({{ lignes().length }})</h3>
+          <app-button size="sm" variant="secondary" (clicked)="addLigne()">Ajouter une ligne</app-button>
+        </div>
+
+        @for (ligne of lignes(); track $index; let index = $index) {
+          <div class="file-form-item">
+            <span class="file-form-number">{{ index + 1 }}</span>
+            <div class="file-form-item-fields">
+              <app-select-field
+                [id]="'programme-objectif-' + index"
+                [config]="{ label: 'Objectif du TDR', placeholder: 'Choisir l\'objectif', options: objectifOptions(), required: true }"
+                [value]="ligne.objectifId"
+                [invalid]="showErrors() && !ligne.objectifId"
+                (valueChange)="updateLigne(index, 'objectifId', $event)"
+              />
+              <div class="file-form-grid">
+                <app-textarea-field
+                  [id]="'programme-tache-' + index"
+                  [config]="{ label: 'Tâche / opération', rows: 2, placeholder: 'Ex. T05 - Enregistrement des dossiers de remboursement' }"
+                  [value]="ligne.tacheOperation"
+                  (valueChange)="updateLigne(index, 'tacheOperation', $event)"
+                />
+                <app-textarea-field
+                  [id]="'programme-faiblesse-' + index"
+                  [config]="{ label: 'Faiblesse à confirmer / infirmer', rows: 2 }"
+                  [value]="ligne.faiblesseAConfirmer"
+                  (valueChange)="updateLigne(index, 'faiblesseAConfirmer', $event)"
+                />
+              </div>
+              <div class="file-form-grid file-form-grid-3">
+                <app-form-field
+                  [id]="'programme-responsable-' + index"
+                  [config]="{ label: 'Responsable', type: 'text', placeholder: 'Ex. Secrétaire DAAF' }"
+                  [value]="ligne.responsable"
+                  (valueChange)="updateLigne(index, 'responsable', $event)"
+                />
+                <app-form-field
+                  [id]="'programme-frequence-' + index"
+                  [config]="{ label: 'Fréquence', type: 'text', placeholder: 'Hebdo, Mensuelle…' }"
+                  [value]="ligne.frequence"
+                  (valueChange)="updateLigne(index, 'frequence', $event)"
+                />
+                <app-select-field
+                  [id]="'programme-type-' + index"
+                  [config]="{ label: 'Type de contrôle', placeholder: 'Non renseigné', options: typeControleOptions, allowEmpty: true }"
+                  [value]="ligne.typeControle"
+                  (valueChange)="updateLigne(index, 'typeControle', $event)"
+                />
+              </div>
+              <div class="file-form-grid">
+                <app-form-field
+                  [id]="'programme-domaine-' + index"
+                  [config]="{ label: 'Domaine / cycle', type: 'text' }"
+                  [value]="ligne.domaineCycle"
+                  (valueChange)="updateLigne(index, 'domaineCycle', $event)"
+                />
+                <app-textarea-field
+                  [id]="'programme-risque-' + index"
+                  [config]="{ label: 'Risque', rows: 2 }"
+                  [value]="ligne.risque"
+                  (valueChange)="updateLigne(index, 'risque', $event)"
+                />
+                <app-textarea-field
+                  [id]="'programme-procedure-' + index"
+                  [config]="{ label: 'Procédure de test', rows: 2 }"
+                  [value]="ligne.procedureTest"
+                  (valueChange)="updateLigne(index, 'procedureTest', $event)"
+                />
+                <app-form-field
+                  [id]="'programme-echantillon-' + index"
+                  [config]="{ label: 'Échantillon', type: 'text' }"
+                  [value]="ligne.echantillonDescription"
+                  (valueChange)="updateLigne(index, 'echantillonDescription', $event)"
+                />
+                <app-form-field
+                  [id]="'programme-technique-' + index"
+                  [config]="{ label: 'Technique d\'audit', type: 'text', placeholder: 'Interview, rapprochement, pointage, circularisation, observation' }"
+                  [value]="ligne.techniqueAudit"
+                  (valueChange)="updateLigne(index, 'techniqueAudit', $event)"
+                />
+                <app-form-field
+                  [id]="'programme-echantillonnage-' + index"
+                  [config]="{ label: 'Technique d\'échantillonnage', type: 'text', placeholder: 'Statistique, aléatoire, N/A' }"
+                  [value]="ligne.techniqueEchantillonnage"
+                  (valueChange)="updateLigne(index, 'techniqueEchantillonnage', $event)"
+                />
+              </div>
+            </div>
+            <app-icon-button icon="delete" variant="danger" label="Retirer la ligne" (clicked)="removeLigne(index)" />
+          </div>
+        } @empty {
+          <p class="file-form-hint">Aucune ligne.</p>
+        }
+
+        @if (lignesError()) {
+          <p class="file-form-error" role="alert">{{ lignesError() }}</p>
+        }
+      </section>
+    </form>
+  } @else if (objectifs().length === 0 && !programme()) {
+    <app-document-toolbar title="Programme de travail" [printable]="false" />
+    <div class="file-form-notice">
+      <p>Le programme de travail découle des objectifs du TDR : rédigez d'abord les termes de référence avec leurs objectifs.</p>
+      <app-button size="sm" variant="outline" (clicked)="openTdr()">Aller au TDR</app-button>
+    </div>
+  } @else if (programme()) {
+    <app-document-toolbar title="Programme de travail" [description]="(programme()?.lignes?.length ?? 0) + ' ligne(s)'">
+      <app-button variant="outline" (clicked)="confirmingDeletion.set(true)">Supprimer</app-button>
+      <app-button variant="outline" (clicked)="startEditing()">Modifier</app-button>
+    </app-document-toolbar>
+
+    <app-document-sheet orientation="landscape">
+      <h1>Programme de travail — Mission n° {{ mission.numero }} « {{ mission.intitule }} »</h1>
+
+      <table class="programme-table">
+        <thead>
+          <tr>
+            <th>Objectif (TDR)</th>
+            <th>Obj. #</th>
+            <th>Contrôle #</th>
+            <th>Tâches / opérations</th>
+            <th>Faiblesses à confirmer / infirmer</th>
+            <th>Responsable</th>
+            <th>Fréquence</th>
+            <th>Type manuel / automatique</th>
+            <th>Domaine / cycle</th>
+            <th>Risque</th>
+            <th>Procédure de test</th>
+            <th>Échantillon</th>
+            <th>Technique d'audit</th>
+            <th>Technique d'échantillonnage</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of rows(); track row.ligne.id) {
+            <tr>
+              @if (row.objectifRowspan > 0) {
+                <td [attr.rowspan]="row.objectifRowspan">{{ row.ligne.objectifDescription }}</td>
+                <td [attr.rowspan]="row.objectifRowspan">{{ row.ligne.objectifNumero }}</td>
+              }
+              <td>{{ row.ligne.numeroControle }}</td>
+              <td class="document-text">{{ row.ligne.tacheOperation }}</td>
+              <td class="document-text">{{ row.ligne.faiblesseAConfirmer }}</td>
+              <td>{{ row.ligne.responsable }}</td>
+              <td>{{ row.ligne.frequence }}</td>
+              <td>{{ row.ligne.typeControle }}</td>
+              <td>{{ row.ligne.domaineCycle }}</td>
+              <td class="document-text">{{ row.ligne.risque }}</td>
+              <td class="document-text">{{ row.ligne.procedureTest }}</td>
+              <td>{{ row.ligne.echantillonDescription }}</td>
+              <td>{{ row.ligne.techniqueAudit }}</td>
+              <td>{{ row.ligne.techniqueEchantillonnage }}</td>
+            </tr>
+          } @empty {
+            <tr><td colspan="14">[Aucune ligne]</td></tr>
+          }
+        </tbody>
+      </table>
+    </app-document-sheet>
+
+    <app-modal
+      title="Supprimer le programme de travail"
+      confirmText="Supprimer"
+      confirmVariant="danger"
+      size="sm"
+      [description]="'Mission n° ' + mission.numero"
+      [isOpen]="confirmingDeletion()"
+      [loading]="deleting()"
+      (confirmed)="confirmDeletion()"
+      (cancelled)="confirmingDeletion.set(false)"
+    >
+      <p>Le programme et ses lignes seront supprimés. <strong>Cette action est définitive.</strong></p>
+      <p class="file-form-hint">Impossible tant que des fiches de test portent sur ses lignes.</p>
+    </app-modal>
+  } @else {
+    <app-document-toolbar title="Programme de travail" [printable]="false" />
+    <app-empty-state
+      icon="document"
+      title="Pas encore de programme de travail"
+      description="Déclinez les objectifs du TDR en contrôles : tâche, faiblesse à confirmer, risque, procédure de test, échantillon…"
+      actionLabel="Établir le programme"
+      (action)="startEditing()"
+    />
+  }
+}

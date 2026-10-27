@@ -1,0 +1,248 @@
+@if (mission(); as mission) {
+  @if (editing()) {
+    <app-document-toolbar
+      [title]="toolbarTitle()"
+      description="Questions posées (QPC, QCI) et réponses de la personne interviewée. La référence FI-xxx est attribuée à l'enregistrement."
+      [printable]="false"
+    >
+      <app-button variant="outline" [disabled]="saving()" (clicked)="cancelEditing()">Annuler</app-button>
+      <app-button [disabled]="saving()" (clicked)="save()">{{ saving() ? 'Enregistrement...' : 'Enregistrer' }}</app-button>
+    </app-document-toolbar>
+
+    <form class="file-form" (submit)="$event.preventDefault()">
+      <section class="file-form-section">
+        <h3>Personne interviewée</h3>
+        <div class="file-form-grid">
+          <app-select-field
+            [id]="'interview-interviewee'"
+            [config]="{
+              label: 'Interviewé(e)',
+              placeholder: 'Choisir dans l\'équipe de la mission',
+              options: intervieweeOptions(),
+              required: true,
+              errorMessage: intervieweeError() ?? undefined
+            }"
+            [value]="draft().personneIntervieweeId"
+            [invalid]="intervieweeError() !== null"
+            (valueChange)="chooseInterviewee($event)"
+          />
+          <app-form-field
+            [id]="'interview-date'"
+            [config]="{ label: 'Date', type: 'date' }"
+            [value]="draft().dateInterview"
+            (valueChange)="updateField('dateInterview', $event)"
+          />
+          <app-form-field
+            [id]="'interview-fonction'"
+            [config]="{ label: 'Fonction', type: 'text' }"
+            [value]="draft().fonction"
+            (valueChange)="updateField('fonction', $event)"
+          />
+          <app-form-field
+            [id]="'interview-anciennete'"
+            [config]="{ label: 'Ancienneté au poste', type: 'text', placeholder: 'Ex. 3 ans' }"
+            [value]="draft().anciennete"
+            (valueChange)="updateField('anciennete', $event)"
+          />
+        </div>
+        @if (intervieweeOptions().length === 0) {
+          <p class="file-form-hint">Ajoutez d'abord des personnes à l'équipe de la mission (Modifier la mission).</p>
+        }
+      </section>
+
+      <section class="file-form-section">
+        <h3>Visas</h3>
+        <div class="file-form-grid file-form-grid-3">
+          <div class="interview-visa">
+            <app-select-field
+              [id]="'interview-redige'"
+              [config]="{ label: 'Rédigé par', placeholder: 'Non renseigné', options: visaOptions(), allowEmpty: true }"
+              [value]="draft().redigeParPersonneId"
+              (valueChange)="updateField('redigeParPersonneId', $event)"
+            />
+            <app-form-field
+              [id]="'interview-redige-date'"
+              [config]="{ label: 'Le', type: 'date' }"
+              [value]="draft().dateRedaction"
+              (valueChange)="updateField('dateRedaction', $event)"
+            />
+          </div>
+          <div class="interview-visa">
+            <app-select-field
+              [id]="'interview-supervise'"
+              [config]="{ label: 'Supervisé par', placeholder: 'Non renseigné', options: visaOptions(), allowEmpty: true }"
+              [value]="draft().superviseParPersonneId"
+              (valueChange)="updateField('superviseParPersonneId', $event)"
+            />
+            <app-form-field
+              [id]="'interview-supervise-date'"
+              [config]="{ label: 'Le', type: 'date' }"
+              [value]="draft().dateSupervision"
+              (valueChange)="updateField('dateSupervision', $event)"
+            />
+          </div>
+          <div class="interview-visa">
+            <app-select-field
+              [id]="'interview-valide'"
+              [config]="{ label: 'Validé par', placeholder: 'Non renseigné', options: visaOptions(), allowEmpty: true }"
+              [value]="draft().valideParPersonneId"
+              (valueChange)="updateField('valideParPersonneId', $event)"
+            />
+            <app-form-field
+              [id]="'interview-valide-date'"
+              [config]="{ label: 'Le', type: 'date' }"
+              [value]="draft().dateValidation"
+              (valueChange)="updateField('dateValidation', $event)"
+            />
+          </div>
+        </div>
+      </section>
+
+      <section class="file-form-section">
+        <div class="file-form-heading">
+          <h3>Questions et réponses ({{ questions().length }})</h3>
+          <app-button size="sm" variant="secondary" (clicked)="addQuestion()">Ajouter une question</app-button>
+        </div>
+
+        @for (question of questions(); track $index; let index = $index) {
+          <div class="file-form-item">
+            <span class="file-form-number">{{ index + 1 }}</span>
+            <div class="file-form-item-fields">
+              <app-textarea-field
+                [id]="'interview-question-' + index"
+                [config]="{ label: 'Question', rows: 2 }"
+                [value]="question.question"
+                [invalid]="showErrors() && !question.question.trim()"
+                (valueChange)="updateQuestion(index, 'question', $event)"
+              />
+              <app-textarea-field
+                [id]="'interview-reponse-' + index"
+                [config]="{ label: 'Réponse', rows: 3 }"
+                [value]="question.reponse ?? ''"
+                (valueChange)="updateQuestion(index, 'reponse', $event)"
+              />
+            </div>
+            <app-icon-button icon="delete" variant="danger" label="Retirer la question" (clicked)="removeQuestion(index)" />
+          </div>
+        } @empty {
+          <p class="file-form-hint">Aucune question.</p>
+        }
+
+        @if (questionsError()) {
+          <p class="file-form-error" role="alert">{{ questionsError() }}</p>
+        }
+      </section>
+    </form>
+  } @else {
+    <app-document-toolbar
+      title="Fiches d'interview"
+      [description]="interviews().length + ' fiche(s) d\'interview'"
+      [printable]="selected() !== null"
+    >
+      <app-button (clicked)="startCreating()">Nouvelle interview</app-button>
+    </app-document-toolbar>
+
+    @if (interviews().length === 0) {
+      <app-empty-state
+        icon="document"
+        title="Aucune fiche d'interview"
+        description="Consignez chaque entretien : la personne interviewée, les questions posées et ses réponses."
+        actionLabel="Nouvelle interview"
+        (action)="startCreating()"
+      />
+    } @else {
+      <app-document-split>
+        @for (interview of interviews(); track interview.id) {
+          <li
+            app-document-list-item
+            split-list
+            [title]="interview.reference + ' — ' + interview.personneIntervieweeNom + ' ' + interview.personneIntervieweePrenom"
+            [subtitle]="interview.fonction ?? ''"
+            [state]="(interview.dateInterview | date: 'dd/MM/yyyy') ?? 'Sans date'"
+            [stateDone]="true"
+            [selected]="interview.id === selectedId()"
+            (chosen)="select(interview)"
+          >
+            <app-icon-button icon="edit" label="Modifier" (clicked)="startEditing(interview)" />
+            <app-icon-button icon="delete" variant="danger" label="Supprimer" (clicked)="interviewToDelete.set(interview)" />
+          </li>
+        }
+
+        @if (selected(); as interview) {
+          <app-document-sheet>
+            <table class="interview-header">
+              <tbody>
+                <tr>
+                  <td><strong>DAI</strong></td>
+                  <td>Audit de {{ mission.intitule }}</td>
+                  <td><strong>Référence :</strong> {{ interview.reference }}</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <h1>Fiche d'interview</h1>
+
+            <table>
+              <thead>
+                <tr><th>Visa</th><th>Nom</th><th>Date</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Rédigé par</td>
+                  <td>{{ personName(interview.redigeParPersonneNom, interview.redigeParPersonnePrenom) }}</td>
+                  <td>{{ (interview.dateRedaction | date: 'dd/MM/yyyy') ?? '……' }}</td>
+                </tr>
+                <tr>
+                  <td>Supervisé par</td>
+                  <td>{{ personName(interview.superviseParPersonneNom, interview.superviseParPersonnePrenom) }}</td>
+                  <td>{{ (interview.dateSupervision | date: 'dd/MM/yyyy') ?? '……' }}</td>
+                </tr>
+                <tr>
+                  <td>Validé par</td>
+                  <td>{{ personName(interview.valideParPersonneNom, interview.valideParPersonnePrenom) }}</td>
+                  <td>{{ (interview.dateValidation | date: 'dd/MM/yyyy') ?? '……' }}</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <p class="document-info"><strong>Interviewé(e) :</strong> {{ interview.personneIntervieweeNom }} {{ interview.personneIntervieweePrenom }}</p>
+            <p class="document-info"><strong>Fonction :</strong> {{ interview.fonction || '……………' }}</p>
+            <p class="document-info"><strong>Ancienneté au poste :</strong> {{ interview.anciennete || '……………' }}</p>
+            <p class="document-info"><strong>Date :</strong> {{ (interview.dateInterview | date: 'dd/MM/yyyy') ?? '……………' }}</p>
+
+            <table class="interview-questions">
+              <thead>
+                <tr><th>N°</th><th>Questions</th><th>Réponses</th></tr>
+              </thead>
+              <tbody>
+                @for (question of interview.questions; track question.id) {
+                  <tr>
+                    <td>{{ question.numero }}</td>
+                    <td class="document-text">{{ question.question }}</td>
+                    <td class="document-text">{{ question.reponse || '' }}</td>
+                  </tr>
+                } @empty {
+                  <tr><td colspan="3">[Aucune question]</td></tr>
+                }
+              </tbody>
+            </table>
+          </app-document-sheet>
+        }
+      </app-document-split>
+    }
+
+    <app-modal
+      title="Supprimer la fiche d'interview"
+      confirmText="Supprimer"
+      confirmVariant="danger"
+      size="sm"
+      [description]="interviewToDelete()?.reference ?? ''"
+      [isOpen]="interviewToDelete() !== null"
+      [loading]="deleting()"
+      (confirmed)="confirmDeletion()"
+      (cancelled)="interviewToDelete.set(null)"
+    >
+      <p>La fiche et ses questions seront supprimées. <strong>Cette action est définitive.</strong></p>
+    </app-modal>
+  }
+}

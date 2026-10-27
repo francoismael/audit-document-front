@@ -1,0 +1,39 @@
+@use 'variables' as *;
+@use 'document-form';
+
+@include document-form.styles;
+
+.pva-group {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+
+  h4 {
+    margin: 0;
+    color: $color-primary;
+    font-size: 0.95rem;
+  }
+}
+
+// A constat that will not be presented in the PV.
+.pva-excluded {
+  opacity: 0.7;
+}
+
+// Framed title of the PV, as in Document.docx.
+.pva-title {
+  margin: $space-3 0 $space-5;
+  border: 1px solid $color-document-text;
+  padding: $space-3;
+  font-weight: 700;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.pva-table {
+  font-size: 10.5pt;
+
+  th:first-child {
+    width: 70px;
+  }
+}

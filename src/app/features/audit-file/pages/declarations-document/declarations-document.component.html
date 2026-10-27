@@ -12,34 +12,26 @@
       description="Ajoutez l'équipe de la DAI à la mission (Modifier la mission) : chaque membre signe sa déclaration d'indépendance."
     />
   } @else {
-    <div class="declarations-layout">
-      <ul class="declarations-list no-print">
-        @for (declarant of declarants(); track declarant.member.personneId) {
-          <li
-            class="declarations-item"
-            [class.declarations-item-selected]="declarant.member.personneId === selectedPersonneId()"
-          >
-            <button class="declarations-select" type="button" (click)="select(declarant)">
-              <span class="declarations-name">{{ fullName(declarant.member) }}</span>
-              <span class="declarations-meta">{{ declarant.member.fonction ?? roleLabels[declarant.member.roles] }}</span>
-              @if (declarant.declaration; as declaration) {
-                <span class="declarations-state declarations-state-done">Signée le {{ declaration.dateDeclaration | date: 'dd/MM/yyyy' }}</span>
-              } @else {
-                <span class="declarations-state">À établir</span>
-              }
-            </button>
-
-            <div class="declarations-actions">
-              @if (declarant.declaration) {
-                <app-icon-button icon="edit" label="Modifier la date" (clicked)="openForm(declarant)" />
-                <app-icon-button icon="delete" variant="danger" label="Supprimer" (clicked)="deletionFor.set(declarant)" />
-              } @else {
-                <app-button size="sm" (clicked)="openForm(declarant)">Établir</app-button>
-              }
-            </div>
-          </li>
-        }
-      </ul>
+    <app-document-split>
+      @for (declarant of declarants(); track declarant.member.personneId) {
+        <li
+          app-document-list-item
+          split-list
+          [title]="fullName(declarant.member)"
+          [subtitle]="declarant.member.fonction ?? roleLabels[declarant.member.roles]"
+          [state]="declarant.declaration ? 'Signée le ' + (declarant.declaration.dateDeclaration | date: 'dd/MM/yyyy') : 'À établir'"
+          [stateDone]="!!declarant.declaration"
+          [selected]="declarant.member.personneId === selectedPersonneId()"
+          (chosen)="select(declarant)"
+        >
+          @if (declarant.declaration) {
+            <app-icon-button icon="edit" label="Modifier la date" (clicked)="openForm(declarant)" />
+            <app-icon-button icon="delete" variant="danger" label="Supprimer" (clicked)="deletionFor.set(declarant)" />
+          } @else {
+            <app-button size="sm" (clicked)="openForm(declarant)">Établir</app-button>
+          }
+        </li>
+      }
 
       @if (selected(); as selected) {
         <app-document-sheet>
@@ -105,7 +97,7 @@
           </p>
         </app-document-sheet>
       }
-    </div>
+    </app-document-split>
   }
 
   <app-declaration-form-modal

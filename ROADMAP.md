@@ -383,37 +383,36 @@ Règles communes à ces 11 étapes :
 
 #### Étape 15 — Fiches d'interview
 
-- [ ] API : `/interviews` (`GET`, `POST`, `GET /{id}`, `PUT /{id}`, `DELETE /{id}`).
-- [ ] Champs : personne interviewée, date, fonction, ancienneté ; rédigé, supervisé et validé par (équipe de la mission).
-- [ ] Liste interne : **questions et réponses**.
-- **Validation :** plusieurs interviews par mission, avec leurs questions, référence `FIxxx` affichée.
+- [x] API : `/interviews` (pas de filtre par mission : filtré côté front). Plusieurs fiches par mission, référence `FI-xxx` attribuée par le backend.
+- [x] Liste des fiches à gauche, fiche à droite (en-tête DAI / Audit de … / Référence, tableau des visas, interviewé, fonction, ancienneté, date, tableau des questions et réponses). Saisie pleine largeur : interviewé (les points focaux proposés en premier, fonction préremplie), visas « rédigé, supervisé, validé par » (équipe d'audit), questions et réponses en liste.
+- [x] Backend : mission et interviewé obligatoires, texte obligatoire pour chaque question, visas donnés uniquement par l'équipe d'audit de la mission (`MissionDocumentRules.checkInterview`). Reporté dans spring.
 
 #### Étape 16 — Programme de travail
 
-- [ ] API : `/programmes-travail` (`GET`, `POST`, `GET /{id}`, `PUT /{id}`, `DELETE /{id}`). Dépend des objectifs du TDR (étape 12).
-- [ ] Liste interne : **lignes du programme** (objectif, tâche, faiblesse à confirmer, responsable, fréquence, type de contrôle, domaine, risque, procédure de test, échantillon, techniques d'audit et d'échantillonnage).
-- **Validation :** créer le programme avec plusieurs lignes rattachées aux objectifs du TDR.
+- [x] API : `/programmes-travail` (un programme par mission ; filtré côté front). Lignes rattachées aux objectifs du TDR ; numéro de contrôle attribué par le backend, conservé quand on modifie.
+- [x] Sans objectif dans le TDR : message et lien vers le TDR.
+- [x] Aperçu fidèle au tableau de `Document.docx` (14 colonnes, lignes groupées par objectif dans l'ordre du TDR), feuille **paysage** : une page A4 paysage à l'impression, défilement horizontal à l'écran.
 
 #### Étape 17 — Fiches de test
 
-- [ ] API : `/tests` (`GET`, `POST`, `GET /{id}`, `PUT /{id}`, `DELETE /{id}`, `GET /ligne-programme/{id}`). Dépend des lignes du programme (étape 16).
-- [ ] Champs : ligne du programme, date, procédure réalisée, résumé des anomalies, résultat (`EFFECTIF`, `INEFFECTIF`…), risque maîtrisé, recommandations, commentaires, contrôle qualité (auditeur, chef de mission, superviseur avec leurs dates, via `missionPersonneId` et le rôle correspondant).
-- [ ] Liste interne : **échantillons** (anomalie détectée, observation ; référence attribuée par le backend).
-- **Validation :** créer un test sur une ligne du programme, avec ses échantillons et son contrôle qualité.
+- [x] API : `/tests` (pas de `missionId` : les tests d'une mission sont ceux portant sur les lignes de son programme).
+- [x] Saisie : ligne du programme, date, procédure réalisée, échantillons (anomalie oui/non, observation), résumé des anomalies, résultat (`EFFECTIF`, `PARTIELLEMENT_EFFECTIF`, `INEFFECTIF`), risque maîtrisé, recommandations, contrôle qualité (auditeur, chef de mission, superviseur : seuls les membres ayant ce rôle sont proposés, avec leurs dates et commentaires).
+- [x] Fiche de test : `Document.docx` ne contient pas de texte pour ce modèle (image) ; mise en page établie à partir des champs : contrôle testé, travaux réalisés, échantillons, résultat, contrôle qualité.
 
 #### Étape 18 — Fiches de constats
 
-- [ ] API : `/constats` (`GET`, `POST`, `GET /{id}`, `PUT /{id}`, `DELETE /{id}`, `GET /test/{testId}`). Dépend des tests (étape 17).
-- [ ] Champs : test, description, niveau de risque, direction ou service concerné.
-- [ ] Listes internes : **causes**, **risques** (avec niveau), **conséquences**, **recommandations** (une seule peut être retenue).
-- **Validation :** créer un constat complet sur un test, et vérifier la règle « une seule recommandation retenue ».
+- [x] API : `/constats` (constats d'une mission = ceux de ses tests).
+- [x] Saisie : test d'origine, description, niveau de risque (`FAIBLE`, `MOYEN`, `ELEVE`), direction ou service concerné, listes de causes, risques (avec niveau), conséquences et recommandations ; cocher « retenue » sur une recommandation décoche les autres (une seule retenue, règle du backend).
+- [x] Deux présentations de `Document.docx` : **fiche par constat (modèle n°02)** « Résultats des travaux » et **tableau récapitulatif (modèle n°01)** de tous les constats groupés par objectif, en paysage.
 
 #### Étape 19 — PV d'affirmation des constats
 
-- [ ] API : `/pv-affirmations` (`POST`, `GET /{id}`, `GET /mission/{missionId}`, `PUT /{id}`, `DELETE /{id}`). Dépend des constats (étape 18).
-- [ ] Champs : date de l'entretien, lieu, observations complémentaires.
-- [ ] Listes internes : **participants** (`missionPersonneId`, `AUDITEUR` ou `ENTITE_AUDITEE` ; l'entité auditée doit avoir le rôle `POINT_FOCAL`) et **lignes** (constat, question, réponse de l'entité, pièces justificatives, commentaires des auditeurs).
-- **Validation :** créer le PV d'affirmation de la mission avec ses participants et ses lignes.
+- [x] API : `/pv-affirmations` (un PV par mission ; `GET /mission/{id}` renvoie 404 tant qu'il n'y en a pas, traité comme « pas encore de PV »).
+- [x] Saisie : date de l'entretien (obligatoire), lieu, présents (`AUDITEUR` = équipe d'audit, `ENTITE_AUDITEE` = points focaux, par `missionPersonneId`), une ligne par constat de la mission (à présenter ou non ; question préremplie avec le constat, réponse de l'entité, pièces justificatives, commentaires des auditeurs), observations complémentaires.
+- [x] Aperçu fidèle à `Document.docx` : titre encadré avec l'OM, phrase d'introduction (mission, structure, période, date de l'entretien), présents des deux côtés, objet, tableau des constats et réponses, observations, « Fait à …, le … » à droite en fin de document (sans bloc de signature après, règle du 23/10/2026).
+
+- **Briques partagées ajoutées :** `app-document-split` et `app-document-list-item` (liste à gauche + feuille à droite, utilisées aussi par les déclarations), mixin SCSS `document-form` (`src/styles/_document-form.scss`) pour les formulaires des documents, orientation paysage de `app-document-sheet`. `AuditFileStore` charge aussi interviews, programme, tests, constats et PV d'affirmation.
+- **Résultat (étapes 15 à 19) :** build OK, 185 tests unitaires OK, tests backend OK (back et spring). Parcours complet validé dans Chrome sur le vrai backend avec une mission temporaire (supprimée ensuite) : interview FI, programme de 2 lignes, test avec échantillon et contrôle qualité, constat complet (une seule recommandation retenue), PV d'affirmation ; règles backend vérifiées (visa par un point focal, question vide, rôle du contrôle qualité, deux recommandations retenues, représentant de l'entité qui n'est pas point focal) ; PDF : programme et tableau des constats sur 1 page paysage, PV en portrait.
 
 #### Étape 20 — Rapport d'audit
 
@@ -524,3 +523,5 @@ Règles communes à ces 11 étapes :
 | 23/10/2026 | Impression | Ajustement | Plus d'en-tête ni de pied de page du navigateur dans les documents imprimés (date et heure, titre d'onglet, adresse localhost, numéro de page) : page sans marge, marges blanches portées par la feuille du document et répétées sur chaque page. Vérifié sur un PDF de 2 pages produit avec en-têtes du navigateur activés |
 | 23/10/2026 | Étape 12 | Ajustement | Date du TDR enregistrée et affichée en en-tête (back, spring, front). Espace de 22 px sous le titre fixé de l'espace de travail |
 | 23/10/2026 | Backend | Correction | Création de mission : le numéro venant de la séquence `mission_numero_seq` pouvait déjà exister (numéros saisis à la main, ex. 007) et la création échouait ; les numéros déjà pris sont maintenant sautés (back et spring) |
+| 26/10/2026 | Étapes 15 à 19 | Fait | Fiches d'interview, programme de travail (paysage), fiches de test, fiches de constats (modèles 01 et 02), PV d'affirmation des constats, dans l'espace de travail de la mission. Backend : contrôles des interviews (back et spring) |
+| 26/10/2026 | Étape 15 | Ajustement | Fiche d'interview : date de chaque visa (rédigé, supervisé, validé le) saisie sous la personne et affichée dans le tableau des visas ; date de rédaction = aujourd'hui par défaut. Colonnes `date_redaction`, `date_supervision`, `date_validation` (back et spring) |

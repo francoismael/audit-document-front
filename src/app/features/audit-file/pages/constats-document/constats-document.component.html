@@ -1,0 +1,299 @@
+@if (mission(); as mission) {
+  @if (editing()) {
+    <app-document-toolbar
+      [title]="toolbarTitle()"
+      description="Le constat découle d'un test. Une seule recommandation peut être retenue. La référence est attribuée à l'enregistrement."
+      [printable]="false"
+    >
+      <app-button variant="outline" [disabled]="saving()" (clicked)="cancelEditing()">Annuler</app-button>
+      <app-button [disabled]="saving()" (clicked)="save()">{{ saving() ? 'Enregistrement...' : 'Enregistrer' }}</app-button>
+    </app-document-toolbar>
+
+    <form class="file-form" (submit)="$event.preventDefault()">
+      <section class="file-form-section">
+        <h3>Constat</h3>
+        <div class="file-form-grid">
+          <app-select-field
+            [id]="'constat-test'"
+            [config]="{
+              label: 'Test à l\'origine du constat',
+              placeholder: 'Choisir le test',
+              options: testOptions(),
+              required: true,
+              errorMessage: testError() ?? undefined
+            }"
+            [value]="draft().testId"
+            [invalid]="testError() !== null"
+            (valueChange)="updateField('testId', $event)"
+          />
+          <app-select-field
+            [id]="'constat-niveau'"
+            [config]="{ label: 'Niveau de risque', placeholder: 'Non renseigné', options: levelOptions, allowEmpty: true }"
+            [value]="draft().niveauRisque"
+            (valueChange)="updateField('niveauRisque', $event)"
+          />
+        </div>
+        <app-textarea-field
+          [id]="'constat-description'"
+          [config]="{ label: 'Description du constat', rows: 4, required: true, errorMessage: descriptionError() ?? undefined }"
+          [value]="draft().descriptions"
+          [invalid]="descriptionError() !== null"
+          (valueChange)="updateField('descriptions', $event)"
+        />
+        <app-form-field
+          [id]="'constat-direction'"
+          [config]="{ label: 'Direction / service concerné', type: 'text' }"
+          [value]="draft().directionServiceConcerne"
+          (valueChange)="updateField('directionServiceConcerne', $event)"
+        />
+      </section>
+
+      @for (list of itemLists; track list) {
+        <section class="file-form-section">
+          <div class="file-form-heading">
+            <h3>{{ list === 'causes' ? 'Causes' : 'Conséquences' }} ({{ itemsOf(list).length }})</h3>
+            <app-button size="sm" variant="secondary" (clicked)="addItem(list)">
+              {{ list === 'causes' ? 'Ajouter une cause' : 'Ajouter une conséquence' }}
+            </app-button>
+          </div>
+          @for (item of itemsOf(list); track $index; let index = $index) {
+            <div class="file-form-item">
+              <span class="file-form-number">{{ index + 1 }}</span>
+              <div class="file-form-item-fields">
+                <app-textarea-field
+                  [id]="'constat-' + list + '-' + index"
+                  [config]="{ label: list === 'causes' ? 'Cause' : 'Conséquence', rows: 2 }"
+                  [value]="item.descriptions"
+                  [invalid]="showErrors() && !item.descriptions.trim()"
+                  (valueChange)="updateItem(list, index, $event)"
+                />
+              </div>
+              <app-icon-button icon="delete" variant="danger" label="Retirer" (clicked)="removeItem(list, index)" />
+            </div>
+          } @empty {
+            <p class="file-form-hint">Aucun élément.</p>
+          }
+        </section>
+      }
+
+      <section class="file-form-section">
+        <div class="file-form-heading">
+          <h3>Risques ({{ risques().length }})</h3>
+          <app-button size="sm" variant="secondary" (clicked)="addRisque()">Ajouter un risque</app-button>
+        </div>
+        @for (risque of risques(); track $index; let index = $index) {
+          <div class="file-form-item">
+            <span class="file-form-number">{{ index + 1 }}</span>
+            <div class="file-form-item-fields">
+              <app-textarea-field
+                [id]="'constat-risque-' + index"
+                [config]="{ label: 'Risque', rows: 2 }"
+                [value]="risque.descriptions"
+                [invalid]="showErrors() && !risque.descriptions.trim()"
+                (valueChange)="updateRisque(index, { descriptions: $event })"
+              />
+              <app-select-field
+                [id]="'constat-risque-niveau-' + index"
+                [config]="{ label: 'Niveau', placeholder: 'Non renseigné', options: levelOptions, allowEmpty: true }"
+                [value]="risque.niveau ?? ''"
+                (valueChange)="updateRisque(index, { niveau: $event || null })"
+              />
+            </div>
+            <app-icon-button icon="delete" variant="danger" label="Retirer le risque" (clicked)="removeRisque(index)" />
+          </div>
+        } @empty {
+          <p class="file-form-hint">Aucun risque.</p>
+        }
+      </section>
+
+      <section class="file-form-section">
+        <div class="file-form-heading">
+          <h3>Recommandations ({{ recommandations().length }})</h3>
+          <app-button size="sm" variant="secondary" (clicked)="addRecommandation()">Ajouter une recommandation</app-button>
+        </div>
+        @for (recommandation of recommandations(); track $index; let index = $index) {
+          <div class="file-form-item">
+            <span class="file-form-number">{{ index + 1 }}</span>
+            <div class="file-form-item-fields">
+              <app-textarea-field
+                [id]="'constat-recommandation-' + index"
+                [config]="{ label: 'Recommandation', rows: 2 }"
+                [value]="recommandation.description"
+                [invalid]="showErrors() && !recommandation.description.trim()"
+                (valueChange)="updateRecommandation(index, $event)"
+              />
+              <app-checkbox-field
+                [id]="'constat-retenue-' + index"
+                [config]="{ label: 'Recommandation retenue', description: 'Une seule recommandation peut être retenue.' }"
+                [checked]="recommandation.retenue"
+                (valueChange)="retainRecommandation(index, $event)"
+              />
+            </div>
+            <app-icon-button icon="delete" variant="danger" label="Retirer la recommandation" (clicked)="removeRecommandation(index)" />
+          </div>
+        } @empty {
+          <p class="file-form-hint">Aucune recommandation.</p>
+        }
+
+        @if (itemsError()) {
+          <p class="file-form-error" role="alert">{{ itemsError() }}</p>
+        }
+      </section>
+    </form>
+  } @else if (tests().length === 0 && constats().length === 0) {
+    <app-document-toolbar title="Fiches de constats" [printable]="false" />
+    <div class="file-form-notice">
+      <p>Un constat découle d'un test : réalisez d'abord les fiches de test.</p>
+      <app-button size="sm" variant="outline" (clicked)="openTests()">Aller aux fiches de test</app-button>
+    </div>
+  } @else {
+    <app-document-toolbar
+      title="Fiches de constats"
+      [description]="constats().length + ' constat(s)'"
+      [printable]="view() === 'tableau' ? constats().length > 0 : selected() !== null"
+    >
+      @if (constats().length > 0) {
+        <app-button variant="outline" (clicked)="view.set(view() === 'fiche' ? 'tableau' : 'fiche')">
+          {{ view() === 'fiche' ? 'Tableau récapitulatif' : 'Fiche par constat' }}
+        </app-button>
+      }
+      <app-button (clicked)="startCreating()">Nouveau constat</app-button>
+    </app-document-toolbar>
+
+    @if (constats().length === 0) {
+      <app-empty-state
+        icon="document"
+        title="Aucun constat"
+        description="Consignez les anomalies relevées par les tests : description, causes, risques, conséquences et recommandations."
+        actionLabel="Nouveau constat"
+        (action)="startCreating()"
+      />
+    } @else if (view() === 'tableau') {
+      <app-document-sheet orientation="landscape">
+        <h1>Fiche de constats — Mission n° {{ mission.numero }} « {{ mission.intitule }} »</h1>
+
+        <table class="constats-table">
+          <thead>
+            <tr>
+              <th>Référence</th>
+              <th>Constats</th>
+              <th>Causes</th>
+              <th>Risques</th>
+              <th>Niveau de risque</th>
+              <th>Direction / service concerné</th>
+              <th>Recommandations</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (group of groups(); track group.objectifId) {
+              <tr class="constats-objective">
+                <td colspan="7">Objectif {{ group.title }}</td>
+              </tr>
+              @for (constat of group.constats; track constat.id) {
+                <tr>
+                  <td>{{ constat.reference }}</td>
+                  <td class="document-text">{{ constat.descriptions }}</td>
+                  <td>
+                    @for (cause of constat.causes; track cause.id) {
+                      <div class="document-text">- {{ cause.descriptions }}</div>
+                    }
+                  </td>
+                  <td>
+                    @for (risque of constat.risques; track risque.id) {
+                      <div class="document-text">- {{ risque.descriptions }}</div>
+                    }
+                  </td>
+                  <td>{{ levelLabel(constat.niveauRisque) }}</td>
+                  <td>{{ constat.directionServiceConcerne || '—' }}</td>
+                  <td>
+                    @for (recommandation of constat.recommandations; track recommandation.id) {
+                      <div class="document-text">- {{ recommandation.description }}{{ recommandation.retenue ? ' (retenue)' : '' }}</div>
+                    }
+                  </td>
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+      </app-document-sheet>
+    } @else {
+      <app-document-split>
+        @for (constat of constats(); track constat.id) {
+          <li
+            app-document-list-item
+            split-list
+            [title]="constat.reference + ' — ' + constat.testReference"
+            [subtitle]="constat.descriptions"
+            [state]="'Risque ' + levelLabel(constat.niveauRisque).toLowerCase()"
+            [stateDone]="constat.niveauRisque === 'FAIBLE'"
+            [selected]="constat.id === selectedId()"
+            (chosen)="select(constat)"
+          >
+            <app-icon-button icon="edit" label="Modifier" (clicked)="startEditing(constat)" />
+            <app-icon-button icon="delete" variant="danger" label="Supprimer" (clicked)="constatToDelete.set(constat)" />
+          </li>
+        }
+
+        @if (selected(); as constat) {
+          <app-document-sheet>
+            <h1>Résultats des travaux</h1>
+            <p class="document-info"><strong>Domaine / cycle / volet :</strong> {{ constat.domaineCycle || '—' }}</p>
+
+            <table class="constat-sheet">
+              <tbody>
+                <tr>
+                  <th>Constat n° {{ constat.reference }}</th>
+                  <td class="document-text">{{ constat.descriptions }}</td>
+                </tr>
+                <tr>
+                  <th>Cause(s)</th>
+                  <td>
+                    @for (cause of constat.causes; track cause.id) {
+                      <div class="document-text">- {{ cause.descriptions }}</div>
+                    } @empty {
+                      —
+                    }
+                  </td>
+                </tr>
+                <tr>
+                  <th>Conséquence(s)</th>
+                  <td>
+                    @for (consequence of constat.consequences; track consequence.id) {
+                      <div class="document-text">- {{ consequence.descriptions }}</div>
+                    } @empty {
+                      —
+                    }
+                  </td>
+                </tr>
+                <tr>
+                  <th>Recommandation(s)</th>
+                  <td>
+                    @for (recommandation of constat.recommandations; track recommandation.id) {
+                      <div class="document-text">- {{ recommandation.description }}{{ recommandation.retenue ? ' (retenue)' : '' }}</div>
+                    } @empty {
+                      —
+                    }
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </app-document-sheet>
+        }
+      </app-document-split>
+    }
+
+    <app-modal
+      title="Supprimer le constat"
+      confirmText="Supprimer"
+      confirmVariant="danger"
+      size="sm"
+      [description]="constatToDelete()?.reference ?? ''"
+      [isOpen]="constatToDelete() !== null"
+      [loading]="deleting()"
+      (confirmed)="confirmDeletion()"
+      (cancelled)="constatToDelete.set(null)"
+    >
+      <p>Le constat, ses causes, risques, conséquences et recommandations seront supprimés. <strong>Cette action est définitive.</strong></p>
+    </app-modal>
+  }
+}

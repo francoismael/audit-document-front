@@ -1,0 +1,118 @@
+@use 'variables' as *;
+
+// Full-width forms of the business documents (mission workspace): sections, grids and editable lists.
+// Usage in a component: @use 'document-form'; @include document-form.styles;
+@mixin styles {
+  .file-form {
+    display: flex;
+    flex-direction: column;
+    gap: $space-4;
+  }
+
+  .file-form-section {
+    display: flex;
+    flex-direction: column;
+    gap: $space-4;
+    border-radius: $radius-lg;
+    padding: $space-5;
+    background-color: $color-white;
+    box-shadow: $shadow-card;
+
+    h3 {
+      margin: 0;
+      color: $color-text-muted;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+  }
+
+  .file-form-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $space-3;
+  }
+
+  .file-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: $space-4;
+
+    &.file-form-grid-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    @media (max-width: 900px) {
+      &,
+      &.file-form-grid-3 {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+  }
+
+  // An item of an editable list (question, programme line, sample, cause...).
+  .file-form-item {
+    display: flex;
+    align-items: flex-start;
+    gap: $space-3;
+    border: 1px solid $color-border;
+    border-radius: $radius-md;
+    padding: $space-4;
+
+    app-icon-button {
+      margin-top: $space-5;
+    }
+  }
+
+  .file-form-item-fields {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: $space-3;
+    min-width: 0;
+  }
+
+  .file-form-number {
+    display: grid;
+    flex-shrink: 0;
+    place-items: center;
+    min-width: 28px;
+    height: 28px;
+    margin-top: $space-5;
+    border-radius: $radius-md;
+    padding: 0 $space-1;
+    background-color: $color-light-gray;
+    color: $color-primary;
+    font-size: 0.8rem;
+    font-weight: 700;
+  }
+
+  .file-form-hint {
+    margin: 0;
+    color: $color-text-muted;
+    font-size: 0.9rem;
+  }
+
+  .file-form-error {
+    margin: 0;
+    color: $color-danger;
+    font-size: 0.85rem;
+  }
+
+  .file-form-notice {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $space-2;
+    border-radius: $radius-md;
+    padding: $space-3 $space-4;
+    background-color: $color-warning-light;
+
+    p {
+      margin: 0;
+      font-size: 0.9rem;
+    }
+  }
+}

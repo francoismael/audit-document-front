@@ -1,0 +1,20 @@
+@use 'variables' as *;
+@use 'document-form';
+
+@include document-form.styles;
+
+// A visa: the person, then the date under it.
+.interview-visa {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
+.interview-header td {
+  width: 33%;
+}
+
+.interview-questions td:first-child {
+  width: 40px;
+  text-align: center;
+}

@@ -1,0 +1,33 @@
+@use 'variables' as *;
+@use 'document-form';
+
+@include document-form.styles;
+
+// 14 columns on a landscape A4 page: smaller text, as in Document.docx.
+.programme-table {
+  font-size: 8.5pt;
+  line-height: 1.3;
+  table-layout: fixed;
+
+  th {
+    background-color: $color-light-gray;
+    font-size: 8pt;
+    vertical-align: middle;
+  }
+
+  td,
+  th {
+    overflow-wrap: break-word;
+  }
+
+  // Width of the landscape page: the columns stay readable, the sheet scrolls on a small screen.
+  @media screen {
+    min-width: 1080px;
+  }
+
+  @media print {
+    th {
+      background-color: transparent;
+    }
+  }
+}

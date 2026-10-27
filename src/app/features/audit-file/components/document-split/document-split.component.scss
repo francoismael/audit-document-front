@@ -1,0 +1,30 @@
+@use 'variables' as *;
+
+.document-split {
+  display: grid;
+  grid-template-columns: minmax(240px, 300px) minmax(0, 1fr);
+  align-items: start;
+  gap: $space-4;
+
+  // Under this width the sheet would be too narrow next to the list: the list goes above it.
+  @media (max-width: 1440px) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  @media print {
+    display: block;
+  }
+}
+
+.document-split-list {
+  margin: 0;
+  border-radius: $radius-lg;
+  padding: $space-2;
+  background-color: $color-white;
+  box-shadow: $shadow-card;
+  list-style: none;
+}
+
+.document-split-main {
+  min-width: 0;
+}

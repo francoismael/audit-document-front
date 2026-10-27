@@ -1,0 +1,237 @@
+@if (mission(); as mission) {
+  @if (editing()) {
+    <app-document-toolbar
+      [title]="pv() ? 'Modifier le PV d\'affirmation' : 'Rédiger le PV d\'affirmation des constats'"
+      description="Les constats de la mission sont présentés à l'entité auditée, qui y répond. Un seul PV par mission."
+      [printable]="false"
+    >
+      <app-button variant="outline" [disabled]="saving()" (clicked)="cancelEditing()">Annuler</app-button>
+      <app-button [disabled]="saving()" (clicked)="save()">{{ saving() ? 'Enregistrement...' : 'Enregistrer' }}</app-button>
+    </app-document-toolbar>
+
+    <form class="file-form" (submit)="$event.preventDefault()">
+      <section class="file-form-section">
+        <h3>Entretien</h3>
+        <div class="file-form-grid">
+          <app-form-field
+            [id]="'pva-date'"
+            [config]="{ label: 'Date de l\'entretien', type: 'date', required: true, errorMessage: dateError() ?? undefined }"
+            [value]="draft().dateEntretien"
+            [invalid]="dateError() !== null"
+            (valueChange)="updateField('dateEntretien', $event)"
+          />
+          <app-form-field
+            [id]="'pva-lieu'"
+            [config]="{ label: 'Lieu', type: 'text', placeholder: 'Ex. Antananarivo' }"
+            [value]="draft().lieu"
+            (valueChange)="updateField('lieu', $event)"
+          />
+        </div>
+      </section>
+
+      <section class="file-form-section">
+        <h3>Présents</h3>
+        <div class="file-form-grid">
+          <div class="pva-group">
+            <h4>Représentants de l'auditeur</h4>
+            @for (member of auditeurs(); track member.missionPersonneId) {
+              <app-checkbox-field
+                [id]="'pva-auditeur-' + member.missionPersonneId"
+                [config]="{ label: member.nom + ' ' + member.prenom, description: member.fonction ?? roleLabels[member.roles] }"
+                [checked]="selectedAuditeurs().has(member.missionPersonneId)"
+                (valueChange)="toggleParticipant('AUDITEUR', member.missionPersonneId, $event)"
+              />
+            } @empty {
+              <p class="file-form-hint">Aucun membre de l'équipe d'audit.</p>
+            }
+          </div>
+          <div class="pva-group">
+            <h4>Représentants de l'entité auditée</h4>
+            @for (member of entite(); track member.missionPersonneId) {
+              <app-checkbox-field
+                [id]="'pva-entite-' + member.missionPersonneId"
+                [config]="{ label: member.nom + ' ' + member.prenom, description: member.fonction ?? roleLabels[member.roles] }"
+                [checked]="selectedEntite().has(member.missionPersonneId)"
+                (valueChange)="toggleParticipant('ENTITE_AUDITEE', member.missionPersonneId, $event)"
+              />
+            } @empty {
+              <div class="file-form-notice">
+                <p>Aucun point focal dans l'équipe de la mission : ajoutez les responsables de la structure auditée avec le rôle « Point focal ».</p>
+                <app-button size="sm" variant="outline" (clicked)="editMission()">Modifier la mission</app-button>
+              </div>
+            }
+          </div>
+        </div>
+        @if (participantsError()) {
+          <p class="file-form-error" role="alert">{{ participantsError() }}</p>
+        }
+      </section>
+
+      <section class="file-form-section">
+        <h3>Constats et réponses de l'entité ({{ lignes().length }})</h3>
+        @for (ligne of lignes(); track ligne.constat.id; let index = $index) {
+          <div class="file-form-item" [class.pva-excluded]="!ligne.included">
+            <span class="file-form-number">{{ ligne.constat.reference }}</span>
+            <div class="file-form-item-fields">
+              <app-checkbox-field
+                [id]="'pva-inclus-' + index"
+                [config]="{ label: 'Présenter ce constat', description: ligne.constat.descriptions }"
+                [checked]="ligne.included"
+                (valueChange)="updateLigne(index, { included: $event })"
+              />
+              @if (ligne.included) {
+                <app-textarea-field
+                  [id]="'pva-question-' + index"
+                  [config]="{ label: 'Question', rows: 2, required: true }"
+                  [value]="ligne.question"
+                  [invalid]="showErrors() && !ligne.question.trim()"
+                  (valueChange)="updateLigne(index, { question: $event })"
+                />
+                <app-textarea-field
+                  [id]="'pva-reponse-' + index"
+                  [config]="{ label: 'Réponse de l\'entité', rows: 2 }"
+                  [value]="ligne.reponseEntite"
+                  (valueChange)="updateLigne(index, { reponseEntite: $event })"
+                />
+                <div class="file-form-grid">
+                  <app-textarea-field
+                    [id]="'pva-pieces-' + index"
+                    [config]="{ label: 'Pièces justificatives fournies', rows: 2 }"
+                    [value]="ligne.piecesJustificatives"
+                    (valueChange)="updateLigne(index, { piecesJustificatives: $event })"
+                  />
+                  <app-textarea-field
+                    [id]="'pva-commentaires-' + index"
+                    [config]="{ label: 'Commentaires des auditeurs', rows: 2 }"
+                    [value]="ligne.commentairesAuditeurs"
+                    (valueChange)="updateLigne(index, { commentairesAuditeurs: $event })"
+                  />
+                </div>
+              }
+            </div>
+          </div>
+        } @empty {
+          <div class="file-form-notice">
+            <p>La mission n'a pas encore de constat.</p>
+            <app-button size="sm" variant="outline" (clicked)="openPage('constats')">Aller aux fiches de constats</app-button>
+          </div>
+        }
+        @if (lignesError()) {
+          <p class="file-form-error" role="alert">{{ lignesError() }}</p>
+        }
+      </section>
+
+      <section class="file-form-section">
+        <h3>Observations complémentaires</h3>
+        <app-textarea-field
+          [id]="'pva-observations'"
+          [config]="{ label: 'Observations (facultatif)', rows: 3 }"
+          [value]="draft().observationsComplementaires"
+          (valueChange)="updateField('observationsComplementaires', $event)"
+        />
+      </section>
+    </form>
+  } @else if (pv()) {
+    @if (pv(); as pv) {
+      <app-document-toolbar title="PV d'affirmation des constats" [description]="pv.lignes.length + ' constat(s) présenté(s)'">
+        <app-button variant="outline" (clicked)="confirmingDeletion.set(true)">Supprimer</app-button>
+        <app-button variant="outline" (clicked)="startEditing()">Modifier</app-button>
+      </app-document-toolbar>
+
+      <app-document-sheet>
+        <div class="pva-title">
+          Procès-verbal d'affirmation des constats d'audit : « {{ mission.intitule }} » [OM N° {{ mission.numero }}]
+        </div>
+
+        <p>
+          Dans le cadre de la mission d'audit « {{ mission.intitule }} » menée auprès de
+          {{ mission.structureNom || 'la structure auditée' }} {{ missionPeriod() }}, un entretien s'est tenu le
+          {{ pv.dateEntretien | date: 'dd/MM/yyyy' }} afin de présenter les constats relevés et de recueillir les réponses
+          des responsables de l'entité.
+        </p>
+
+        <h2>Présents</h2>
+        <h3>Représentants de l'auditeur</h3>
+        <ul>
+          @for (participant of auditeurParticipants(); track participant.id) {
+            <li>{{ describe(participant) }}</li>
+          } @empty {
+            <li>[Aucun représentant indiqué]</li>
+          }
+        </ul>
+        <h3>Représentants de l'entité auditée</h3>
+        <ul>
+          @for (participant of entiteParticipants(); track participant.id) {
+            <li>{{ describe(participant) }}</li>
+          } @empty {
+            <li>[Aucun représentant indiqué]</li>
+          }
+        </ul>
+
+        <h2>Objet</h2>
+        <p>
+          Le présent procès-verbal a pour objet de consigner les constats relevés ainsi que les réponses apportées par le(s)
+          responsable(s) interviewé(s). Il constitue une pièce justificative annexée au rapport d'audit.
+        </p>
+
+        <h2>Tableau des constats et réponses de l'entité auditée</h2>
+        <table class="pva-table">
+          <thead>
+            <tr>
+              <th>Réf #</th>
+              <th>Questions</th>
+              <th>Réponses de l'entité auditée</th>
+              <th>Pièces justificatives fournies</th>
+              <th>Commentaires des auditeurs</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (ligne of pv.lignes; track ligne.id) {
+              <tr>
+                <td>{{ ligne.referenceConstat }}</td>
+                <td class="document-text">{{ ligne.question }}</td>
+                <td class="document-text">{{ ligne.reponseEntite || '' }}</td>
+                <td class="document-text">{{ ligne.piecesJustificatives || '' }}</td>
+                <td class="document-text">{{ ligne.commentairesAuditeurs || '' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+
+        <h2>Observations complémentaires</h2>
+        <p class="document-text">{{ pv.observationsComplementaires || 'Néant.' }}</p>
+
+        <p class="document-date">Fait à {{ pv.lieu || '……………' }}, le {{ pv.dateEntretien | date: 'dd/MM/yyyy' }}</p>
+      </app-document-sheet>
+
+      <app-modal
+        title="Supprimer le PV d'affirmation"
+        confirmText="Supprimer"
+        confirmVariant="danger"
+        size="sm"
+        [description]="'Mission n° ' + mission.numero"
+        [isOpen]="confirmingDeletion()"
+        [loading]="deleting()"
+        (confirmed)="confirmDeletion()"
+        (cancelled)="confirmingDeletion.set(false)"
+      >
+        <p>Le procès-verbal, ses participants et ses lignes seront supprimés. <strong>Cette action est définitive.</strong></p>
+      </app-modal>
+    }
+  } @else if (store.constats().length === 0) {
+    <app-document-toolbar title="PV d'affirmation des constats" [printable]="false" />
+    <div class="file-form-notice">
+      <p>Le PV d'affirmation présente les constats de la mission à l'entité auditée : établissez d'abord les fiches de constats.</p>
+      <app-button size="sm" variant="outline" (clicked)="openPage('constats')">Aller aux fiches de constats</app-button>
+    </div>
+  } @else {
+    <app-document-toolbar title="PV d'affirmation des constats" [printable]="false" />
+    <app-empty-state
+      icon="document"
+      title="Pas encore de PV d'affirmation"
+      description="Consignez l'entretien avec l'entité auditée : présents, constats présentés, réponses et pièces justificatives."
+      actionLabel="Rédiger le PV"
+      (action)="startEditing()"
+    />
+  }
+}

@@ -57,6 +57,41 @@ export const routes: Routes = [
               import('./features/audit-file/pages/pv-ouverture-document/pv-ouverture-document.component').then(
                 (m) => m.PvOuvertureDocumentComponent
               )
+          },
+          {
+            path: 'interviews',
+            loadComponent: () =>
+              import('./features/audit-file/pages/interviews-document/interviews-document.component').then(
+                (m) => m.InterviewsDocumentComponent
+              )
+          },
+          {
+            path: 'programme',
+            loadComponent: () =>
+              import('./features/audit-file/pages/programme-document/programme-document.component').then(
+                (m) => m.ProgrammeDocumentComponent
+              )
+          },
+          {
+            path: 'tests',
+            loadComponent: () =>
+              import('./features/audit-file/pages/tests-document/tests-document.component').then(
+                (m) => m.TestsDocumentComponent
+              )
+          },
+          {
+            path: 'constats',
+            loadComponent: () =>
+              import('./features/audit-file/pages/constats-document/constats-document.component').then(
+                (m) => m.ConstatsDocumentComponent
+              )
+          },
+          {
+            path: 'pv-affirmation',
+            loadComponent: () =>
+              import('./features/audit-file/pages/pv-affirmation-document/pv-affirmation-document.component').then(
+                (m) => m.PvAffirmationDocumentComponent
+              )
           }
         ]
       },

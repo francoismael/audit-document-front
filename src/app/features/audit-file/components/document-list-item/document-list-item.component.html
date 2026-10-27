@@ -1,0 +1,13 @@
+<button class="document-list-item-select" type="button" (click)="chosen.emit()">
+  <span class="document-list-item-title">{{ title() }}</span>
+  @if (subtitle()) {
+    <span class="document-list-item-subtitle">{{ subtitle() }}</span>
+  }
+  @if (state()) {
+    <span class="document-list-item-state" [class.document-list-item-state-done]="stateDone()">{{ state() }}</span>
+  }
+</button>
+
+<div class="document-list-item-actions">
+  <ng-content />
+</div>

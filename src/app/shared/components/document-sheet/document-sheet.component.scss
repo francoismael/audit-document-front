@@ -31,6 +31,21 @@
     -webkit-box-decoration-break: clone;
     box-decoration-break: clone;
   }
+
+  &.document-sheet-landscape {
+    max-width: 297mm;
+
+    // On screen a wide table scrolls inside the sheet instead of being squeezed.
+    @media screen {
+      min-height: 210mm;
+      overflow-x: auto;
+    }
+
+    // The landscape page itself is chosen in _print.scss.
+    @media print {
+      max-width: none;
+    }
+  }
 }
 
 // Logo and name of the Ministry, centered at the top of every document.

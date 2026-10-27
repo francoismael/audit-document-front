@@ -1,0 +1,60 @@
+@use 'variables' as *;
+
+:host {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  border-radius: $radius-md;
+  padding: $space-2;
+}
+
+:host(.document-list-item-selected) {
+  background-color: $color-info-light;
+}
+
+.document-list-item-select {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  border: none;
+  padding: $space-1;
+  background: none;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.document-list-item-title {
+  color: $color-text;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.document-list-item-subtitle {
+  color: $color-text-muted;
+  font-size: 0.8rem;
+}
+
+.document-list-item-state {
+  align-self: flex-start;
+  margin-top: $space-1;
+  border-radius: $radius-sm;
+  padding: 1px $space-2;
+  background-color: $color-light-gray;
+  color: $color-text-muted;
+  font-size: 0.75rem;
+  font-weight: 600;
+
+  &.document-list-item-state-done {
+    background-color: $color-success-light;
+    color: $color-green;
+  }
+}
+
+.document-list-item-actions {
+  display: flex;
+  flex-shrink: 0;
+  gap: $space-1;
+}

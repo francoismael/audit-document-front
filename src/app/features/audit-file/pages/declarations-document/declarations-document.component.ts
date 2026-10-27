@@ -12,6 +12,8 @@ import { ModalComponent } from '../../../../shared/components/modal/modal.compon
 import { MISSION_ROLE_LABELS } from '../../../missions/models/mission-labels';
 import { MissionPersonne } from '../../../missions/models/mission-personne.model';
 import { DeclarationFormModalComponent } from '../../components/declaration-form-modal/declaration-form-modal.component';
+import { DocumentListItemComponent } from '../../components/document-list-item/document-list-item.component';
+import { DocumentSplitComponent } from '../../components/document-split/document-split.component';
 import { DeclarationIndependance } from '../../models/declaration-independance.model';
 import { AuditFileStore } from '../../services/audit-file.store';
 import { DeclarationIndependanceService } from '../../services/declaration-independance.service';
@@ -28,7 +30,9 @@ interface Declarant {
     ButtonComponent,
     DatePipe,
     DeclarationFormModalComponent,
+    DocumentListItemComponent,
     DocumentSheetComponent,
+    DocumentSplitComponent,
     DocumentToolbarComponent,
     EmptyStateComponent,
     IconButtonComponent,

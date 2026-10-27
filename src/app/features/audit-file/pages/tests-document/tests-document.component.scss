@@ -1,0 +1,8 @@
+@use 'variables' as *;
+@use 'document-form';
+
+@include document-form.styles;
+
+.test-header td {
+  width: 33%;
+}

@@ -1,0 +1,31 @@
+@use 'variables' as *;
+@use 'document-form';
+
+@include document-form.styles;
+
+// Model n°01: 7 columns on a landscape page.
+.constats-table {
+  font-size: 9.5pt;
+  line-height: 1.35;
+
+  th {
+    background-color: $color-light-gray;
+    text-transform: uppercase;
+    font-size: 8.5pt;
+  }
+
+  @media print {
+    th {
+      background-color: transparent;
+    }
+  }
+}
+
+.constats-objective td {
+  font-weight: 700;
+}
+
+// Model n°02: the headings in a first column.
+.constat-sheet th {
+  width: 30%;
+}

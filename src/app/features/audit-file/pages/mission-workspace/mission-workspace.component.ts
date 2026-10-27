@@ -57,14 +57,27 @@ export class MissionWorkspaceComponent {
       case 'tdr':
         return this.store.tdr() ? { state: 'done', hint: '' } : { state: 'todo', hint: '' };
       // Done as soon as one auditor has declared; the others may still add theirs.
-      case 'declarations': {
-        const count = this.store.declarations().length;
-        return { state: count > 0 ? 'done' : 'todo', hint: count > 0 ? String(count) : '' };
-      }
+      case 'declarations':
+        return countState(this.store.declarations().length);
       case 'pv-ouverture':
         return this.store.openingReunion() ? { state: 'done', hint: '' } : { state: 'todo', hint: '' };
+      case 'interviews':
+        return countState(this.store.interviews().length);
+      case 'programme':
+        return countState(this.store.programme()?.lignes.length ?? 0);
+      case 'tests':
+        return countState(this.store.tests().length);
+      case 'constats':
+        return countState(this.store.constats().length);
+      case 'pv-affirmation':
+        return this.store.pvAffirmation() ? { state: 'done', hint: '' } : { state: 'todo', hint: '' };
       default:
         return { state: 'todo', hint: '' };
     }
   }
+}
+
+// Documents made of several items (interviews, programme lines, tests, constats): done with one, the hint gives how many.
+function countState(count: number): Pick<NavigationItem, 'state' | 'hint'> {
+  return { state: count > 0 ? 'done' : 'todo', hint: count > 0 ? String(count) : '' };
 }

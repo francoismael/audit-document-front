@@ -120,7 +120,7 @@ describe('MissionDetailComponent', () => {
     expect(items[0]).toContain('Rempli');
     expect(items[1]).toContain('Rempli');
     expect(items[2]).toContain('Disponible');
-    expect(items[4]).toContain('À venir');
+    expect(items[11]).toContain('À venir');
     expect(items[6]).toContain('À remplir');
   });
 

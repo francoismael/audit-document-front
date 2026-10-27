@@ -50,7 +50,7 @@ describe('DeclarationsDocumentComponent', () => {
   });
 
   it('should list each member of the audit team once, without the point focal', () => {
-    const names = Array.from(element.querySelectorAll('.declarations-name')).map((name) => name.textContent?.trim());
+    const names = Array.from(element.querySelectorAll('.document-list-item-title')).map((name) => name.textContent?.trim());
 
     expect(names).toEqual(['Rakoto Jean', 'Rabe Aina', 'Rasoa Lova', 'Randria Hery']);
     expect(element.textContent).toContain('1 déclaration(s) établie(s)');

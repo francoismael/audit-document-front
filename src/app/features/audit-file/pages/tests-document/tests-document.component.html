@@ -1,0 +1,295 @@
+@if (mission(); as mission) {
+  @if (editing()) {
+    <app-document-toolbar
+      [title]="toolbarTitle()"
+      description="Le test porte sur une ligne du programme. La référence du test et celles des échantillons sont attribuées à l'enregistrement."
+      [printable]="false"
+    >
+      <app-button variant="outline" [disabled]="saving()" (clicked)="cancelEditing()">Annuler</app-button>
+      <app-button [disabled]="saving()" (clicked)="save()">{{ saving() ? 'Enregistrement...' : 'Enregistrer' }}</app-button>
+    </app-document-toolbar>
+
+    <form class="file-form" (submit)="$event.preventDefault()">
+      <section class="file-form-section">
+        <h3>Contrôle testé</h3>
+        <div class="file-form-grid">
+          <app-select-field
+            [id]="'test-ligne'"
+            [config]="{
+              label: 'Ligne du programme',
+              placeholder: 'Choisir le contrôle',
+              options: ligneOptions(),
+              required: true,
+              errorMessage: ligneError() ?? undefined
+            }"
+            [value]="draft().ligneProgrammeId"
+            [invalid]="ligneError() !== null"
+            (valueChange)="updateField('ligneProgrammeId', $event)"
+          />
+          <app-form-field
+            [id]="'test-date'"
+            [config]="{ label: 'Date du test', type: 'date' }"
+            [value]="draft().dateTest"
+            (valueChange)="updateField('dateTest', $event)"
+          />
+        </div>
+        <app-textarea-field
+          [id]="'test-procedure'"
+          [config]="{ label: 'Procédure réalisée', rows: 4 }"
+          [value]="draft().procedureRealisee"
+          (valueChange)="updateField('procedureRealisee', $event)"
+        />
+      </section>
+
+      <section class="file-form-section">
+        <div class="file-form-heading">
+          <h3>Échantillons ({{ echantillons().length }})</h3>
+          <app-button size="sm" variant="secondary" (clicked)="addEchantillon()">Ajouter un échantillon</app-button>
+        </div>
+
+        @for (echantillon of echantillons(); track $index; let index = $index) {
+          <div class="file-form-item">
+            <span class="file-form-number">{{ index + 1 }}</span>
+            <div class="file-form-item-fields">
+              <app-checkbox-field
+                [id]="'test-anomalie-' + index"
+                [config]="{ label: 'Anomalie détectée' }"
+                [checked]="echantillon.anomalieDetectee"
+                (valueChange)="updateEchantillon(index, { anomalieDetectee: $event })"
+              />
+              <app-textarea-field
+                [id]="'test-observation-' + index"
+                [config]="{ label: 'Observation', rows: 2 }"
+                [value]="echantillon.observation"
+                (valueChange)="updateEchantillon(index, { observation: $event })"
+              />
+            </div>
+            <app-icon-button icon="delete" variant="danger" label="Retirer l'échantillon" (clicked)="removeEchantillon(index)" />
+          </div>
+        } @empty {
+          <p class="file-form-hint">Aucun échantillon.</p>
+        }
+      </section>
+
+      <section class="file-form-section">
+        <h3>Résultat</h3>
+        <app-textarea-field
+          [id]="'test-anomalies'"
+          [config]="{ label: 'Résumé des anomalies', rows: 3 }"
+          [value]="draft().resumeAnomalies"
+          (valueChange)="updateField('resumeAnomalies', $event)"
+        />
+        <div class="file-form-grid">
+          <app-select-field
+            [id]="'test-resultat'"
+            [config]="{ label: 'Résultat du test', placeholder: 'Non renseigné', options: resultOptions, allowEmpty: true }"
+            [value]="draft().resultatTest"
+            (valueChange)="updateField('resultatTest', $event)"
+          />
+          <app-checkbox-field
+            [id]="'test-risque-maitrise'"
+            [config]="{ label: 'Risque maîtrisé', description: 'Le contrôle couvre le risque identifié.' }"
+            [checked]="risqueMaitrise()"
+            (valueChange)="risqueMaitrise.set($event)"
+          />
+        </div>
+        <app-textarea-field
+          [id]="'test-recommandations'"
+          [config]="{ label: 'Recommandations', rows: 3 }"
+          [value]="draft().recommandations"
+          (valueChange)="updateField('recommandations', $event)"
+        />
+      </section>
+
+      <section class="file-form-section">
+        <h3>Contrôle qualité</h3>
+        <div class="file-form-grid">
+          <app-select-field
+            [id]="'test-auditeur'"
+            [config]="{ label: 'Auditeur', placeholder: 'Non renseigné', options: auditeurOptions(), allowEmpty: true }"
+            [value]="draft().auditeurMissionPersonneId"
+            (valueChange)="updateField('auditeurMissionPersonneId', $event)"
+          />
+          <app-form-field
+            [id]="'test-date-audit'"
+            [config]="{ label: 'Date de l\'audit', type: 'date' }"
+            [value]="draft().dateAudit"
+            (valueChange)="updateField('dateAudit', $event)"
+          />
+          <app-select-field
+            [id]="'test-chef'"
+            [config]="{ label: 'Chef de mission', placeholder: 'Non renseigné', options: chefOptions(), allowEmpty: true }"
+            [value]="draft().chefMissionMissionPersonneId"
+            (valueChange)="updateField('chefMissionMissionPersonneId', $event)"
+          />
+          <app-form-field
+            [id]="'test-date-chef'"
+            [config]="{ label: 'Date de revue du chef de mission', type: 'date' }"
+            [value]="draft().dateRevueChefMission"
+            (valueChange)="updateField('dateRevueChefMission', $event)"
+          />
+          <app-select-field
+            [id]="'test-superviseur'"
+            [config]="{ label: 'Superviseur', placeholder: 'Non renseigné', options: superviseurOptions(), allowEmpty: true }"
+            [value]="draft().superviseurMissionPersonneId"
+            (valueChange)="updateField('superviseurMissionPersonneId', $event)"
+          />
+          <app-form-field
+            [id]="'test-date-superviseur'"
+            [config]="{ label: 'Date de revue du superviseur', type: 'date' }"
+            [value]="draft().dateRevueSuperviseur"
+            (valueChange)="updateField('dateRevueSuperviseur', $event)"
+          />
+        </div>
+        <app-textarea-field
+          [id]="'test-commentaires-chef'"
+          [config]="{ label: 'Commentaires du chef de mission', rows: 2 }"
+          [value]="draft().commentairesChefMission"
+          (valueChange)="updateField('commentairesChefMission', $event)"
+        />
+        <app-textarea-field
+          [id]="'test-commentaires-superviseur'"
+          [config]="{ label: 'Commentaires du superviseur', rows: 2 }"
+          [value]="draft().commentairesSuperviseur"
+          (valueChange)="updateField('commentairesSuperviseur', $event)"
+        />
+      </section>
+    </form>
+  } @else if (lignes().length === 0 && tests().length === 0) {
+    <app-document-toolbar title="Fiches de test" [printable]="false" />
+    <div class="file-form-notice">
+      <p>Chaque test porte sur une ligne du programme de travail : établissez d'abord le programme.</p>
+      <app-button size="sm" variant="outline" (clicked)="openProgramme()">Aller au programme de travail</app-button>
+    </div>
+  } @else {
+    <app-document-toolbar title="Fiches de test" [description]="tests().length + ' fiche(s) de test'" [printable]="selected() !== null">
+      <app-button (clicked)="startCreating()">Nouveau test</app-button>
+    </app-document-toolbar>
+
+    @if (tests().length === 0) {
+      <app-empty-state
+        icon="document"
+        title="Aucune fiche de test"
+        description="Testez les contrôles du programme : procédure réalisée, échantillons, résultat et contrôle qualité."
+        actionLabel="Nouveau test"
+        (action)="startCreating()"
+      />
+    } @else {
+      <app-document-split>
+        @for (test of tests(); track test.id) {
+          <li
+            app-document-list-item
+            split-list
+            [title]="test.reference + ' — contrôle ' + test.numeroControle"
+            [subtitle]="test.tacheOperation ?? test.objectifDescription"
+            [state]="resultLabel(test.resultatTest)"
+            [stateDone]="test.resultatTest === 'EFFECTIF'"
+            [selected]="test.id === selectedId()"
+            (chosen)="select(test)"
+          >
+            <app-icon-button icon="edit" label="Modifier" (clicked)="startEditing(test)" />
+            <app-icon-button icon="delete" variant="danger" label="Supprimer" (clicked)="testToDelete.set(test)" />
+          </li>
+        }
+
+        @if (selected(); as test) {
+          <app-document-sheet>
+            <table class="test-header">
+              <tbody>
+                <tr>
+                  <td><strong>DAI</strong></td>
+                  <td>Audit de {{ mission.intitule }}</td>
+                  <td><strong>Référence :</strong> {{ test.reference }}</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <h1>Fiche de test</h1>
+
+            <h2>Contrôle testé</h2>
+            <p class="document-info"><strong>Objectif :</strong> {{ test.objectifNumero }} — {{ test.objectifDescription }}</p>
+            <p class="document-info"><strong>Contrôle n° :</strong> {{ test.numeroControle }}</p>
+            <p class="document-info"><strong>Tâche / opération :</strong> {{ test.tacheOperation || '—' }}</p>
+            <p class="document-info"><strong>Faiblesse à confirmer :</strong> {{ test.faiblesseAConfirmer || '—' }}</p>
+            <p class="document-info"><strong>Risque :</strong> {{ test.risque || '—' }}</p>
+            <p class="document-info"><strong>Domaine / cycle :</strong> {{ test.domaineCycle || '—' }}</p>
+            <p class="document-info"><strong>Responsable :</strong> {{ test.responsable || '—' }} · <strong>Fréquence :</strong> {{ test.frequence || '—' }} · <strong>Type :</strong> {{ test.typeControle || '—' }}</p>
+            <p class="document-info"><strong>Procédure de test prévue :</strong> {{ test.procedureTest || '—' }}</p>
+            <p class="document-info"><strong>Échantillon :</strong> {{ test.echantillonDescription || '—' }} ({{ test.techniqueEchantillonnage || 'technique non précisée' }})</p>
+
+            <h2>Travaux réalisés</h2>
+            <p class="document-info"><strong>Date du test :</strong> {{ (test.dateTest | date: 'dd/MM/yyyy') ?? '……………' }}</p>
+            <p class="document-text">{{ test.procedureRealisee || '[Procédure réalisée à compléter]' }}</p>
+
+            <table>
+              <thead>
+                <tr><th>Réf.</th><th>Anomalie détectée</th><th>Observation</th></tr>
+              </thead>
+              <tbody>
+                @for (echantillon of test.echantillons; track echantillon.id) {
+                  <tr>
+                    <td>{{ echantillon.reference }}</td>
+                    <td>{{ echantillon.anomalieDetectee ? 'Oui' : 'Non' }}</td>
+                    <td class="document-text">{{ echantillon.observation || '' }}</td>
+                  </tr>
+                } @empty {
+                  <tr><td colspan="3">[Aucun échantillon]</td></tr>
+                }
+              </tbody>
+            </table>
+
+            <h2>Résultat</h2>
+            <p class="document-info"><strong>Résumé des anomalies :</strong></p>
+            <p class="document-text">{{ test.resumeAnomalies || '—' }}</p>
+            <p class="document-info"><strong>Résultat du test :</strong> {{ resultLabel(test.resultatTest) }}</p>
+            <p class="document-info"><strong>Risque maîtrisé :</strong> {{ test.risqueMaitrise ? 'Oui' : 'Non' }}</p>
+            <p class="document-info"><strong>Recommandations :</strong></p>
+            <p class="document-text">{{ test.recommandations || '—' }}</p>
+
+            <h2>Contrôle qualité</h2>
+            <table>
+              <thead>
+                <tr><th>Visa</th><th>Nom</th><th>Date</th><th>Commentaires</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Auditeur</td>
+                  <td>{{ personName(test.auditeurNom, test.auditeurPrenom) }}</td>
+                  <td>{{ (test.dateAudit | date: 'dd/MM/yyyy') ?? '……' }}</td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td>Chef de mission</td>
+                  <td>{{ personName(test.chefMissionNom, test.chefMissionPrenom) }}</td>
+                  <td>{{ (test.dateRevueChefMission | date: 'dd/MM/yyyy') ?? '……' }}</td>
+                  <td class="document-text">{{ test.commentairesChefMission || '' }}</td>
+                </tr>
+                <tr>
+                  <td>Superviseur</td>
+                  <td>{{ personName(test.superviseurNom, test.superviseurPrenom) }}</td>
+                  <td>{{ (test.dateRevueSuperviseur | date: 'dd/MM/yyyy') ?? '……' }}</td>
+                  <td class="document-text">{{ test.commentairesSuperviseur || '' }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </app-document-sheet>
+        }
+      </app-document-split>
+    }
+
+    <app-modal
+      title="Supprimer la fiche de test"
+      confirmText="Supprimer"
+      confirmVariant="danger"
+      size="sm"
+      [description]="testToDelete()?.reference ?? ''"
+      [isOpen]="testToDelete() !== null"
+      [loading]="deleting()"
+      (confirmed)="confirmDeletion()"
+      (cancelled)="testToDelete.set(null)"
+    >
+      <p>La fiche et ses échantillons seront supprimés. <strong>Cette action est définitive.</strong></p>
+      <p class="file-form-hint">Impossible tant que des constats portent sur ce test.</p>
+    </app-modal>
+  }
+}
