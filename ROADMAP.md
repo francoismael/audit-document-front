@@ -416,22 +416,29 @@ Règles communes à ces 11 étapes :
 
 #### Étape 20 — Rapport d'audit
 
-- [ ] API : `/rapports` (`POST`, `GET /mission/{missionId}`, `PUT /{id}`). Un seul rapport par mission, pas de suppression.
-- [ ] Champs : motifs, nature, version, date d'émission, propriétaire, destinataires, classification. Le titre et la référence de l'ordre de mission viennent de la mission.
+- [x] API : `/rapports` (`POST`, `GET /mission/{missionId}`, `PUT /{id}`). Un seul rapport par mission, pas de suppression (`GET` renvoie 404 tant qu'il n'y en a pas, traité comme « pas encore de rapport »).
+- [x] Champs : motifs, nature, version (`provisoire` / `definitif`), date d'émission (aujourd'hui par défaut), propriétaire (« Direction de l'Audit Interne » par défaut), destinataires (un par ligne, « Autorités Supérieures » + structure auditée par défaut), classification (les 3 de `Document.docx`). Le titre et la référence de l'ordre de mission viennent de la mission.
+- [x] Aperçu : page de garde de `Document.docx` (titre, « (OM : N° 005-2026-MEF/DAI) », « Rapport provisoire / définitif », tableau Motifs | Nature sur fond bleu, référence, version, date, propriétaire, destinataires sur plusieurs lignes, classification cochée ☒ / ☐). Référence de l'OM partagée avec l'ordre de mission (`ordreMissionReference()`).
+- [x] Backend : titre « RAPPORT D'AUDIT SUR null » quand la mission n'a pas d'objet → l'intitulé est utilisé (back et spring).
 - **Validation :** créer puis modifier le rapport de la mission.
 
 #### Étape 21 — PV de réunion de clôture
 
-- [ ] API : `/reunions` avec `type: CLOTURE` (une seule par mission). Réutilise au maximum l'écran de l'étape 14.
-- [ ] Champs : date, heures, heure de levée, lieu, remerciements, rappel du périmètre, synthèse des constats, points forts, résultats des vérifications, recommandations et plans d'actions, observations des interlocuteurs.
+- [x] API : `/reunions` avec `type: CLOTURE` (une seule par mission). `ReunionService.getByMission()` lit les deux réunions de la mission en un seul appel.
+- [x] Réutilisation de l'étape 14 : composants `app-reunion-attendees` (cases à cocher des présents) et `app-reunion-sheet` (feuille du PV : date, objet, horaires, présents, « La séance a été levée à … », secrétaire ; les points abordés sont projetés), fonctions `participantIds()`, `toParticipantRequests()`, `formatReunionTime()` dans `reunion.model.ts`. Le PV d'ouverture utilise maintenant ces briques et le mixin `document-form`.
+- [x] Champs : date (obligatoire), heures, heure de levée, lieu, remerciements, rappel du périmètre, synthèse des constats, points forts, résultats des vérifications, recommandations et plans d'actions, observations des interlocuteurs. Préremplis à partir du dossier : périmètre du TDR, constats, résumé des tests par résultat, recommandations retenues.
 - **Validation :** créer le PV de clôture, le modifier et le supprimer.
 
 #### Étape 22 — Tableau des recommandations
 
-- [ ] API : `GET /tableau-recommandations/mission/{missionId}`, `/reponses` (`POST`, `PUT /{id}`, `DELETE /{id}`, `GET /recommandation/{id}`) et `PUT /recommandations/{id}/maintien`. Dépend des constats (étape 18).
-- [ ] Tableau : anomalies constatées, recommandations retenues, réponses de l'entité, recommandation maintenue ou non.
-- [ ] Actions : saisir ou modifier la réponse de l'entité, puis décider du maintien (possible seulement après une réponse).
+- [x] API : `GET /tableau-recommandations/mission/{missionId}`, `/reponses` (`POST`, `PUT /{id}`, `DELETE /{id}`) et `PUT /recommandations/{id}/maintien`. Dépend des constats (étape 18). Le tableau est relu à l'ouverture de la page (les constats ont pu changer).
+- [x] Tableau (aperçu fidèle à `Document.docx`) : « Mission d'audit », « Entité auditée », anomalies constatées (avec la référence du constat), recommandations retenues, réponses de l'entité (avec leur date), recommandation maintenue (Oui / Non).
+- [x] Saisie en pleine largeur : une fiche par recommandation retenue (rappel de l'anomalie et de la recommandation, réponse, date, maintien). Une seule réponse par recommandation côté interface (la dernière, comme le tableau du backend). Enregistrement ligne par ligne, réponse puis décision, puis relecture du tableau ; vider une réponse la supprime et efface la décision ; le maintien est grisé tant qu'il n'y a pas de réponse.
+- [x] Menu : terminé quand chaque recommandation retenue a sa décision ; le nombre de recommandations est affiché.
+- [x] Backend : supprimer la dernière réponse d'une recommandation efface la décision de maintien (back et spring). Les réponses sont supprimées avec leur recommandation par la base (`ON DELETE CASCADE`).
 - **Validation :** répondre à une recommandation retenue, puis décider de son maintien.
+
+- **Résultat (étapes 20 à 22) :** build OK, 200 tests unitaires OK, back et spring compilent. **Reste à faire :** validation dans le navigateur sur le vrai backend (redémarrer le backend pour prendre les deux corrections).
 
 ### Étape 23 — Tableau de bord (`/dashboard`)
 
@@ -525,3 +532,5 @@ Règles communes à ces 11 étapes :
 | 23/10/2026 | Backend | Correction | Création de mission : le numéro venant de la séquence `mission_numero_seq` pouvait déjà exister (numéros saisis à la main, ex. 007) et la création échouait ; les numéros déjà pris sont maintenant sautés (back et spring) |
 | 26/10/2026 | Étapes 15 à 19 | Fait | Fiches d'interview, programme de travail (paysage), fiches de test, fiches de constats (modèles 01 et 02), PV d'affirmation des constats, dans l'espace de travail de la mission. Backend : contrôles des interviews (back et spring) |
 | 26/10/2026 | Étape 15 | Ajustement | Fiche d'interview : date de chaque visa (rédigé, supervisé, validé le) saisie sous la personne et affichée dans le tableau des visas ; date de rédaction = aujourd'hui par défaut. Colonnes `date_redaction`, `date_supervision`, `date_validation` (back et spring) |
+| 27/10/2026 | Étapes 20 à 22 | Fait (tests unitaires) | Rapport d'audit (page de garde), PV de réunion de clôture (briques partagées avec le PV d'ouverture), tableau des recommandations (réponses et maintien). Les 12 documents du dossier sont disponibles. Backend (back et spring) : titre du rapport sans objet, décision effacée avec la dernière réponse. Validation navigateur à faire |
+| 27/10/2026 | Interface | Ajustement | Barres de défilement verticales masquées dans tout le projet, remplacées par `app-scroll-navigator` (bouton rond : ↓ en haut, ↑ et ↓ au milieu, ↑ en bas) sur le contenu principal, le tiroir et les fenêtres ; barres horizontales gardées fines pour les tableaux larges |

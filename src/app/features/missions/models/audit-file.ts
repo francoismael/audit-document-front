@@ -23,9 +23,9 @@ export const AUDIT_FILE_DOCUMENTS: AuditFileDocument[] = [
   { label: 'Fiches de test', step: 17, progressFlag: 'tests', slug: 'tests' },
   { label: 'Fiches de constats', step: 18, progressFlag: 'constats', slug: 'constats' },
   { label: "PV d'affirmation des constats", step: 19, progressFlag: 'pvAffirmation', slug: 'pv-affirmation' },
-  { label: "Rapport d'audit", step: 20, progressFlag: 'rapport', slug: null },
-  { label: 'PV de réunion de clôture', step: 21, progressFlag: 'pvCloture', slug: null },
-  { label: 'Tableau des recommandations', step: 22, progressFlag: null, slug: null }
+  { label: "Rapport d'audit", step: 20, progressFlag: 'rapport', slug: 'rapport' },
+  { label: 'PV de réunion de clôture', step: 21, progressFlag: 'pvCloture', slug: 'pv-cloture' },
+  { label: 'Tableau des recommandations', step: 22, progressFlag: null, slug: 'recommandations' }
 ];
 
 export type AuditFileStatus = 'done' | 'todo' | 'unknown';

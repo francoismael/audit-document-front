@@ -2,6 +2,9 @@ import { Mission } from '../../missions/models/mission.model';
 import { AuditTest } from '../models/audit-test.model';
 import { Constat } from '../models/constat.model';
 import { ProgrammeTravail } from '../models/programme-travail.model';
+import { RapportAudit } from '../models/rapport-audit.model';
+import { Reunion } from '../models/reunion.model';
+import { TableauRecommandations } from '../models/tableau-recommandations.model';
 import { Tdr } from '../models/tdr.model';
 
 // Mission shared by the tests of the workspace: a full team, with one point focal.
@@ -157,5 +160,88 @@ export const TEST_CONSTAT: Constat = {
   recommandations: [
     { id: 4, description: 'Installer un antivirus.', retenue: true, maintenue: null },
     { id: 5, description: 'Former les agents.', retenue: false, maintenue: null }
+  ]
+};
+
+export const TEST_CLOSING_REUNION: Reunion = {
+  id: 41,
+  missionId: 10,
+  missionNumero: '005',
+  missionIntitule: TEST_MISSION.intitule,
+  type: 'CLOTURE',
+  dateReunion: '2026-12-15',
+  heureDebut: '09:00:00',
+  heureFin: '11:00:00',
+  heureLevee: '11:00:00',
+  lieu: 'Salle de réunion de la DRH',
+  observations: null,
+  pointsDaiIntroduction: null,
+  pointsDaiPresentationMission: null,
+  pointsDaiMethodologie: null,
+  pointsInterlocuteursIntroduction: null,
+  pointsInterlocuteursProcessus: null,
+  pointsInterlocuteursOrganisation: null,
+  remerciements: 'Remerciements à la DRH.',
+  rappelPerimetre: 'Gestion financière 2025.',
+  syntheseConstats: 'CST-001 : Les ordinateurs ne sont pas protégés.',
+  pointsFortsIdentifies: 'Équipe disponible.',
+  resumeResultatsVerification: null,
+  resumeRecommandationsPlansActions: 'Installer un antivirus.',
+  observationsCommentaires: 'La DRH accepte les recommandations.',
+  participants: [
+    { id: 1, personneId: 5, nom: 'Ravelo', prenom: 'Tiana', matricule: null, fonction: 'Directeur des RH', service: 'DRH', role: 'POINT_FOCAL', typeParticipant: 'ENTITE_AUDITEE' },
+    { id: 2, personneId: 2, nom: 'Rabe', prenom: 'Aina', matricule: null, fonction: 'Chef de service', service: 'DAI', role: 'CHEF_MISSION', typeParticipant: 'EQUIPE_DAI' }
+  ]
+};
+
+export const TEST_RAPPORT: RapportAudit = {
+  rapportId: 80,
+  missionId: 10,
+  missionNumero: '005',
+  missionIntitule: TEST_MISSION.intitule,
+  missionObjet: TEST_MISSION.objet,
+  missionDateSignature: '2026-10-30',
+  structureId: 3,
+  structureNom: 'Direction des Ressources Humaines',
+  titre: 'RAPPORT D’AUDIT SUR Contrôle des procédures comptables.',
+  motifs: 'Programme annuel de la DAI.',
+  nature: 'Audit de conformité',
+  referenceOm: '005',
+  dateOm: '2026-10-30',
+  versionRapport: 'definitif',
+  dateEmission: '2026-12-20',
+  proprietaireDocument: 'Direction de l’Audit Interne',
+  destinataires: 'Autorités Supérieures\nDirection des Ressources Humaines',
+  classification: 'Non public'
+};
+
+export const TEST_TABLEAU: TableauRecommandations = {
+  missionId: 10,
+  missionIntitule: TEST_MISSION.intitule,
+  structureId: 3,
+  structureNom: 'Direction des Ressources Humaines',
+  lignes: [
+    {
+      constatId: 60,
+      constatReference: 'CST-001',
+      anomalie: 'Les ordinateurs ne sont pas protégés.',
+      recommandationId: 4,
+      recommandation: 'Installer un antivirus.',
+      reponseId: null,
+      reponse: null,
+      dateReponse: null,
+      recommandationMaintenue: null
+    },
+    {
+      constatId: 62,
+      constatReference: 'CST-002',
+      anomalie: 'Pas de sauvegarde.',
+      recommandationId: 9,
+      recommandation: 'Sauvegarder chaque semaine.',
+      reponseId: 90,
+      reponse: 'Sauvegarde mise en place.',
+      dateReponse: '2026-12-10',
+      recommandationMaintenue: false
+    }
   ]
 };

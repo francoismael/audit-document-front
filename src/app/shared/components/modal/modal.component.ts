@@ -2,6 +2,7 @@ import { Component, DestroyRef, effect, inject, input, output } from '@angular/c
 
 import { ButtonComponent } from '../button/button.component';
 import { IconButtonComponent } from '../icon-button/icon-button.component';
+import { ScrollNavigatorComponent } from '../scroll-navigator/scroll-navigator.component';
 import { ModalSize, ModalVariant } from './modal.interface';
 
 // Open modals, the most recent last: Escape only closes the one on top (a quick creation over a form).
@@ -10,7 +11,7 @@ const openModals: ModalComponent[] = [];
 @Component({
   selector: 'app-modal',
   standalone: true,
-  imports: [ButtonComponent, IconButtonComponent],
+  imports: [ButtonComponent, IconButtonComponent, ScrollNavigatorComponent],
   templateUrl: './modal.component.html',
   styleUrl: './modal.component.scss',
   host: {

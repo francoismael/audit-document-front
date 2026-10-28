@@ -11,7 +11,9 @@ import { DeclarationIndependance } from '../models/declaration-independance.mode
 import { Interview } from '../models/interview.model';
 import { ProgrammeTravail } from '../models/programme-travail.model';
 import { PvAffirmation } from '../models/pv-affirmation.model';
+import { RapportAudit } from '../models/rapport-audit.model';
 import { Reunion } from '../models/reunion.model';
+import { TableauRecommandations } from '../models/tableau-recommandations.model';
 import { Tdr } from '../models/tdr.model';
 import { AuditTestService } from './audit-test.service';
 import { ConstatService } from './constat.service';
@@ -19,7 +21,9 @@ import { DeclarationIndependanceService } from './declaration-independance.servi
 import { InterviewService } from './interview.service';
 import { ProgrammeTravailService } from './programme-travail.service';
 import { PvAffirmationService } from './pv-affirmation.service';
+import { RapportAuditService } from './rapport-audit.service';
 import { ReunionService } from './reunion.service';
+import { TableauRecommandationsService } from './tableau-recommandations.service';
 import { TdrService } from './tdr.service';
 
 interface AuditFileDocuments {
@@ -32,6 +36,9 @@ interface AuditFileDocuments {
   tests: AuditTest[];
   constats: Constat[];
   pvAffirmation: PvAffirmation | null;
+  rapport: RapportAudit | null;
+  closingReunion: Reunion | null;
+  tableauRecommandations: TableauRecommandations | null;
 }
 
 /*
@@ -49,6 +56,8 @@ export class AuditFileStore {
   private readonly testService = inject(AuditTestService);
   private readonly constatService = inject(ConstatService);
   private readonly pvAffirmationService = inject(PvAffirmationService);
+  private readonly rapportService = inject(RapportAuditService);
+  private readonly tableauService = inject(TableauRecommandationsService);
 
   readonly mission = signal<Mission | null>(null);
   readonly tdr = signal<Tdr | null>(null);
@@ -59,6 +68,9 @@ export class AuditFileStore {
   readonly tests = signal<AuditTest[]>([]);
   readonly constats = signal<Constat[]>([]);
   readonly pvAffirmation = signal<PvAffirmation | null>(null);
+  readonly rapport = signal<RapportAudit | null>(null);
+  readonly closingReunion = signal<Reunion | null>(null);
+  readonly tableauRecommandations = signal<TableauRecommandations | null>(null);
   readonly loading = signal<boolean>(true);
   readonly errorMessage = signal<string | null>(null);
 
@@ -99,6 +111,9 @@ export class AuditFileStore {
           this.tests.set(result.tests);
           this.constats.set(result.constats);
           this.pvAffirmation.set(result.pvAffirmation);
+          this.rapport.set(result.rapport);
+          this.closingReunion.set(result.closingReunion);
+          this.tableauRecommandations.set(result.tableauRecommandations);
         }
 
         this.loading.set(false);
@@ -114,19 +129,30 @@ export class AuditFileStore {
     return forkJoin({
       tdr: this.tdrService.getByMission(mission.id),
       declarations: this.declarationService.getByMission(mission.id),
-      openingReunion: this.reunionService.getByMission(mission.id, 'OUVERTURE'),
+      reunions: this.reunionService.getByMission(mission.id),
       interviews: this.interviewService.getByMission(mission.id),
       programme: this.programmeService.getByMission(mission.id),
-      pvAffirmation: this.pvAffirmationService.getByMission(mission.id)
+      pvAffirmation: this.pvAffirmationService.getByMission(mission.id),
+      rapport: this.rapportService.getByMission(mission.id),
+      tableauRecommandations: this.tableauService.getByMission(mission.id)
     }).pipe(
-      switchMap((documents) => {
+      switchMap(({ reunions, ...documents }) => {
         const lineIds = documents.programme?.lignes.map((ligne) => ligne.id) ?? [];
         const tests$ = lineIds.length > 0 ? this.testService.getByProgrammeLines(lineIds) : of([]);
 
         return tests$.pipe(
           switchMap((tests) => {
             const constats$ = tests.length > 0 ? this.constatService.getByTests(tests.map((test) => test.id)) : of([]);
-            return constats$.pipe(map((constats) => ({ ...documents, mission, tests, constats })));
+            return constats$.pipe(
+              map((constats) => ({
+                ...documents,
+                mission,
+                openingReunion: reunions.ouverture,
+                closingReunion: reunions.cloture,
+                tests,
+                constats
+              }))
+            );
           })
         );
       })

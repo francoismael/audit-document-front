@@ -9,10 +9,10 @@
       <app-button [disabled]="saving()" (clicked)="save()">{{ saving() ? 'Enregistrement...' : 'Enregistrer' }}</app-button>
     </app-document-toolbar>
 
-    <form class="pv-form" (submit)="$event.preventDefault()">
-      <section class="pv-form-section">
+    <form class="file-form" (submit)="$event.preventDefault()">
+      <section class="file-form-section">
         <h3>Séance</h3>
-        <div class="pv-form-grid">
+        <div class="file-form-grid">
           <app-form-field
             [id]="'pv-date'"
             [config]="{ label: 'Date de la réunion', type: 'date', required: true, errorMessage: dateError() ?? undefined }"
@@ -48,43 +48,20 @@
         </div>
       </section>
 
-      <section class="pv-form-section">
+      <section class="file-form-section">
         <h3>Présents</h3>
-        <div class="pv-form-columns">
-          <div class="pv-form-group">
-            <h4>Représentants de l'entité auditée</h4>
-            @for (member of entiteMembers(); track member.personneId) {
-              <app-checkbox-field
-                [id]="'pv-entite-' + member.personneId"
-                [config]="{ label: member.nom + ' ' + member.prenom, description: member.fonction ?? roleLabels[member.roles] }"
-                [checked]="selectedEntite().has(member.personneId)"
-                (valueChange)="toggleParticipant('ENTITE_AUDITEE', member.personneId, $event)"
-              />
-            } @empty {
-              <div class="pv-form-notice">
-                <p>Aucun point focal dans l'équipe de la mission. Ajoutez les représentants de la structure auditée avec le rôle « Point focal ».</p>
-                <app-button size="sm" variant="outline" (clicked)="editMission()">Modifier la mission</app-button>
-              </div>
-            }
-          </div>
-
-          <div class="pv-form-group">
-            <h4>Équipe de la Direction de l'Audit Interne</h4>
-            @for (member of daiMembers(); track member.personneId) {
-              <app-checkbox-field
-                [id]="'pv-dai-' + member.personneId"
-                [config]="{ label: member.nom + ' ' + member.prenom, description: member.fonction ?? roleLabels[member.roles] }"
-                [checked]="selectedDai().has(member.personneId)"
-                (valueChange)="toggleParticipant('EQUIPE_DAI', member.personneId, $event)"
-              />
-            } @empty {
-              <p class="pv-form-hint">Aucun membre de la DAI dans l'équipe de la mission.</p>
-            }
-          </div>
-        </div>
+        <app-reunion-attendees
+          idPrefix="pv"
+          [entiteMembers]="entiteMembers()"
+          [daiMembers]="daiMembers()"
+          [selectedEntite]="selectedEntite()"
+          [selectedDai]="selectedDai()"
+          (toggled)="toggleParticipant($event.type, $event.personneId, $event.checked)"
+          (editMission)="editMission()"
+        />
       </section>
 
-      <section class="pv-form-section">
+      <section class="file-form-section">
         <h3>Points abordés par la DAI</h3>
         <app-textarea-field
           [id]="'pv-dai-introduction'"
@@ -106,7 +83,7 @@
         />
       </section>
 
-      <section class="pv-form-section">
+      <section class="file-form-section">
         <h3>Points abordés par les interlocuteurs</h3>
         <app-textarea-field
           [id]="'pv-interlocuteurs-introduction'"
@@ -144,35 +121,11 @@
         <app-button variant="outline" (clicked)="startEditing()">Modifier</app-button>
       </app-document-toolbar>
 
-      <app-document-sheet [reference]="'- ' + ((reunion.dateReunion | date: 'dd/MM/yyyy') ?? '……') + ' -'">
-        <h1>Procès-verbal de réunion d'ouverture</h1>
-
-        <div class="pv-header">
-          <p class="document-info"><strong>Objet :</strong> Réunion de lancement de la mission « {{ mission.intitule }} »</p>
-          <p class="document-info"><strong>Début de séance :</strong> {{ formatTime(reunion.heureDebut) }}</p>
-          <p class="document-info"><strong>Fin de séance :</strong> {{ formatTime(reunion.heureFin) }}</p>
-          <p class="document-info"><strong>Lieu :</strong> {{ reunion.lieu || '……………………' }}</p>
-        </div>
-
-        <h2>Présents</h2>
-        <h3>Représentants de l'entité auditée</h3>
-        <ul>
-          @for (participant of entiteParticipants(); track participant.id) {
-            <li>{{ describe(participant) }}</li>
-          } @empty {
-            <li>[Aucun représentant indiqué]</li>
-          }
-        </ul>
-        <h3>Équipe de la Direction de l'Audit Interne</h3>
-        <ul>
-          @for (participant of daiParticipants(); track participant.id) {
-            <li>{{ describe(participant) }}</li>
-          } @empty {
-            <li>[Aucun membre indiqué]</li>
-          }
-        </ul>
-
-        <h2>Les principaux points abordés</h2>
+      <app-reunion-sheet
+        [reunion]="reunion"
+        title="Procès-verbal de réunion d'ouverture"
+        [objet]="'Réunion de lancement de la mission « ' + mission.intitule + ' »'"
+      >
         <h3>Par la DAI</h3>
         <p><strong>Introduction :</strong></p>
         <p class="document-text">{{ reunion.pointsDaiIntroduction || '—' }}</p>
@@ -193,10 +146,7 @@
           <h3>Observations</h3>
           <p class="document-text">{{ reunion.observations }}</p>
         }
-
-        <p class="pv-closing">La séance a été levée à {{ formatTime(reunion.heureLevee) }}.</p>
-        <p class="pv-secretary">Le secrétaire de séance</p>
-      </app-document-sheet>
+      </app-reunion-sheet>
 
       <app-modal
         title="Supprimer le PV d'ouverture"

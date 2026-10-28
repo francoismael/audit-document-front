@@ -27,6 +27,13 @@ const REUNION: Reunion = {
   pointsInterlocuteursIntroduction: null,
   pointsInterlocuteursProcessus: null,
   pointsInterlocuteursOrganisation: null,
+  remerciements: null,
+  rappelPerimetre: null,
+  syntheseConstats: null,
+  pointsFortsIdentifies: null,
+  resumeResultatsVerification: null,
+  resumeRecommandationsPlansActions: null,
+  observationsCommentaires: null,
   participants: [
     { id: 1, personneId: 5, nom: 'Ravelo', prenom: 'Tiana', matricule: null, fonction: 'Directeur des RH', service: 'DRH', role: 'POINT_FOCAL', typeParticipant: 'ENTITE_AUDITEE' },
     { id: 2, personneId: 2, nom: 'Rabe', prenom: 'Aina', matricule: null, fonction: 'Chef de service', service: 'DAI', role: 'CHEF_MISSION', typeParticipant: 'EQUIPE_DAI' }

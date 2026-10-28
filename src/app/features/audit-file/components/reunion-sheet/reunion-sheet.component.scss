@@ -1,0 +1,14 @@
+@use 'variables' as *;
+
+.reunion-header {
+  margin-bottom: $space-4;
+}
+
+.reunion-closing {
+  margin-top: $space-5;
+}
+
+.reunion-secretary {
+  margin-top: $space-4;
+  text-align: right;
+}

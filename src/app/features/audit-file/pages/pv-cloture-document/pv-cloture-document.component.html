@@ -1,0 +1,172 @@
+@if (mission(); as mission) {
+  @if (editing()) {
+    <app-document-toolbar
+      [title]="reunion() ? 'Modifier le PV de réunion de clôture' : 'Rédiger le PV de réunion de clôture'"
+      description="Les points sont préremplis à partir du dossier (périmètre du TDR, constats, tests et recommandations retenues) : adaptez-les au compte rendu."
+      [printable]="false"
+    >
+      <app-button variant="outline" [disabled]="saving()" (clicked)="cancelEditing()">Annuler</app-button>
+      <app-button [disabled]="saving()" (clicked)="save()">{{ saving() ? 'Enregistrement...' : 'Enregistrer' }}</app-button>
+    </app-document-toolbar>
+
+    <form class="file-form" (submit)="$event.preventDefault()">
+      <section class="file-form-section">
+        <h3>Séance</h3>
+        <div class="file-form-grid">
+          <app-form-field
+            [id]="'pvc-date'"
+            [config]="{ label: 'Date de la réunion', type: 'date', required: true, errorMessage: dateError() ?? undefined }"
+            [value]="draft().dateReunion"
+            [invalid]="dateError() !== null"
+            (valueChange)="updateField('dateReunion', $event)"
+          />
+          <app-form-field
+            [id]="'pvc-lieu'"
+            [config]="{ label: 'Lieu', type: 'text', placeholder: 'Ex. Salle de réunion de la DRH' }"
+            [value]="draft().lieu"
+            (valueChange)="updateField('lieu', $event)"
+          />
+          <app-form-field
+            [id]="'pvc-debut'"
+            [config]="{ label: 'Début de séance', type: 'time' }"
+            [value]="draft().heureDebut"
+            (valueChange)="updateField('heureDebut', $event)"
+          />
+          <app-form-field
+            [id]="'pvc-fin'"
+            [config]="{ label: 'Fin de séance', type: 'time', errorMessage: heureFinError() ?? undefined }"
+            [value]="draft().heureFin"
+            [invalid]="heureFinError() !== null"
+            (valueChange)="updateField('heureFin', $event)"
+          />
+          <app-form-field
+            [id]="'pvc-levee'"
+            [config]="{ label: 'Séance levée à', type: 'time' }"
+            [value]="draft().heureLevee"
+            (valueChange)="updateField('heureLevee', $event)"
+          />
+        </div>
+      </section>
+
+      <section class="file-form-section">
+        <h3>Présents</h3>
+        <app-reunion-attendees
+          idPrefix="pvc"
+          [entiteMembers]="entiteMembers()"
+          [daiMembers]="daiMembers()"
+          [selectedEntite]="selectedEntite()"
+          [selectedDai]="selectedDai()"
+          (toggled)="toggleParticipant($event.type, $event.personneId, $event.checked)"
+          (editMission)="editMission()"
+        />
+      </section>
+
+      <section class="file-form-section">
+        <h3>Points abordés par la DAI</h3>
+        <app-textarea-field
+          [id]="'pvc-remerciements'"
+          [config]="{ label: 'Remerciements', rows: 2 }"
+          [value]="draft().remerciements"
+          (valueChange)="updateField('remerciements', $event)"
+        />
+        <app-textarea-field
+          [id]="'pvc-perimetre'"
+          [config]="{ label: 'Rappel du périmètre', rows: 3 }"
+          [value]="draft().rappelPerimetre"
+          (valueChange)="updateField('rappelPerimetre', $event)"
+        />
+        <app-textarea-field
+          [id]="'pvc-constats'"
+          [config]="{ label: 'Synthèse des constats', rows: 5 }"
+          [value]="draft().syntheseConstats"
+          (valueChange)="updateField('syntheseConstats', $event)"
+        />
+        <app-textarea-field
+          [id]="'pvc-points-forts'"
+          [config]="{ label: 'Points forts identifiés', rows: 3 }"
+          [value]="draft().pointsFortsIdentifies"
+          (valueChange)="updateField('pointsFortsIdentifies', $event)"
+        />
+        <app-textarea-field
+          [id]="'pvc-verification'"
+          [config]="{ label: 'Résumé des résultats des travaux de vérification', rows: 3 }"
+          [value]="draft().resumeResultatsVerification"
+          (valueChange)="updateField('resumeResultatsVerification', $event)"
+        />
+        <app-textarea-field
+          [id]="'pvc-recommandations'"
+          [config]="{ label: 'Résumé des recommandations et plans d\'actions', rows: 5 }"
+          [value]="draft().resumeRecommandationsPlansActions"
+          (valueChange)="updateField('resumeRecommandationsPlansActions', $event)"
+        />
+      </section>
+
+      <section class="file-form-section">
+        <h3>Points abordés par les interlocuteurs</h3>
+        <app-textarea-field
+          [id]="'pvc-observations'"
+          [config]="{ label: 'Observations et commentaires', rows: 4 }"
+          [value]="draft().observationsCommentaires"
+          (valueChange)="updateField('observationsCommentaires', $event)"
+        />
+      </section>
+    </form>
+  } @else if (reunion()) {
+    @if (reunion(); as reunion) {
+      <app-document-toolbar
+        title="PV de réunion de clôture"
+        [description]="reunion.participants.length + ' participant(s)'"
+      >
+        <app-button variant="outline" (clicked)="confirmingDeletion.set(true)">Supprimer</app-button>
+        <app-button variant="outline" (clicked)="startEditing()">Modifier</app-button>
+      </app-document-toolbar>
+
+      <app-reunion-sheet
+        [reunion]="reunion"
+        title="Procès-verbal de réunion de clôture"
+        objet="Restitution des résultats de la mission d'audit"
+      >
+        <h3>Par la DAI</h3>
+        <p><strong>Introduction :</strong></p>
+        <p class="document-text">{{ reunion.remerciements || '—' }}</p>
+        <p><strong>Rappel du périmètre :</strong></p>
+        <p class="document-text">{{ reunion.rappelPerimetre || '—' }}</p>
+        <p><strong>Synthèse des constats :</strong></p>
+        <p class="document-text">{{ reunion.syntheseConstats || '—' }}</p>
+        <p><strong>Points forts identifiés :</strong></p>
+        <p class="document-text">{{ reunion.pointsFortsIdentifies || '—' }}</p>
+        <p><strong>Résumé des résultats des travaux de vérification :</strong></p>
+        <p class="document-text">{{ reunion.resumeResultatsVerification || '—' }}</p>
+        <p><strong>Résumé des recommandations et plans d'actions :</strong></p>
+        <p class="document-text">{{ reunion.resumeRecommandationsPlansActions || '—' }}</p>
+
+        <h3>Par les interlocuteurs</h3>
+        <p><strong>Observations et commentaires :</strong></p>
+        <p class="document-text">{{ reunion.observationsCommentaires || '—' }}</p>
+      </app-reunion-sheet>
+
+      <app-modal
+        title="Supprimer le PV de clôture"
+        confirmText="Supprimer"
+        confirmVariant="danger"
+        size="sm"
+        [description]="'Mission n° ' + mission.numero"
+        [isOpen]="confirmingDeletion()"
+        [loading]="deleting()"
+        (confirmed)="confirmDeletion()"
+        (cancelled)="confirmingDeletion.set(false)"
+      >
+        <p>Le procès-verbal et la liste des présents seront supprimés. <strong>Cette action est définitive.</strong></p>
+      </app-modal>
+    }
+  } @else {
+    <app-document-toolbar title="PV de réunion de clôture" [printable]="false" />
+    <app-empty-state
+      icon="document"
+      title="Pas encore de PV de clôture"
+      description="Rédigez le procès-verbal de la restitution des résultats : séance, présents, synthèse des constats et recommandations."
+      actionLabel="Rédiger le PV"
+      (action)="startEditing()"
+    />
+  }
+}

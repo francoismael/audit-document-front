@@ -1,0 +1,43 @@
+@use 'variables' as *;
+@use 'document-form';
+
+@include document-form.styles;
+
+.rapport-cover {
+  margin: $space-6 0;
+  text-align: center;
+
+  h1 {
+    margin-bottom: $space-3;
+    font-size: 14pt;
+  }
+}
+
+.rapport-cover-line {
+  margin: 0 0 $space-2;
+  font-size: 14pt;
+  font-weight: 700;
+  text-align: center;
+}
+
+// Two columns as in Document.docx: label on the left, value on the right.
+.rapport-table {
+  th {
+    background-color: $color-document-shading;
+    text-align: center;
+    print-color-adjust: exact;
+  }
+
+  td {
+    text-align: center;
+  }
+
+  .rapport-label {
+    width: 33%;
+    vertical-align: middle;
+  }
+}
+
+.rapport-box {
+  margin-right: $space-1;
+}

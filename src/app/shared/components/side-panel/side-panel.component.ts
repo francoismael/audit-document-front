@@ -1,13 +1,14 @@
 import { Component, input, output, signal } from '@angular/core';
 
 import { IconButtonComponent } from '../icon-button/icon-button.component';
+import { ScrollNavigatorComponent } from '../scroll-navigator/scroll-navigator.component';
 
 // Drawer that slides in from the right, over the page, to show the detail of a list item.
 // Slots: [panel-badges] under the title, [panel-tabs] under the header, [panel-footer] for the main actions.
 @Component({
   selector: 'app-side-panel',
   standalone: true,
-  imports: [IconButtonComponent],
+  imports: [IconButtonComponent, ScrollNavigatorComponent],
   templateUrl: './side-panel.component.html',
   styleUrl: './side-panel.component.scss'
 })

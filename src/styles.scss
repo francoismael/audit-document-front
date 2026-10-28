@@ -7,6 +7,25 @@
   box-sizing: border-box;
 }
 
+// Vertical scrollbars are replaced by app-scroll-navigator (the wheel, touchpad and keyboard still scroll).
+// Horizontal ones stay, thin: wide tables have no other way to show they scroll sideways.
+::-webkit-scrollbar {
+  width: 0;
+  height: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: $radius-sm;
+  background-color: $color-border;
+}
+
+// Firefox cannot hide only the vertical scrollbar: both are kept thin.
+@supports (-moz-appearance: none) {
+  * {
+    scrollbar-width: thin;
+  }
+}
+
 body {
   margin: 0;
   font-family: $font-family;

@@ -1,0 +1,44 @@
+@use 'variables' as *;
+
+.attendees-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: $space-5;
+
+  @media (max-width: 900px) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.attendees-group {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+
+  h4 {
+    margin: 0 0 $space-2;
+    color: $color-primary;
+    font-size: 0.95rem;
+  }
+}
+
+.attendees-notice {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: $space-2;
+  border-radius: $radius-md;
+  padding: $space-3 $space-4;
+  background-color: $color-warning-light;
+
+  p {
+    margin: 0;
+    font-size: 0.9rem;
+  }
+}
+
+.attendees-hint {
+  margin: 0;
+  color: $color-text-muted;
+  font-size: 0.9rem;
+}

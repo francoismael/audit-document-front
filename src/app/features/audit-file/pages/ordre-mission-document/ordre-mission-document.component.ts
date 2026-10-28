@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { ButtonComponent } from '../../../../shared/components/button/button.component';
 import { DocumentSheetComponent } from '../../../../shared/components/document-sheet/document-sheet.component';
 import { DocumentToolbarComponent } from '../../../../shared/components/document-toolbar/document-toolbar.component';
+import { ordreMissionReference } from '../../../missions/models/mission-labels';
 import { MissionPersonne, MissionRole } from '../../../missions/models/mission-personne.model';
 import { AuditFileStore } from '../../services/audit-file.store';
 
@@ -27,11 +28,9 @@ export class OrdreMissionDocumentComponent {
   readonly superviseurs = computed(() => this.membersWithRole('SUPERVISEUR'));
   readonly directeur = computed(() => this.membersWithRole('DIRECTEUR_AUDIT_INTERNE')[0] ?? null);
 
-  // "N° 005-2026-MEF/DAI": the year of the signature, or the current year.
   readonly reference = computed(() => {
     const mission = this.mission();
-    const year = mission?.dateSignature ? mission.dateSignature.slice(0, 4) : String(new Date().getFullYear());
-    return mission ? `N° ${mission.numero}-${year}-MEF/DAI` : '';
+    return mission ? `N° ${ordreMissionReference(mission)}` : '';
   });
 
   // "Sous l'égide de X, Directeur de l'Audit Interne, et sous la supervision de Y, fonction ; à effectuer..."

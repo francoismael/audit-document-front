@@ -71,6 +71,16 @@ export class MissionWorkspaceComponent {
         return countState(this.store.constats().length);
       case 'pv-affirmation':
         return this.store.pvAffirmation() ? { state: 'done', hint: '' } : { state: 'todo', hint: '' };
+      case 'rapport':
+        return this.store.rapport() ? { state: 'done', hint: '' } : { state: 'todo', hint: '' };
+      case 'pv-cloture':
+        return this.store.closingReunion() ? { state: 'done', hint: '' } : { state: 'todo', hint: '' };
+      // Done once the maintenance of every retained recommendation is decided.
+      case 'recommandations': {
+        const lignes = this.store.tableauRecommandations()?.lignes ?? [];
+        const decided = lignes.length > 0 && lignes.every((ligne) => ligne.recommandationMaintenue !== null);
+        return { state: decided ? 'done' : 'todo', hint: lignes.length > 0 ? String(lignes.length) : '' };
+      }
       default:
         return { state: 'todo', hint: '' };
     }

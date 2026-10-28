@@ -1,0 +1,32 @@
+<div class="attendees-columns">
+  <div class="attendees-group">
+    <h4>Représentants de l'entité auditée</h4>
+    @for (member of entiteMembers(); track member.personneId) {
+      <app-checkbox-field
+        [id]="idPrefix() + '-entite-' + member.personneId"
+        [config]="{ label: member.nom + ' ' + member.prenom, description: member.fonction ?? roleLabels[member.roles] }"
+        [checked]="selectedEntite().has(member.personneId)"
+        (valueChange)="toggled.emit({ type: 'ENTITE_AUDITEE', personneId: member.personneId, checked: $event })"
+      />
+    } @empty {
+      <div class="attendees-notice">
+        <p>Aucun point focal dans l'équipe de la mission. Ajoutez les représentants de la structure auditée avec le rôle « Point focal ».</p>
+        <app-button size="sm" variant="outline" (clicked)="editMission.emit()">Modifier la mission</app-button>
+      </div>
+    }
+  </div>
+
+  <div class="attendees-group">
+    <h4>Équipe de la Direction de l'Audit Interne</h4>
+    @for (member of daiMembers(); track member.personneId) {
+      <app-checkbox-field
+        [id]="idPrefix() + '-dai-' + member.personneId"
+        [config]="{ label: member.nom + ' ' + member.prenom, description: member.fonction ?? roleLabels[member.roles] }"
+        [checked]="selectedDai().has(member.personneId)"
+        (valueChange)="toggled.emit({ type: 'EQUIPE_DAI', personneId: member.personneId, checked: $event })"
+      />
+    } @empty {
+      <p class="attendees-hint">Aucun membre de la DAI dans l'équipe de la mission.</p>
+    }
+  </div>
+</div>

@@ -92,6 +92,27 @@ export const routes: Routes = [
               import('./features/audit-file/pages/pv-affirmation-document/pv-affirmation-document.component').then(
                 (m) => m.PvAffirmationDocumentComponent
               )
+          },
+          {
+            path: 'rapport',
+            loadComponent: () =>
+              import('./features/audit-file/pages/rapport-document/rapport-document.component').then(
+                (m) => m.RapportDocumentComponent
+              )
+          },
+          {
+            path: 'pv-cloture',
+            loadComponent: () =>
+              import('./features/audit-file/pages/pv-cloture-document/pv-cloture-document.component').then(
+                (m) => m.PvClotureDocumentComponent
+              )
+          },
+          {
+            path: 'recommandations',
+            loadComponent: () =>
+              import('./features/audit-file/pages/recommandations-document/recommandations-document.component').then(
+                (m) => m.RecommandationsDocumentComponent
+              )
           }
         ]
       },

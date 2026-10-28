@@ -19,8 +19,11 @@
         <app-icon-button class="modal-close" icon="close" label="Fermer la fenêtre" [disabled]="loading()" (clicked)="onCancel()" />
       </header>
 
-      <div class="modal-content">
-        <ng-content />
+      <div class="modal-scroll">
+        <div #content class="modal-content">
+          <ng-content />
+        </div>
+        <app-scroll-navigator [target]="content" />
       </div>
 
       <footer class="modal-actions">

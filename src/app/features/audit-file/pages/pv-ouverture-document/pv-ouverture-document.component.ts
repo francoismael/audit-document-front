@@ -1,19 +1,17 @@
-import { DatePipe } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { injectActionRunner } from '../../../../core/http/action-runner';
 import { ToastService } from '../../../../core/services/toast.service';
 import { ButtonComponent } from '../../../../shared/components/button/button.component';
-import { CheckboxFieldComponent } from '../../../../shared/components/checkbox-field/checkbox-field.component';
-import { DocumentSheetComponent } from '../../../../shared/components/document-sheet/document-sheet.component';
 import { DocumentToolbarComponent } from '../../../../shared/components/document-toolbar/document-toolbar.component';
 import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
 import { FormFieldComponent } from '../../../../shared/components/form-field/form-field.component';
 import { ModalComponent } from '../../../../shared/components/modal/modal.component';
 import { TextareaFieldComponent } from '../../../../shared/components/textarea-field/textarea-field.component';
-import { MISSION_ROLE_LABELS } from '../../../missions/models/mission-labels';
-import { OpeningReunionRequest, ParticipantType, Reunion, ReunionParticipant } from '../../models/reunion.model';
+import { ReunionAttendeesComponent } from '../../components/reunion-attendees/reunion-attendees.component';
+import { ReunionSheetComponent } from '../../components/reunion-sheet/reunion-sheet.component';
+import { OpeningReunionRequest, ParticipantType, Reunion, participantIds, toParticipantRequests } from '../../models/reunion.model';
 import { AuditFileStore, uniquePersons } from '../../services/audit-file.store';
 import { ReunionService } from '../../services/reunion.service';
 
@@ -38,13 +36,12 @@ type PvDraft = Record<PvTextField, string>;
   standalone: true,
   imports: [
     ButtonComponent,
-    CheckboxFieldComponent,
-    DatePipe,
-    DocumentSheetComponent,
     DocumentToolbarComponent,
     EmptyStateComponent,
     FormFieldComponent,
     ModalComponent,
+    ReunionAttendeesComponent,
+    ReunionSheetComponent,
     TextareaFieldComponent
   ],
   templateUrl: './pv-ouverture-document.component.html',
@@ -59,7 +56,6 @@ export class PvOuvertureDocumentComponent {
 
   readonly mission = this.store.mission;
   readonly reunion = this.store.openingReunion;
-  readonly roleLabels = MISSION_ROLE_LABELS;
 
   readonly editing = signal<boolean>(false);
   readonly draft = signal<PvDraft>(this.emptyDraft());
@@ -73,9 +69,6 @@ export class PvOuvertureDocumentComponent {
   // One line per person, even when a person has several roles in the mission.
   readonly entiteMembers = computed(() => uniquePersons(this.store.pointsFocaux()));
   readonly daiMembers = computed(() => uniquePersons(this.store.auditors()));
-
-  readonly entiteParticipants = computed(() => this.participantsOfType('ENTITE_AUDITEE'));
-  readonly daiParticipants = computed(() => this.participantsOfType('EQUIPE_DAI'));
 
   readonly dateError = computed(() =>
     this.showErrors() && !this.draft().dateReunion ? 'La date de la réunion est obligatoire.' : null
@@ -92,10 +85,10 @@ export class PvOuvertureDocumentComponent {
 
     this.draft.set(reunion ? this.toDraft(reunion) : this.emptyDraft());
     this.selectedEntite.set(
-      new Set(reunion ? this.idsOfType(reunion, 'ENTITE_AUDITEE') : this.entiteMembers().map((member) => member.personneId))
+      new Set(reunion ? participantIds(reunion, 'ENTITE_AUDITEE') : this.entiteMembers().map((member) => member.personneId))
     );
     this.selectedDai.set(
-      new Set(reunion ? this.idsOfType(reunion, 'EQUIPE_DAI') : this.daiMembers().map((member) => member.personneId))
+      new Set(reunion ? participantIds(reunion, 'EQUIPE_DAI') : this.daiMembers().map((member) => member.personneId))
     );
     this.showErrors.set(false);
     this.editing.set(true);
@@ -151,12 +144,8 @@ export class PvOuvertureDocumentComponent {
       pointsInterlocuteursProcessus: text(draft.pointsInterlocuteursProcessus),
       pointsInterlocuteursOrganisation: text(draft.pointsInterlocuteursOrganisation),
       participants: [
-        ...this.entiteMembers()
-          .filter((member) => this.selectedEntite().has(member.personneId))
-          .map((member) => ({ personneId: member.personneId, role: member.roles, typeParticipant: 'ENTITE_AUDITEE' as const })),
-        ...this.daiMembers()
-          .filter((member) => this.selectedDai().has(member.personneId))
-          .map((member) => ({ personneId: member.personneId, role: member.roles, typeParticipant: 'EQUIPE_DAI' as const }))
+        ...toParticipantRequests(this.entiteMembers(), this.selectedEntite(), 'ENTITE_AUDITEE'),
+        ...toParticipantRequests(this.daiMembers(), this.selectedDai(), 'EQUIPE_DAI')
       ]
     };
 
@@ -195,26 +184,6 @@ export class PvOuvertureDocumentComponent {
     if (mission) {
       this.router.navigate(['/missions', mission.id]);
     }
-  }
-
-  // "09:30:00" → "09h30".
-  formatTime(time: string | null): string {
-    return time ? time.slice(0, 5).replace(':', 'h') : '……';
-  }
-
-  describe(participant: ReunionParticipant): string {
-    const name = `${participant.nom} ${participant.prenom}`;
-    return participant.fonction ? `${name}, ${participant.fonction}` : name;
-  }
-
-  private participantsOfType(type: ParticipantType): ReunionParticipant[] {
-    return (this.reunion()?.participants ?? []).filter((participant) => participant.typeParticipant === type);
-  }
-
-  private idsOfType(reunion: Reunion, type: ParticipantType): number[] {
-    return reunion.participants
-      .filter((participant) => participant.typeParticipant === type)
-      .map((participant) => participant.personneId);
   }
 
   private toDraft(reunion: Reunion): PvDraft {

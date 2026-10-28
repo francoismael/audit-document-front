@@ -30,6 +30,8 @@ $font-family: 'Segoe UI', Roboto, Arial, sans-serif;
 // Printed business documents (Document.docx).
 $font-document: 'Times New Roman', Times, serif;
 $color-document-text: #000000;
+// Shaded header cells of the tables of Document.docx (cover page of the report).
+$color-document-shading: #C6D9F1;
 
 /* Spacing */
 $space-1: 4px;

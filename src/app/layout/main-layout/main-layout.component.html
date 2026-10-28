@@ -8,8 +8,9 @@
       <div class="main-layout-backdrop" aria-hidden="true" (click)="closeSidebar()"></div>
     }
 
-    <main class="main-layout-content">
+    <main #content class="main-layout-content">
       <router-outlet />
     </main>
+    <app-scroll-navigator [target]="content" />
   </div>
 </div>

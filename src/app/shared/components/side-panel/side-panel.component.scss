@@ -66,8 +66,18 @@
   }
 }
 
+// Holds the scrolling body and its scroll arrows.
+.side-panel-scroll {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+
 .side-panel-body {
   flex: 1;
+  min-height: 0;
   padding: $space-5 $space-6;
   overflow-y: auto;
 }

@@ -1,0 +1,41 @@
+@use 'variables' as *;
+@use 'document-form';
+
+@include document-form.styles;
+
+// Reminder of the constat above the fields of the response.
+.recommandation-context {
+  border-radius: $radius-md;
+  padding: $space-3 $space-4;
+  background-color: $color-background;
+
+  p {
+    margin: 0 0 $space-1;
+    font-size: 0.9rem;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.recommandations-table {
+  font-size: 10.5pt;
+
+  th {
+    background-color: $color-light-gray;
+  }
+
+  th:last-child {
+    width: 15%;
+  }
+
+  .recommandations-maintien {
+    text-align: center;
+  }
+}
+
+.recommandations-date {
+  display: block;
+  font-style: italic;
+}

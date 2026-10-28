@@ -1,0 +1,34 @@
+<app-document-sheet [reference]="'- ' + ((reunion().dateReunion | date: 'dd/MM/yyyy') ?? '……') + ' -'">
+  <h1>{{ title() }}</h1>
+
+  <div class="reunion-header">
+    <p class="document-info"><strong>Objet :</strong> {{ objet() }}</p>
+    <p class="document-info"><strong>Début de séance :</strong> {{ formatTime(reunion().heureDebut) }}</p>
+    <p class="document-info"><strong>Fin de séance :</strong> {{ formatTime(reunion().heureFin) }}</p>
+    <p class="document-info"><strong>Lieu :</strong> {{ reunion().lieu || '……………………' }}</p>
+  </div>
+
+  <h2>Présents</h2>
+  <h3>Représentants de l'entité auditée</h3>
+  <ul>
+    @for (participant of entiteParticipants(); track participant.id) {
+      <li>{{ describe(participant) }}</li>
+    } @empty {
+      <li>[Aucun représentant indiqué]</li>
+    }
+  </ul>
+  <h3>Équipe de la Direction de l'Audit Interne</h3>
+  <ul>
+    @for (participant of daiParticipants(); track participant.id) {
+      <li>{{ describe(participant) }}</li>
+    } @empty {
+      <li>[Aucun membre indiqué]</li>
+    }
+  </ul>
+
+  <h2>Les principaux points abordés</h2>
+  <ng-content />
+
+  <p class="reunion-closing">La séance a été levée à {{ formatTime(reunion().heureLevee) }}.</p>
+  <p class="reunion-secretary">Le secrétaire de séance</p>
+</app-document-sheet>

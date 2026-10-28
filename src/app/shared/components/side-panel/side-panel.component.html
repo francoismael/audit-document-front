@@ -23,8 +23,11 @@
       <ng-content select="[panel-tabs]" />
     </header>
 
-    <div class="side-panel-body">
-      <ng-content />
+    <div class="side-panel-scroll">
+      <div #body class="side-panel-body">
+        <ng-content />
+      </div>
+      <app-scroll-navigator [target]="body" />
     </div>
 
     <footer class="side-panel-footer">

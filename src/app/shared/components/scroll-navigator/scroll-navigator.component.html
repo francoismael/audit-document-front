@@ -1,0 +1,14 @@
+@if (position() !== 'none') {
+  <div class="scroll-navigator no-print" [class.scroll-navigator-double]="position() === 'middle'">
+    @if (position() !== 'top') {
+      <button type="button" class="scroll-navigator-button" title="Remonter en haut" aria-label="Remonter en haut" (click)="scrollToTop()">
+        <mat-icon>keyboard_arrow_up</mat-icon>
+      </button>
+    }
+    @if (position() !== 'bottom') {
+      <button type="button" class="scroll-navigator-button" title="Descendre en bas" aria-label="Descendre en bas" (click)="scrollToBottom()">
+        <mat-icon>keyboard_arrow_down</mat-icon>
+      </button>
+    }
+  </div>
+}

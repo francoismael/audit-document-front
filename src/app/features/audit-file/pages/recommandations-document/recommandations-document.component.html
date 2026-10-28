@@ -1,0 +1,105 @@
+@if (mission(); as mission) {
+  @if (editing()) {
+    <app-document-toolbar
+      title="Réponses de l'entité et maintien des recommandations"
+      description="Saisissez la réponse de l'entité auditée, puis décidez si la recommandation est maintenue. Vider une réponse la supprime."
+      [printable]="false"
+    >
+      <app-button variant="outline" [disabled]="saving()" (clicked)="cancelEditing()">Annuler</app-button>
+      <app-button [disabled]="saving()" (clicked)="save()">{{ saving() ? 'Enregistrement...' : 'Enregistrer' }}</app-button>
+    </app-document-toolbar>
+
+    <form class="file-form" (submit)="$event.preventDefault()">
+      <section class="file-form-section">
+        <h3>Recommandations retenues ({{ drafts().length }})</h3>
+        @for (draft of drafts(); track draft.ligne.recommandationId; let index = $index) {
+          <div class="file-form-item">
+            <span class="file-form-number">{{ draft.ligne.constatReference }}</span>
+            <div class="file-form-item-fields">
+              <div class="recommandation-context">
+                <p><strong>Anomalie constatée :</strong> {{ draft.ligne.anomalie }}</p>
+                <p><strong>Recommandation :</strong> {{ draft.ligne.recommandation }}</p>
+              </div>
+              <app-textarea-field
+                [id]="'reco-reponse-' + index"
+                [config]="{ label: 'Réponse de l\'entité auditée', rows: 3 }"
+                [value]="draft.reponse"
+                (valueChange)="updateReponse(index, $event)"
+              />
+              <div class="file-form-grid">
+                <app-form-field
+                  [id]="'reco-date-' + index"
+                  [config]="{ label: 'Date de la réponse', type: 'date' }"
+                  [value]="draft.dateReponse"
+                  (valueChange)="updateDraft(index, { dateReponse: $event })"
+                />
+                <app-select-field
+                  [id]="'reco-maintien-' + index"
+                  [config]="{
+                    label: 'Recommandation maintenue',
+                    options: maintienOptions,
+                    placeholder: 'À décider',
+                    disabled: !draft.reponse.trim(),
+                    errorMessage: 'Saisissez la réponse de l\'entité avant de décider du maintien.'
+                  }"
+                  [value]="draft.maintien"
+                  [invalid]="showErrors() && invalidLines().includes(draft.ligne.recommandationId)"
+                  (valueChange)="updateMaintien(index, $event)"
+                />
+              </div>
+            </div>
+          </div>
+        }
+      </section>
+    </form>
+  } @else if (lignes().length > 0) {
+    <app-document-toolbar
+      title="Tableau des recommandations"
+      [description]="lignes().length + ' recommandation(s) retenue(s) · ' + decidedCount() + ' décision(s) prise(s)'"
+    >
+      <app-button variant="outline" (clicked)="startEditing()">Saisir les réponses</app-button>
+    </app-document-toolbar>
+
+    <app-document-sheet>
+      <h1>Tableau des recommandations regroupées</h1>
+
+      <p class="document-info"><strong>Mission d'audit :</strong> {{ mission.intitule }}</p>
+      <p class="document-info"><strong>Entité auditée :</strong> {{ mission.structureNom || '……………………' }}</p>
+
+      <table class="recommandations-table">
+        <thead>
+          <tr>
+            <th>Anomalies constatées</th>
+            <th>Recommandations</th>
+            <th>Réponses</th>
+            <th>Recommandation maintenue</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (ligne of lignes(); track ligne.recommandationId) {
+            <tr>
+              <td class="document-text"><strong>{{ ligne.constatReference }}</strong> – {{ ligne.anomalie }}</td>
+              <td class="document-text">{{ ligne.recommandation }}</td>
+              <td class="document-text">
+                {{ ligne.reponse || '' }}
+                @if (ligne.dateReponse) {
+                  <span class="recommandations-date">({{ ligne.dateReponse | date: 'dd/MM/yyyy' }})</span>
+                }
+              </td>
+              <td class="recommandations-maintien">{{ maintienLabel(ligne) }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </app-document-sheet>
+  } @else if (!refreshing()) {
+    <app-document-toolbar title="Tableau des recommandations" [printable]="false" />
+    <div class="file-form-notice">
+      <p>
+        Le tableau reprend la recommandation retenue de chaque constat de la mission : établissez d'abord les fiches de
+        constats et cochez « retenue » sur une recommandation.
+      </p>
+      <app-button size="sm" variant="outline" (clicked)="openConstats()">Aller aux fiches de constats</app-button>
+    </div>
+  }
+}

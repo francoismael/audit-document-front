@@ -1,0 +1,144 @@
+@if (mission(); as mission) {
+  @if (editing()) {
+    <app-document-toolbar
+      [title]="rapport() ? 'Modifier le rapport d\'audit' : 'Établir le rapport d\'audit'"
+      description="Page de garde du rapport. Le titre et la référence de l'ordre de mission viennent de la mission. Un seul rapport par mission."
+      [printable]="false"
+    >
+      <app-button variant="outline" [disabled]="saving()" (clicked)="cancelEditing()">Annuler</app-button>
+      <app-button [disabled]="saving()" (clicked)="save()">{{ saving() ? 'Enregistrement...' : 'Enregistrer' }}</app-button>
+    </app-document-toolbar>
+
+    <form class="file-form" (submit)="$event.preventDefault()">
+      <section class="file-form-section">
+        <h3>Rapport</h3>
+        <div class="file-form-grid">
+          <app-form-field
+            [id]="'rapport-nature'"
+            [config]="{ label: 'Nature', type: 'text', placeholder: 'Ex. Audit de conformité' }"
+            [value]="draft().nature"
+            (valueChange)="updateField('nature', $event)"
+          />
+          <app-select-field
+            [id]="'rapport-version'"
+            [config]="{ label: 'Version du rapport', options: versionOptions }"
+            [value]="draft().versionRapport"
+            (valueChange)="updateVersion($event)"
+          />
+          <app-form-field
+            [id]="'rapport-date'"
+            [config]="{ label: 'Date d\'émission', type: 'date' }"
+            [value]="draft().dateEmission"
+            (valueChange)="updateField('dateEmission', $event)"
+          />
+          <app-form-field
+            [id]="'rapport-proprietaire'"
+            [config]="{ label: 'Propriétaire du document', type: 'text' }"
+            [value]="draft().proprietaireDocument"
+            (valueChange)="updateField('proprietaireDocument', $event)"
+          />
+        </div>
+        <app-textarea-field
+          [id]="'rapport-motifs'"
+          [config]="{ label: 'Motifs', rows: 3, placeholder: 'Ex. Programme annuel de la DAI, demande du Ministre...' }"
+          [value]="draft().motifs"
+          (valueChange)="updateField('motifs', $event)"
+        />
+      </section>
+
+      <section class="file-form-section">
+        <h3>Diffusion</h3>
+        <div class="file-form-grid">
+          <app-textarea-field
+            [id]="'rapport-destinataires'"
+            [config]="{ label: 'Destinataires du document (un par ligne)', rows: 3 }"
+            [value]="draft().destinataires"
+            (valueChange)="updateField('destinataires', $event)"
+          />
+          <app-select-field
+            [id]="'rapport-classification'"
+            [config]="{ label: 'Classification du document', options: classificationOptions(), placeholder: 'Non précisée', allowEmpty: true }"
+            [value]="draft().classification"
+            (valueChange)="updateField('classification', $event)"
+          />
+        </div>
+      </section>
+    </form>
+  } @else if (rapport()) {
+    @if (rapport(); as rapport) {
+      <app-document-toolbar title="Rapport d'audit" [description]="'Version ' + versionLabel()">
+        <app-button variant="outline" (clicked)="startEditing()">Modifier</app-button>
+      </app-document-toolbar>
+
+      <app-document-sheet>
+        <div class="rapport-cover">
+          <h1>{{ rapport.titre }}</h1>
+          <p class="rapport-cover-line">(OM : N° {{ omReference() }})</p>
+          <p class="rapport-cover-line">Rapport {{ versionLabel() }}</p>
+        </div>
+
+        <table class="rapport-table">
+          <tbody>
+            <tr>
+              <th>Motifs</th>
+              <th>Nature</th>
+            </tr>
+            <tr>
+              <td class="document-text">{{ rapport.motifs || '' }}</td>
+              <td class="document-text">{{ rapport.nature || '' }}</td>
+            </tr>
+            <tr>
+              <td class="rapport-label">Référence</td>
+              <td>OM n° {{ omReference() }} du {{ (rapport.dateOm | date: 'dd/MM/yyyy') ?? '……….' }}</td>
+            </tr>
+            <tr>
+              <td class="rapport-label">Version du rapport</td>
+              <td>{{ versionLabel() }}</td>
+            </tr>
+            <tr>
+              <td class="rapport-label">Date d'émission</td>
+              <td>{{ (rapport.dateEmission | date: 'dd/MM/yyyy') ?? '…………..' }}</td>
+            </tr>
+            <tr>
+              <td class="rapport-label">Propriétaire du document</td>
+              <td>{{ rapport.proprietaireDocument || '' }}</td>
+            </tr>
+            @for (destinataire of destinataires(); track $index; let first = $first) {
+              <tr>
+                @if (first) {
+                  <td class="rapport-label" [attr.rowspan]="destinataires().length">Destinataires du document</td>
+                }
+                <td>{{ destinataire }}</td>
+              </tr>
+            } @empty {
+              <tr>
+                <td class="rapport-label">Destinataires du document</td>
+                <td></td>
+              </tr>
+            }
+            @for (classification of classifications; track classification; let first = $first) {
+              <tr>
+                @if (first) {
+                  <td class="rapport-label" [attr.rowspan]="classifications.length">Classification du document</td>
+                }
+                <td>
+                  <span class="rapport-box" aria-hidden="true">{{ classification === rapport.classification ? '☒' : '☐' }}</span>
+                  {{ classification }}
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </app-document-sheet>
+    }
+  } @else {
+    <app-document-toolbar title="Rapport d'audit" [printable]="false" />
+    <app-empty-state
+      icon="document"
+      title="Pas encore de rapport d'audit"
+      description="Établissez la page de garde du rapport : motifs, nature, version, date d'émission, destinataires et classification."
+      actionLabel="Établir le rapport"
+      (action)="startEditing()"
+    />
+  }
+}

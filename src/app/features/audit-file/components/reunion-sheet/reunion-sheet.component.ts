@@ -1,0 +1,25 @@
+import { DatePipe } from '@angular/common';
+import { Component, computed, input } from '@angular/core';
+
+import { DocumentSheetComponent } from '../../../../shared/components/document-sheet/document-sheet.component';
+import { Reunion, describeParticipant, formatReunionTime, participantsOfType } from '../../models/reunion.model';
+
+// PV of an opening or closing meeting as in Document.docx; the points discussed are projected.
+@Component({
+  selector: 'app-reunion-sheet',
+  standalone: true,
+  imports: [DatePipe, DocumentSheetComponent],
+  templateUrl: './reunion-sheet.component.html',
+  styleUrl: './reunion-sheet.component.scss'
+})
+export class ReunionSheetComponent {
+  readonly reunion = input.required<Reunion>();
+  readonly title = input.required<string>();
+  readonly objet = input.required<string>();
+
+  readonly formatTime = formatReunionTime;
+  readonly describe = describeParticipant;
+
+  readonly entiteParticipants = computed(() => participantsOfType(this.reunion(), 'ENTITE_AUDITEE'));
+  readonly daiParticipants = computed(() => participantsOfType(this.reunion(), 'EQUIPE_DAI'));
+}

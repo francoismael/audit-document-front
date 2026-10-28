@@ -48,6 +48,12 @@ export function getMissionStatus(mission: Pick<Mission, 'dateDebut' | 'dateFin'>
   return mission.dateDebut ? 'ongoing' : 'undated';
 }
 
+// Reference of the mission order, "005-2026-MEF/DAI": the year of the signature, or the current year.
+export function ordreMissionReference(mission: Pick<Mission, 'numero' | 'dateSignature'>): string {
+  const year = mission.dateSignature ? mission.dateSignature.slice(0, 4) : String(new Date().getFullYear());
+  return `${mission.numero}-${year}-MEF/DAI`;
+}
+
 // Today in the format of the API dates (yyyy-MM-dd), in local time.
 export function todayAsText(): string {
   const today = new Date();

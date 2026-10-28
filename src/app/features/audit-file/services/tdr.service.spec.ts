@@ -61,17 +61,18 @@ describe('Business document services', () => {
     expect(count).toBe(2);
   });
 
-  it('should find the opening meeting of the mission', () => {
+  it('should find the opening and closing meetings of the mission in one call', () => {
     const service = TestBed.inject(ReunionService);
-    let found: number | null | undefined;
+    let found: (number | null)[] = [];
 
-    service.getByMission(10, 'OUVERTURE').subscribe((reunion) => (found = reunion?.id ?? null));
+    service.getByMission(10).subscribe((reunions) => (found = [reunions.ouverture?.id ?? null, reunions.cloture?.id ?? null]));
     httpTesting.expectOne(`${API_BASE_URL}/reunions`).flush([
       { id: 1, missionId: 10, type: 'CLOTURE' },
-      { id: 2, missionId: 10, type: 'OUVERTURE' }
+      { id: 2, missionId: 10, type: 'OUVERTURE' },
+      { id: 3, missionId: 11, type: 'OUVERTURE' }
     ]);
 
-    expect(found).toBe(2);
+    expect(found).toEqual([2, 1]);
 
     service.delete(2).subscribe();
     expect(httpTesting.expectOne(`${API_BASE_URL}/reunions/2`).request.method).toBe('DELETE');

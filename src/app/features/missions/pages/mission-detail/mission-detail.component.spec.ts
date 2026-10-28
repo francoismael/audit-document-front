@@ -120,7 +120,8 @@ describe('MissionDetailComponent', () => {
     expect(items[0]).toContain('Rempli');
     expect(items[1]).toContain('Rempli');
     expect(items[2]).toContain('Disponible');
-    expect(items[11]).toContain('À venir');
+    // The table of recommendations has no progress flag: it is only said to be available.
+    expect(items[11]).toContain('Disponible');
     expect(items[6]).toContain('À remplir');
   });
 
