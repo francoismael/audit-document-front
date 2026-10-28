@@ -1,17 +1,15 @@
 import { Component, effect, input, signal } from '@angular/core';
-import { MatIconModule } from '@angular/material/icon';
 
 type ScrollPosition = 'none' | 'top' | 'middle' | 'bottom';
 
 // Distance (px) from an end under which the area is considered at that end.
 const EDGE = 8;
 
-// Round button that replaces the vertical scrollbar of an area: ↓ at the top, ↑ at the bottom, both in between.
+// Round button that replaces the vertical scrollbar of an area: ↓ at the top, ↑ at the bottom, both in one circle in between.
 // The parent of the component must be positioned (position: relative), and must not be the scrolling area itself.
 @Component({
   selector: 'app-scroll-navigator',
   standalone: true,
-  imports: [MatIconModule],
   templateUrl: './scroll-navigator.component.html',
   styleUrl: './scroll-navigator.component.scss'
 })

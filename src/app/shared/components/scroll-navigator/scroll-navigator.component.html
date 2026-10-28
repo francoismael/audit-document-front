@@ -1,14 +1,26 @@
 @if (position() !== 'none') {
-  <div class="scroll-navigator no-print" [class.scroll-navigator-double]="position() === 'middle'">
+  <div class="scroll-navigator no-print">
     @if (position() !== 'top') {
-      <button type="button" class="scroll-navigator-button" title="Remonter en haut" aria-label="Remonter en haut" (click)="scrollToTop()">
-        <mat-icon>keyboard_arrow_up</mat-icon>
-      </button>
+      <button type="button" class="scroll-navigator-button" title="Remonter en haut" aria-label="Remonter en haut" (click)="scrollToTop()"></button>
     }
     @if (position() !== 'bottom') {
-      <button type="button" class="scroll-navigator-button" title="Descendre en bas" aria-label="Descendre en bas" (click)="scrollToBottom()">
-        <mat-icon>keyboard_arrow_down</mat-icon>
-      </button>
+      <button type="button" class="scroll-navigator-button" title="Descendre en bas" aria-label="Descendre en bas" (click)="scrollToBottom()"></button>
     }
+
+    <!-- One drawing over the whole circle, so that the chevrons are centred exactly; the buttons below take the clicks. -->
+    <svg class="scroll-navigator-chevrons" viewBox="0 0 24 24" aria-hidden="true">
+      @switch (position()) {
+        @case ('top') {
+          <polyline points="6.5 10.25 12 15.75 17.5 10.25" />
+        }
+        @case ('bottom') {
+          <polyline points="6.5 14.75 12 9.25 17.5 14.75" />
+        }
+        @default {
+          <polyline points="7.5 10.5 12 6 16.5 10.5" />
+          <polyline points="7.5 13.5 12 18 16.5 13.5" />
+        }
+      }
+    </svg>
   </div>
 }

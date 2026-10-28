@@ -7,36 +7,26 @@
   z-index: 10;
 }
 
-// A circle with one arrow, stretched into a pill holding both arrows in the middle of the area.
+// An outlined circle: one chevron at an end of the area, both chevrons in the same circle in between.
 .scroll-navigator {
+  position: relative;
   display: flex;
   flex-direction: column;
+  width: 40px;
+  height: 40px;
   overflow: hidden;
-  border-radius: 999px;
-  background-color: $color-primary;
-  box-shadow: $shadow-modal;
-  animation: scroll-navigator-in 0.2s ease-out;
-
-  &.scroll-navigator-double .scroll-navigator-button + .scroll-navigator-button {
-    border-top: 1px solid rgba($color-white, 0.2);
-  }
+  border: 3px solid $color-primary;
+  border-radius: 50%;
 }
 
+// Upper and lower halves of the circle in the middle of the area, the whole circle at an end.
 .scroll-navigator-button {
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
+  flex: 1;
+  min-height: 0;
   border: none;
   padding: 0;
   background: none;
-  color: $color-text-inverse;
   cursor: pointer;
-  transition: background-color 0.15s ease-out;
-
-  &:hover {
-    background-color: $color-turquoise;
-  }
 
   &:focus-visible {
     outline: 2px solid $color-gold;
@@ -44,14 +34,15 @@
   }
 }
 
-@keyframes scroll-navigator-in {
-  from {
-    opacity: 0;
-    transform: scale(0.8);
-  }
-
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+.scroll-navigator-chevrons {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: $color-primary;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  pointer-events: none;
 }
