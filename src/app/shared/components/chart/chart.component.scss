@@ -1,0 +1,12 @@
+// The chart fills the height given by the parent (Chart.js: maintainAspectRatio false).
+:host {
+  display: block;
+  height: 100%;
+}
+
+.chart {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}

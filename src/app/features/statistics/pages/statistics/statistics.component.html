@@ -1,10 +1,52 @@
-<app-page-header
-  title="Statistiques"
-  description="Indicateurs sur les missions et les documents générés."
-/>
+<app-page-header title="Statistiques" description="Évolution des documents générés, des missions et du remplissage des dossiers d'audit.">
+  <app-select-field
+    class="statistics-period"
+    [id]="'statistics-period'"
+    [config]="{ label: 'Période', options: periodOptions }"
+    [value]="period()"
+    (valueChange)="period.set($event)"
+  />
+</app-page-header>
 
-<app-empty-state
-  icon="folder"
-  title="Page en préparation"
-  description="Cette fonctionnalité est en cours de développement."
-/>
+@if (loading()) {
+  <app-loading message="Chargement des statistiques..." [fullPage]="true" />
+} @else if (errorMessage()) {
+  <app-empty-state
+    icon="folder"
+    title="Impossible de charger les statistiques"
+    [description]="errorMessage() ?? ''"
+    actionLabel="Réessayer"
+    (action)="reload()"
+  />
+} @else {
+  <!-- The four charts in a square of 2 x 2 that fills the screen: everything is seen at once. -->
+  <div class="statistics-grid">
+    <app-card title="Documents générés par type" description="Nombre de documents générés chaque mois, pour chaque type." variant="elevated">
+      <div class="statistics-chart">
+        <app-chart [config]="documentsByTypeChart()" label="Courbes du nombre de documents générés par mois et par type" />
+      </div>
+    </app-card>
+
+    <app-card title="Cumul des documents générés" description="Total des documents générés depuis le début." variant="elevated">
+      <div class="statistics-chart">
+        <app-chart [config]="cumulativeChart()" label="Courbe du total cumulé des documents générés" />
+      </div>
+    </app-card>
+
+    <app-card title="Missions commencées" description="Missions selon le mois de leur date de début." variant="elevated">
+      <div class="statistics-chart">
+        <app-chart [config]="missionsChart()" label="Courbe du nombre de missions commencées par mois" />
+      </div>
+    </app-card>
+
+    <app-card
+      title="Remplissage des dossiers d'audit"
+      description="Part des missions qui ont chaque document (toutes périodes)."
+      variant="elevated"
+    >
+      <div class="statistics-chart">
+        <app-chart [config]="fillingChart()" label="Courbe de la part des missions ayant chaque document du dossier" />
+      </div>
+    </app-card>
+  </div>
+}

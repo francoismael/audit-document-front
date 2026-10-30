@@ -55,6 +55,8 @@ $workspace-header-height: 88px + $workspace-header-gap;
 // Inner margin of the page area (main layout). A pinned element sticks inside it: its offset must remove it.
 $content-padding: $space-6;
 $content-padding-tablet: $space-4;
+// Room under the page content, so that the round scroll button (app-scroll-navigator) never hides its last line.
+$scroll-navigator-room: 56px;
 $topbar-height: 64px;
 $breakpoint-tablet: 992px;
 $color-backdrop: rgba($color-dark, 0.45);

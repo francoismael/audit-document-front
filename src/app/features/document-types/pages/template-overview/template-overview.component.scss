@@ -1,0 +1,34 @@
+@use 'variables' as *;
+
+.overview-tiles {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: $space-4;
+  margin-bottom: $space-5;
+
+  @media (max-width: 1200px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @media (max-width: 640px) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.overview-name {
+  display: block;
+  color: $color-text;
+  font-weight: 600;
+}
+
+.overview-meta {
+  display: block;
+  color: $color-text-muted;
+  font-size: 0.8rem;
+}
+
+.overview-hint {
+  margin: $space-3 0 0;
+  color: $color-text-muted;
+  font-size: 0.85rem;
+}

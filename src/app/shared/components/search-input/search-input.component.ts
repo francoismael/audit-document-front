@@ -10,6 +10,8 @@ const SEARCH_DELAY_MS = 300;
   styleUrl: './search-input.component.scss'
 })
 export class SearchInputComponent {
+  // Text shown above the field, like the label of the other fields.
+  readonly label = input<string>('Rechercher');
   readonly placeholder = input<string>('Rechercher...');
   readonly value = input<string>('');
   readonly disabled = input<boolean>(false);

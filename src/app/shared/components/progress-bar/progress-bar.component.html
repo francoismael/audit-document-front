@@ -1,0 +1,10 @@
+<progress
+  class="progress-bar"
+  [class.progress-bar-complete]="percent() === 100"
+  [class.progress-bar-sm]="size() === 'sm'"
+  [value]="percent()"
+  max="100"
+  [attr.aria-label]="label()"
+>
+  {{ percent() }} %
+</progress>

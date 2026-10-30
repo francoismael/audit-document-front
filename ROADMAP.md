@@ -322,7 +322,7 @@ L'ordre de mission correspond à la mission elle-même : sa gestion couvre ce pr
 - [x] **Création et modification** (`MissionFormModalComponent`) : intitulé, objet, structure, dates de début, de fin et de signature ; équipe : personne + rôle parmi les 5 valeurs fixes (groupée par rôle), une même personne ne peut pas avoir deux fois le même rôle ; rappel « les représentants de l'entité auditée ont le rôle Point focal ». Contrôles : intitulé et structure obligatoires, date de fin après la date de début.
 - [x] Création rapide dans une fenêtre par-dessus le formulaire : « + » à côté des structures (nom, description → sélectionnée automatiquement) et à côté des personnes (nom, prénom, matricule, fonction, service → ajoutée à l'équipe si un rôle est déjà choisi). Échap ne ferme que la fenêtre du dessus.
 - [x] **Détail** dans le tiroir : onglets Informations (ordre de mission), Équipe (groupée par rôle), Dossier d'audit (avancement et les 12 documents dans l'ordre de l'audit, avec leur état) et Documents générés (ouvrent le tiroir de l'historique). Pied : Modifier, Générer un document.
-- [ ] **Saisie des documents métier** : reportée aux étapes 12 à 22. L'onglet Dossier d'audit liste déjà les documents et l'étape qui les apportera. **À décider à l'étape 12** : où afficher la saisie d'un document métier (tiroir agrandi, ou espace de travail dédié pour les documents longs comme le rapport).
+- [x] **Saisie des documents métier** : faite aux étapes 12 à 22 (espace de travail de la mission). L'onglet Dossier d'audit liste déjà les documents et l'étape qui les apportera. **À décider à l'étape 12** : où afficher la saisie d'un document métier (tiroir agrandi, ou espace de travail dédié pour les documents longs comme le rapport).
 - [x] Listes de personnes pour les formulaires : `MissionService.getTeam()` renvoie l'équipe avec `missionPersonneId` (règle du 19/10/2026), prêt pour les étapes 12 et suivantes.
 - [x] Backend :
   - `MissionRequestValidator` : intitulé obligatoire (500 caractères maximum), structure obligatoire, ordre des dates, pas de doublon personne + rôle (erreurs 400 claires au lieu d'erreurs techniques) ;
@@ -442,32 +442,33 @@ Règles communes à ces 11 étapes :
 
 ### Étape 23 — Tableau de bord (`/dashboard`)
 
-- [ ] Source : `GET /statistiques` et `GET /statistiques/avancement`.
-- [ ] Indicateurs avec des tuiles : missions (en cours, à venir, terminées, sans dates), documents générés et types actifs.
-- [ ] Derniers documents générés (`derniersDocuments`), avec un lien vers l'historique.
-- [ ] Avancement des missions : une barre de progression par mission, avec le détail des 7 documents, et un lien vers la mission.
-- [ ] Liens rapides vers « Créer un document » et « Nouvelle mission ».
+- [x] Source : `GET /statistiques` et `GET /statistiques/avancement`.
+- [x] Mise en page d'après la maquette de l'utilisateur (28/10/2026), adaptée à nos données : tuiles d'indicateurs (`app-stat-tile`) ; tableau des derniers documents (icône, type en pastille de couleur, mission, date, voir / télécharger) ; « Documents générés » en barres avec la valeur au-dessus et un filtre de période (3, 6, 12 mois) ; « Répartition des missions » en anneau avec le total au centre et une légende en % et nombre (terminées, en cours, à venir, sans dates).
+- [x] Avancement des dossiers : une barre (`app-progress-bar`) par mission, les dossiers en cours d'abord, lien vers la mission.
+- [x] Liens rapides « Nouvelle mission » (ouvre le formulaire : `/missions?nouvelle=1`) et « Générer un document ».
 - **Validation :** les chiffres correspondent à la base.
 
 ### Étape 24 — Statistiques (`/statistics`)
 
-- [ ] Source : `GET /statistiques` et `GET /statistiques/avancement`.
-- [ ] Graphiques : documents générés par mois (12 derniers mois), documents par type, répartition des missions par état, avancement des missions.
-- [ ] Choisir une approche sans dépendance lourde (SVG simple) ou ajouter une bibliothèque de graphiques. À décider au début de l'étape.
+- [x] Bibliothèque : **Chart.js 4.4.7** (choix de l'utilisateur, 28/10/2026), via le composant partagé `app-chart`. Couleurs dans `chart-palette.ts`, copie de `_variables.scss` (le canvas ne lit pas le SCSS).
+- [x] Graphiques en **courbes** (demande de l'utilisateur), lissées sans dépasser les points (`monotone`) : documents générés par type et par mois, cumul des documents, missions commencées par mois, part des missions ayant chaque document du dossier. Filtre de période (3, 6, 12 mois) et tuiles (documents, moyenne par mois, missions commencées, avancement moyen).
+- [x] Source : `GET /documents-generes`, `GET /missions` et `GET /statistiques/avancement` : les courbes par type et par mois sont calculées dans le front, sans nouvel endpoint.
 - **Validation :** les graphiques correspondent aux chiffres de l'API, y compris quand il n'y a encore aucun document (état vide).
 
 ### Étape 25 — Paramètres (`/settings`)
 
-- [ ] Source : `GET /parametres`, en lecture seule.
-- [ ] Afficher les informations générales, les paramètres de génération (formats, taille maximale, syntaxe `{{nomDuChamp}}`), les types de champs et les rôles de mission.
-- [ ] Aucun paramètre modifiable : le backend n'en expose pas.
+- [x] Source : `GET /parametres`, en lecture seule (`SettingsService`). Cartes Application, Génération, Types de champs et Rôles de mission (libellés lisibles et code).
+- [x] Afficher les informations générales, les paramètres de génération (formats, taille maximale, syntaxe `{{nomDuChamp}}`), les types de champs et les rôles de mission.
+- [x] Aucun paramètre modifiable : le backend n'en expose pas (message en haut de page).
 - **Validation :** les valeurs affichées correspondent à `application.properties`.
 
 ### Étape 26 — Templates et champs (`/templates`)
 
-- [ ] Décider au début de l'étape : fusionner ce menu dans « Types de documents » (l'étape 9 couvre déjà la configuration) ou garder une vue d'ensemble légère.
-- [ ] Si vue d'ensemble : pour chaque type, présence d'un modèle (nom et version), nombre de champs et statut de vérification, avec une action « Configurer » vers `/document-types/:id` (sans dupliquer la page de l'étape 9).
-- [ ] ⛔ Il n'existe pas d'API qui liste les anciennes versions d'un modèle. On n'affiche que le modèle actif de chaque type.
+- [x] Décidé : vue d'ensemble légère (le menu existe déjà) ; la configuration reste dans « Types de documents ».
+- [x] Vue d'ensemble : pour chaque type, présence d'un modèle (nom et version), nombre de champs et statut de vérification, avec une action « Configurer » vers `/document-types/:id` (sans dupliquer la page de l'étape 9).
+- [x] ⛔ Il n'existe pas d'API qui liste les anciennes versions d'un modèle. On n'affiche que le modèle actif de chaque type (indiqué sous le tableau).
+
+- **Résultat (étapes 23 à 26) :** build OK, 223 tests unitaires OK. Pages vérifiées sur captures d'écran avec les vraies données (backend de test sur 8081, front sur 4300). Nouvelles briques partagées : `app-chart`, `app-stat-tile`, `app-progress-bar` (aussi utilisée par le tiroir de la mission), emplacement `[card-actions]` dans `app-card`.
 - **Validation :** l'état affiché correspond à ce qui est configuré.
 
 ### Étape 27 — Recette complète
@@ -534,3 +535,7 @@ Règles communes à ces 11 étapes :
 | 26/10/2026 | Étape 15 | Ajustement | Fiche d'interview : date de chaque visa (rédigé, supervisé, validé le) saisie sous la personne et affichée dans le tableau des visas ; date de rédaction = aujourd'hui par défaut. Colonnes `date_redaction`, `date_supervision`, `date_validation` (back et spring) |
 | 27/10/2026 | Étapes 20 à 22 | Fait (tests unitaires) | Rapport d'audit (page de garde), PV de réunion de clôture (briques partagées avec le PV d'ouverture), tableau des recommandations (réponses et maintien). Les 12 documents du dossier sont disponibles. Backend (back et spring) : titre du rapport sans objet, décision effacée avec la dernière réponse. Validation navigateur à faire |
 | 27/10/2026 | Interface | Ajustement | Barres de défilement verticales masquées dans tout le projet, remplacées par `app-scroll-navigator` (bouton rond : ↓ en haut, ↑ et ↓ au milieu, ↑ en bas) sur le contenu principal, le tiroir et les fenêtres ; barres horizontales gardées fines pour les tableaux larges |
+| 28/10/2026 | Étapes 23 à 26 | Fait | Tableau de bord (maquette de l'utilisateur : tuiles, derniers documents, barres par mois, anneau des missions, avancement), statistiques en courbes avec Chart.js, paramètres en lecture seule, vue d'ensemble des templates. Reste l'étape 27 (recette) |
+| 28/10/2026 | Étapes 23 et 24 | Ajustement | Demandes de l'utilisateur : plus de tuiles en haut des statistiques ni du tableau de bord. Statistiques : les 4 courbes en carré 2 × 2 qui remplit l'écran (sans défilement sur ordinateur). Tableau de bord : sous le tableau des documents, 4 blocs en 2 × 2 (barres, anneau, avancement, « Indicateurs clés » : chiffre / total avec jauge, composant `app-key-figure`) |
+| 30/10/2026 | Documents et génération | Ajustement | Génération PDF avec **Microsoft Word** (`app.pdf.engine=word`, back et spring) : rendu identique à Word, LibreOffice gardé en option (écarts constatés : puces, logo qui recouvre le texte, justification). PV d'ouverture : titre en premier, logo de la République de Madagascar, puis le Ministère, date « Antananarivo, le … » ; PV d'affirmation : logo de la République. Champ de recherche avec un libellé visible |
+| 30/10/2026 | Types de documents | Changement de règle | Demande de l'utilisateur : un type qui a déjà servi peut être supprimé. Ses documents générés restent dans l'historique et les statistiques avec le code et le nom du type (« (type supprimé) » à l'écran). Back et spring : `document_genere.document_type_id` facultatif, colonnes `document_type_code` et `document_type_nom` (bases réelles mises à jour, fichiers SQL aussi). Dashboard : barres plus fines, indicateurs sans icône, tableau sans carte, blocs du bas qui remplissent leur place |

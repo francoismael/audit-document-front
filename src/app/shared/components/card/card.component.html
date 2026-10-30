@@ -10,13 +10,20 @@
 >
   @if (title() || description()) {
     <header class="card-header">
-      @if (title()) {
-        <h2 class="card-title">{{ title() }}</h2>
-      }
+      <div class="card-heading">
+        @if (title()) {
+          <h2 class="card-title">{{ title() }}</h2>
+        }
 
-      @if (description()) {
-        <p class="card-description">{{ description() }}</p>
-      }
+        @if (description()) {
+          <p class="card-description">{{ description() }}</p>
+        }
+      </div>
+
+      <!-- Actions on the right of the title: a link, a period filter... -->
+      <div class="card-actions">
+        <ng-content select="[card-actions]" />
+      </div>
     </header>
   }
 

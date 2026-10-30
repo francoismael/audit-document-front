@@ -1,7 +1,7 @@
 import { formatDate } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
-import { Router, RouterOutlet } from '@angular/router';
+import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
 import { catchError, from, map, switchMap, tap } from 'rxjs';
 
 import { injectActionRunner } from '../../../../core/http/action-runner';
@@ -61,6 +61,7 @@ export class MissionListComponent {
   private readonly missionService = inject(MissionService);
   private readonly toastService = inject(ToastService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   private readonly runAction = injectActionRunner();
 
   readonly missions = signal<Mission[]>([]);
@@ -145,6 +146,12 @@ export class MissionListComponent {
 
         this.loading.set(false);
       });
+
+    // "Nouvelle mission" from the dashboard: /missions?nouvelle=1 opens the creation form.
+    if (this.route.snapshot.queryParamMap.has('nouvelle')) {
+      this.openCreateForm();
+      this.router.navigate([], { relativeTo: this.route, queryParams: {}, replaceUrl: true });
+    }
   }
 
   reloadMissions(): void {

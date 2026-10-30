@@ -1,10 +1,62 @@
-<app-page-header
-  title="Paramètres"
-  description="Configuration générale de l'application."
-/>
+<app-page-header title="Paramètres" description="Configuration générale de l'application, définie par le serveur." />
 
-<app-empty-state
-  icon="folder"
-  title="Page en préparation"
-  description="Cette fonctionnalité est en cours de développement."
-/>
+@if (loading()) {
+  <app-loading message="Chargement des paramètres..." [fullPage]="true" />
+} @else if (errorMessage()) {
+  <app-empty-state
+    icon="folder"
+    title="Impossible de charger les paramètres"
+    [description]="errorMessage() ?? ''"
+    actionLabel="Réessayer"
+    (action)="reload()"
+  />
+} @else if (settings()) {
+  @if (settings(); as settings) {
+    <p class="settings-notice">
+      Ces paramètres sont en lecture seule : ils se modifient dans la configuration du serveur (application.properties).
+    </p>
+
+    <div class="settings-grid">
+      <app-card title="Application" variant="elevated">
+        <app-detail-row label="Nom">{{ settings.nomApplication }}</app-detail-row>
+        <app-detail-row label="Dossier des modèles">
+          <code>{{ settings.dossierModeles }}</code>
+        </app-detail-row>
+        <app-detail-row label="Dossier des documents générés">
+          <code>{{ settings.dossierDocumentsGeneres }}</code>
+        </app-detail-row>
+      </app-card>
+
+      <app-card title="Génération des documents" variant="elevated">
+        <app-detail-row label="Formats des modèles">{{ settings.formatsModeles.join(', ') }}</app-detail-row>
+        <app-detail-row label="Format généré">{{ settings.formatsGeneration.join(', ') }}</app-detail-row>
+        <app-detail-row label="Taille maximale d'un fichier">{{ settings.tailleMaxFichier }}</app-detail-row>
+        <app-detail-row label="Variables dans un modèle">
+          <code>{{ settings.syntaxeVariables }}</code>
+        </app-detail-row>
+      </app-card>
+
+      <app-card title="Types de champs" description="Types possibles pour les champs d'un type de document." variant="elevated">
+        <ul class="settings-chips">
+          @for (type of settings.typesChamps; track type) {
+            <li>
+              <span class="settings-chip-label">{{ fieldTypeLabels[type] }}</span>
+              <code>{{ type }}</code>
+            </li>
+          }
+        </ul>
+      </app-card>
+
+      <app-card title="Rôles de mission" description="Rôles fixes des membres de l'équipe d'une mission." variant="elevated">
+        <ul class="settings-chips">
+          @for (role of settings.rolesMission; track role) {
+            <li>
+              <span class="settings-chip-label">{{ roleLabels[role] }}</span>
+              <code>{{ role }}</code>
+            </li>
+          }
+        </ul>
+      </app-card>
+    </div>
+  }
+}

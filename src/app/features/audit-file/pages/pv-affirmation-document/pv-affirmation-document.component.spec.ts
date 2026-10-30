@@ -108,6 +108,7 @@ describe('PvAffirmationDocumentComponent', () => {
 
     const sheet = element.querySelector('app-document-sheet')?.textContent?.replace(/\s+/g, ' ') ?? '';
     expect(sheet).toContain('[OM N° 005]');
+    expect(element.querySelector('.document-sheet-logo')?.getAttribute('alt')).toBe('Logo de la République de Madagascar');
     expect(sheet).toContain('du 02/11/2026 au 27/11/2026');
     expect(sheet).toContain('Ravelo Tiana, Directeur des RH');
     expect(sheet).toContain('Un antivirus sera installé.');

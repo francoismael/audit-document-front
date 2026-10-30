@@ -1,10 +1,22 @@
 <article class="document-sheet" [class.document-sheet-landscape]="orientation() === 'landscape'">
   <header class="document-sheet-header">
-    <img
-      class="document-sheet-logo"
-      src="images/logos/minitere_economie_et_finance.png"
-      alt="Logo du Ministère de l'Économie et des Finances"
-    />
+    @if (heading()) {
+      <h1 class="document-sheet-heading">{{ heading() }}</h1>
+    }
+
+    @if (logo() === 'republique') {
+      <img
+        class="document-sheet-logo document-sheet-logo-republique"
+        src="images/logos/Logo republique de madagascar.png"
+        alt="Logo de la République de Madagascar"
+      />
+    } @else {
+      <img
+        class="document-sheet-logo"
+        src="images/logos/minitere_economie_et_finance.png"
+        alt="Logo du Ministère de l'Économie et des Finances"
+      />
+    }
     <p>MINISTÈRE DE L'ÉCONOMIE ET DES FINANCES</p>
     <p>DIRECTION DE L'AUDIT INTERNE</p>
   </header>

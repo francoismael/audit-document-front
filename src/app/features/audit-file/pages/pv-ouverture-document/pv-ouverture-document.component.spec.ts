@@ -108,7 +108,10 @@ describe('PvOuvertureDocumentComponent', () => {
     fixture.detectChanges();
 
     const sheet = element.querySelector('app-document-sheet')?.textContent?.replace(/\s+/g, ' ') ?? '';
-    expect(sheet).toContain('- 02/11/2026 -');
+    expect(sheet).toContain('Antananarivo, le 02/11/2026');
+    // Title first, then the logo of the Republic.
+    expect(element.querySelector('.document-sheet-heading')?.textContent).toContain("Procès-verbal de réunion d'ouverture");
+    expect(element.querySelector('.document-sheet-logo')?.getAttribute('alt')).toBe('Logo de la République de Madagascar');
     expect(sheet).toContain('Réunion de lancement de la mission « Audit de la gestion financière »');
     expect(sheet).toContain('09h00');
     expect(sheet).toContain('Ravelo Tiana, Directeur des RH');

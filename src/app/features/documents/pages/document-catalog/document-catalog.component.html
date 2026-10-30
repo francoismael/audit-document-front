@@ -26,6 +26,7 @@
     <div class="document-catalog-search">
       <app-search-input
         [id]="'document-catalog-search'"
+      label="Rechercher un type de document"
         placeholder="Rechercher par nom ou par code..."
         [value]="search()"
         (search)="search.set($event)"

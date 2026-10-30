@@ -24,7 +24,7 @@ import { normalizeForSearch } from '../../../../shared/utils/search';
 import { DocumentTypeService } from '../../../document-types/services/document-type.service';
 import { MissionService } from '../../../missions/services/mission.service';
 import { DocumentHistoryFilters } from '../../models/document-history-filters.model';
-import { GeneratedDocument } from '../../models/generated-document.model';
+import { GeneratedDocument, documentTypeLabel } from '../../models/generated-document.model';
 import { DocumentHistoryService } from '../../services/document-history.service';
 import { GeneratedDocumentDetailComponent } from '../generated-document-detail/generated-document-detail.component';
 
@@ -110,7 +110,7 @@ export class DocumentHistoryComponent {
     this.visibleDocuments().map((document) => ({
       id: document.id,
       nomFichier: document.nomFichier,
-      type: document.documentTypeNom,
+      type: documentTypeLabel(document),
       mission: document.missionNumero ?? '—',
       dateGeneration: formatDate(document.dateGeneration, 'dd/MM/yyyy HH:mm', 'en-US'),
       taille: document.taille

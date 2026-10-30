@@ -1,0 +1,25 @@
+<article
+  class="key-figure"
+  [class.key-figure-turquoise]="tone() === 'turquoise'"
+  [class.key-figure-gold]="tone() === 'gold'"
+  [class.key-figure-green]="tone() === 'green'"
+>
+  <span class="key-figure-label">{{ label() }}</span>
+
+  <p class="key-figure-value">
+    <strong>{{ value() }}</strong>
+    @if (total() !== null) {
+      <span>/ {{ total() }}</span>
+    }
+  </p>
+
+  @if (total() !== null) {
+    <progress class="key-figure-gauge" [value]="percent()" max="100" [attr.aria-label]="label() + ' : ' + percent() + ' %'">
+      {{ percent() }} %
+    </progress>
+  }
+
+  @if (caption()) {
+    <span class="key-figure-caption">{{ caption() }}</span>
+  }
+</article>

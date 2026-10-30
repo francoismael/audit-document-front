@@ -6,7 +6,7 @@
   @if (document(); as document) {
     <div panel-badges class="detail-badges">
       <span class="detail-chip detail-chip-format">{{ format() }}</span>
-      <span class="detail-chip">{{ document.documentTypeNom }}</span>
+      <span class="detail-chip">{{ typeLabel(document) }}</span>
       @if (document.missionNumero) {
         <span class="detail-chip">{{ document.missionNumero }}</span>
       }
@@ -42,7 +42,7 @@
         @case ('details') {
           <section class="detail-section">
             <h3 class="detail-section-title">Informations</h3>
-            <app-detail-row label="Type de document">{{ document.documentTypeNom }}</app-detail-row>
+            <app-detail-row label="Type de document">{{ typeLabel(document) }}</app-detail-row>
             <app-detail-row label="Mission">
               {{ document.missionNumero ? document.missionNumero + ' — ' + document.missionIntitule : 'Aucune' }}
             </app-detail-row>

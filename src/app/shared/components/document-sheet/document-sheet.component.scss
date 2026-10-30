@@ -9,7 +9,7 @@
   max-width: 210mm;
   min-height: 297mm;
   margin: 0 auto;
-  padding: 8mm 18mm 20mm;
+  padding: 4mm 18mm 20mm;
   background-color: $color-white;
   box-shadow: $shadow-card;
   color: $color-document-text;
@@ -26,7 +26,7 @@
   @media print {
     max-width: none;
     min-height: auto;
-    padding: 10mm 18mm 18mm;
+    padding: 6mm 18mm 18mm;
     box-shadow: none;
     -webkit-box-decoration-break: clone;
     box-decoration-break: clone;
@@ -68,6 +68,21 @@
   height: 128px;
   margin: -$space-3 auto (-$space-3);
   object-fit: contain;
+}
+
+// Title written first, above the logo: same look as the titles of the documents.
+.document-sheet-heading {
+  margin: $space-4 0 $space-3;
+  font-size: 13pt;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+// The logo of the Republic is a wide picture with no transparent border: sized by its height, no negative margins.
+.document-sheet-logo-republique {
+  width: auto;
+  height: 140px;
+  margin: 0 auto $space-2;
 }
 
 // Place and date or reference, on its own line at the right.

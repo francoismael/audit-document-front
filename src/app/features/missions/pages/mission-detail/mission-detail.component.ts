@@ -11,13 +11,14 @@ import { ButtonComponent } from '../../../../shared/components/button/button.com
 import { DetailRowComponent } from '../../../../shared/components/detail-row/detail-row.component';
 import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
 import { LoadingComponent } from '../../../../shared/components/loading/loading.component';
+import { ProgressBarComponent } from '../../../../shared/components/progress-bar/progress-bar.component';
 import { SidePanelComponent } from '../../../../shared/components/side-panel/side-panel.component';
 import { StatusBadgeComponent } from '../../../../shared/components/status-badge/status-badge.component';
 import { TabsComponent } from '../../../../shared/components/tabs/tabs.component';
 import { TabItem } from '../../../../shared/components/tabs/tabs.interface';
 import { IconButtonComponent } from '../../../../shared/components/icon-button/icon-button.component';
 import { FileSizePipe } from '../../../../shared/pipes/file-size.pipe';
-import { GeneratedDocument } from '../../../document-history/models/generated-document.model';
+import { GeneratedDocument, documentTypeLabel } from '../../../document-history/models/generated-document.model';
 import { DocumentHistoryService } from '../../../document-history/services/document-history.service';
 import { MissionProgress } from '../../../statistics/models/statistics.model';
 import { StatisticsService } from '../../../statistics/services/statistics.service';
@@ -57,6 +58,7 @@ type MissionLoadResult = LoadedMission | { error: string };
     IconButtonComponent,
     LoadingComponent,
     MissionFormModalComponent,
+    ProgressBarComponent,
     SidePanelComponent,
     StatusBadgeComponent,
     TabsComponent
@@ -65,6 +67,8 @@ type MissionLoadResult = LoadedMission | { error: string };
   styleUrl: './mission-detail.component.scss'
 })
 export class MissionDetailComponent {
+  readonly typeLabel = documentTypeLabel;
+
   private readonly missionService = inject(MissionService);
   private readonly statisticsService = inject(StatisticsService);
   private readonly documentHistoryService = inject(DocumentHistoryService);

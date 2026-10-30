@@ -78,6 +78,7 @@ describe('RapportDocumentComponent', () => {
     const sheet = element.querySelector('app-document-sheet')?.textContent?.replace(/\s+/g, ' ') ?? '';
     expect(sheet).toContain('RAPPORT D’AUDIT SUR Contrôle des procédures comptables.');
     expect(sheet).toContain('(OM : N° 005-2026-MEF/DAI)');
+    expect(element.querySelector('.document-sheet-logo')?.getAttribute('alt')).toBe('Logo de la République de Madagascar');
     expect(sheet).toContain('Rapport définitif');
     expect(sheet).toContain('OM n° 005-2026-MEF/DAI du 30/10/2026');
     expect(sheet).toContain('20/12/2026');

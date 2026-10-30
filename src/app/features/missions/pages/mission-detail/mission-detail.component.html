@@ -91,7 +91,7 @@
                   {{ progress.documentsCompletes }} / {{ progress.documentsAttendus }} · {{ progress.pourcentage }} %
                 </span>
               </div>
-              <progress class="mission-progress" [value]="progress.pourcentage" max="100">{{ progress.pourcentage }} %</progress>
+              <app-progress-bar [value]="progress.pourcentage" label="Avancement du dossier d'audit" />
             </section>
           }
 
@@ -141,7 +141,7 @@
                   <button class="mission-document" type="button" (click)="openDocument(document)">
                     <span class="mission-list-name">{{ document.nomFichier }}</span>
                     <span class="mission-list-meta">
-                      {{ document.documentTypeNom }} · {{ document.dateGeneration | date: 'dd/MM/yyyy HH:mm' }} ·
+                      {{ typeLabel(document) }} · {{ document.dateGeneration | date: 'dd/MM/yyyy HH:mm' }} ·
                       {{ document.taille | fileSize }}
                     </span>
                   </button>

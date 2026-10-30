@@ -16,6 +16,7 @@
     flex: 1;
     min-width: 0;
     padding: $content-padding;
+    padding-bottom: $content-padding + $scroll-navigator-room;
     overflow-y: auto;
   }
 
@@ -28,6 +29,7 @@
   .main-layout {
     .main-layout-content {
       padding: $content-padding-tablet;
+      padding-bottom: $content-padding-tablet + $scroll-navigator-room;
     }
 
     .main-layout-backdrop {

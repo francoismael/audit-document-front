@@ -1,0 +1,300 @@
+@use 'variables' as *;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: $space-5;
+}
+
+.dashboard-documents {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
+.dashboard-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-3;
+
+  h2 {
+    margin: 0;
+    color: $color-primary;
+    font-size: 18px;
+    font-weight: 600;
+  }
+}
+
+// The four blocks under the table: 2 x 2, rows of the same height.
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: 1fr;
+  gap: $space-5;
+
+  @media (max-width: 1100px) {
+    grid-template-columns: minmax(0, 1fr);
+    grid-auto-rows: auto;
+  }
+}
+
+.dashboard-figures {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  gap: $space-3;
+  // Fills the card: the four figures share its whole height.
+  height: 100%;
+
+  @media (max-width: 640px) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.dashboard-period {
+  width: 190px;
+}
+
+.dashboard-chart {
+  height: 100%;
+  min-height: 260px;
+}
+
+// Name of a document, with a small document icon, as in the mock-up.
+.dashboard-document {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-3;
+  border: none;
+  padding: 0;
+  background: none;
+  color: $color-text;
+  font: inherit;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+
+  &:hover {
+    color: $color-turquoise;
+  }
+}
+
+.dashboard-document-icon {
+  position: relative;
+  flex-shrink: 0;
+  width: 14px;
+  height: 18px;
+  border-radius: 2px 6px 2px 2px;
+  background-color: $color-turquoise;
+
+  &::after {
+    position: absolute;
+    right: 3px;
+    bottom: 4px;
+    left: 3px;
+    height: 6px;
+    border-top: 2px solid $color-white;
+    border-bottom: 2px solid $color-white;
+    content: '';
+  }
+}
+
+// Type of the document: a soft pill, one color per type.
+.dashboard-type {
+  display: inline-block;
+  border-radius: $radius-sm;
+  padding: 2px $space-2;
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+
+  &.dashboard-type-0 {
+    background-color: $color-info-light;
+    color: $color-turquoise;
+  }
+
+  &.dashboard-type-1 {
+    background-color: $color-success-light;
+    color: $color-green;
+  }
+
+  &.dashboard-type-2 {
+    background-color: $color-warning-light;
+    color: $color-gold-dark;
+  }
+
+  &.dashboard-type-3 {
+    background-color: $color-light-gray;
+    color: $color-primary;
+  }
+
+  &.dashboard-type-4 {
+    background-color: $color-danger-light;
+    color: $color-danger;
+  }
+
+  &.dashboard-type-deleted {
+    background-color: $color-background;
+    color: $color-text-muted;
+  }
+}
+
+.dashboard-actions {
+  display: inline-flex;
+  gap: $space-1;
+}
+
+.dashboard-donut {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-evenly;
+  gap: $space-6;
+  // Centered in the whole height of the card.
+  height: 100%;
+}
+
+.dashboard-donut-chart {
+  position: relative;
+  width: 260px;
+  height: 260px;
+}
+
+// Total written in the hole of the donut.
+.dashboard-donut-total {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+
+  strong {
+    color: $color-primary;
+    font-size: 2.5rem;
+    line-height: 1.1;
+  }
+
+  span {
+    color: $color-text-muted;
+    font-size: 0.85rem;
+  }
+}
+
+.dashboard-legend {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: grid;
+    grid-template-columns: 12px minmax(90px, 1fr) auto auto;
+    align-items: center;
+    gap: $space-3;
+    font-size: 0.9rem;
+  }
+}
+
+// In the order of missionStatusSlices(): terminées, en cours, à venir, sans dates.
+.dashboard-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+
+  &.dashboard-legend-0 {
+    background-color: $color-green;
+  }
+
+  &.dashboard-legend-1 {
+    background-color: $color-turquoise;
+  }
+
+  &.dashboard-legend-2 {
+    background-color: $color-gold;
+  }
+
+  &.dashboard-legend-3 {
+    background-color: $color-text-muted;
+  }
+}
+
+.dashboard-legend-label {
+  color: $color-text;
+}
+
+.dashboard-legend-share {
+  color: $color-primary;
+  font-weight: 700;
+  text-align: right;
+}
+
+.dashboard-legend-count {
+  color: $color-text-muted;
+}
+
+.dashboard-progress {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: flex;
+    flex-direction: column;
+    gap: $space-2;
+  }
+}
+
+.dashboard-progress-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: $space-3;
+}
+
+.dashboard-progress-mission {
+  display: flex;
+  flex-direction: column;
+  border: none;
+  padding: 0;
+  background: none;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  min-width: 0;
+
+  &:hover .dashboard-progress-intitule {
+    color: $color-turquoise;
+  }
+}
+
+.dashboard-progress-numero {
+  color: $color-text-muted;
+  font-size: 0.8rem;
+}
+
+.dashboard-progress-intitule {
+  overflow: hidden;
+  color: $color-text;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dashboard-progress-value {
+  flex-shrink: 0;
+  color: $color-primary;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.dashboard-progress-empty {
+  color: $color-text-muted;
+}

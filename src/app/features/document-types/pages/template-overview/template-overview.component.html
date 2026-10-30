@@ -1,10 +1,84 @@
 <app-page-header
   title="Templates et champs"
-  description="Vue d'ensemble des modèles Word et des champs de chaque type de document."
+  description="Vue d'ensemble des modèles Word et des champs de chaque type de document. La configuration se fait dans « Types de documents »."
 />
 
-<app-empty-state
-  icon="document"
-  title="Page en préparation"
-  description="Cette fonctionnalité est en cours de développement."
-/>
+@if (loading()) {
+  <app-loading message="Chargement des modèles..." [fullPage]="true" />
+} @else if (errorMessage()) {
+  <app-empty-state
+    icon="document"
+    title="Impossible de charger les modèles"
+    [description]="errorMessage() ?? ''"
+    actionLabel="Réessayer"
+    (action)="reload()"
+  />
+} @else if (items().length === 0) {
+  <app-empty-state
+    icon="document"
+    title="Aucun type de document"
+    description="Créez un type de document, puis ajoutez son modèle Word et ses champs."
+    actionLabel="Aller aux types de documents"
+    (action)="openTypes()"
+  />
+} @else {
+  <section class="overview-tiles" aria-label="Indicateurs des modèles">
+    <app-stat-tile label="Types de documents" icon="category" [value]="items().length" />
+    <app-stat-tile label="Avec un modèle Word" icon="description" tone="turquoise" [value]="withTemplate()" [hint]="'sur ' + items().length" />
+    <app-stat-tile label="Modèles conformes" icon="task_alt" tone="green" [value]="validTemplates()" [hint]="'sur ' + withTemplate() + ' modèle(s)'" />
+    <app-stat-tile label="Champs configurés" icon="dynamic_form" tone="gold" [value]="fieldCount()" />
+  </section>
+
+  <app-data-table [columns]="columns" [rows]="rows()">
+    <ng-template appDataTableCell="type" let-row>
+      @if (findItem(row); as item) {
+        <span class="overview-name">{{ item.form.documentType.nom }}</span>
+        <span class="overview-meta">{{ item.form.documentType.code }}</span>
+      }
+    </ng-template>
+
+    <ng-template appDataTableCell="statut" let-row>
+      @if (findItem(row); as item) {
+        <app-status-badge
+          size="sm"
+          [status]="item.form.documentType.actif ? 'approved' : 'cancelled'"
+          [label]="item.form.documentType.actif ? 'Actif' : 'Inactif'"
+        />
+      }
+    </ng-template>
+
+    <ng-template appDataTableCell="modele" let-row>
+      @if (findItem(row); as item) {
+        @if (item.form.template; as template) {
+          <span class="overview-name">{{ template.nomFichierOriginal }}</span>
+          <span class="overview-meta">Version {{ template.version }} · {{ templateDate(item) }}</span>
+        } @else {
+          <span class="overview-meta">Aucun modèle</span>
+        }
+      }
+    </ng-template>
+
+    <ng-template appDataTableCell="champs" let-row>
+      @if (findItem(row); as item) {
+        <span class="overview-name">{{ item.form.fields.length }}</span>
+        <span class="overview-meta">dont {{ requiredFields(item) }} obligatoire(s)</span>
+      }
+    </ng-template>
+
+    <ng-template appDataTableCell="verification" let-row>
+      @if (findItem(row); as item) {
+        @if (checkBadge(item); as badge) {
+          <app-status-badge size="sm" [status]="badge.status" [label]="badge.label" />
+        }
+      }
+    </ng-template>
+
+    <ng-template appDataTableCell="actions" let-row>
+      @if (findItem(row); as item) {
+        <app-icon-button icon="tune" variant="primary" label="Configurer" (clicked)="configure(item)" />
+      }
+    </ng-template>
+  </app-data-table>
+
+  <p class="overview-hint">Seul le modèle actif de chaque type est affiché : l'API ne donne pas les anciennes versions.</p>
+}

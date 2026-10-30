@@ -21,7 +21,7 @@ import { DynamicField, DynamicFormValues } from '../../../../shared/interfaces/d
 import { FileSizePipe } from '../../../../shared/pipes/file-size.pipe';
 import { DocumentTypeService } from '../../../document-types/services/document-type.service';
 import { toDynamicFields } from '../../../documents/models/dynamic-field.mapper';
-import { GeneratedDocument } from '../../models/generated-document.model';
+import { GeneratedDocument, documentTypeLabel } from '../../models/generated-document.model';
 import { DocumentHistoryService } from '../../services/document-history.service';
 
 type DetailTab = 'details' | 'values';
@@ -54,6 +54,8 @@ type DetailLoadResult = LoadedDocument | { error: string };
   styleUrl: './generated-document-detail.component.scss'
 })
 export class GeneratedDocumentDetailComponent {
+  readonly typeLabel = documentTypeLabel;
+
   private readonly documentHistoryService = inject(DocumentHistoryService);
   private readonly documentTypeService = inject(DocumentTypeService);
   private readonly toastService = inject(ToastService);
@@ -165,11 +167,14 @@ export class GeneratedDocumentDetailComponent {
 
   private fetchDocument(documentId: number): Observable<DetailLoadResult> {
     return this.documentHistoryService.getById(documentId).pipe(
+      // Without its type (deleted), the labels of the fields are no longer known.
       switchMap((document) =>
-        this.documentTypeService.getForm(document.documentTypeId).pipe(
-          map((form) => ({ document, fields: toDynamicFields(form.fields) })),
-          catchError(() => of({ document, fields: [] }))
-        )
+        document.documentTypeId === null
+          ? of({ document, fields: [] })
+          : this.documentTypeService.getForm(document.documentTypeId).pipe(
+              map((form) => ({ document, fields: toDynamicFields(form.fields) })),
+              catchError(() => of({ document, fields: [] }))
+            )
       ),
       catchError((error: unknown) => from(readApiErrorMessage(error)).pipe(map((message) => ({ error: message }))))
     );

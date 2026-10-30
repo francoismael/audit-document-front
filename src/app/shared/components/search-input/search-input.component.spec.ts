@@ -34,6 +34,18 @@ describe('SearchInputComponent', () => {
     expect(element.querySelectorAll('button').length).toBe(0);
   });
 
+  it('should show its label above the field, linked to it', () => {
+    const label = (): HTMLLabelElement | null => element.querySelector('label');
+
+    expect(label()?.textContent?.trim()).toBe('Rechercher');
+    expect(label()?.htmlFor).toBe('test-search');
+
+    fixture.componentRef.setInput('label', 'Rechercher une mission');
+    fixture.detectChanges();
+
+    expect(label()?.textContent?.trim()).toBe('Rechercher une mission');
+  });
+
   it('should show the loader while typing, then search once the user stops', fakeAsync(() => {
     typeText('rap');
     typeText('rapport ');

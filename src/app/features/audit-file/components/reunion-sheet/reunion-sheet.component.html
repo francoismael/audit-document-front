@@ -1,5 +1,11 @@
-<app-document-sheet [reference]="'- ' + ((reunion().dateReunion | date: 'dd/MM/yyyy') ?? '……') + ' -'">
-  <h1>{{ title() }}</h1>
+<app-document-sheet
+  [heading]="officialHeader() ? title() : ''"
+  [logo]="officialHeader() ? 'republique' : 'mef'"
+  [reference]="reference()"
+>
+  @if (!officialHeader()) {
+    <h1>{{ title() }}</h1>
+  }
 
   <div class="reunion-header">
     <p class="document-info"><strong>Objet :</strong> {{ objet() }}</p>

@@ -1,7 +1,7 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Router, provideRouter } from '@angular/router';
+import { ActivatedRoute, Router, convertToParamMap, provideRouter } from '@angular/router';
 
 import { API_BASE_URL } from '../../../../core/http/api.config';
 import { Mission } from '../../models/mission.model';
@@ -125,5 +125,26 @@ describe('MissionListComponent', () => {
     fixture.detectChanges();
 
     expect(rowTexts().length).toBe(1);
+  });
+});
+
+describe('MissionListComponent opened with ?nouvelle', () => {
+  it('should open the creation form, then remove the parameter from the address', async () => {
+    await TestBed.configureTestingModule({
+      imports: [MissionListComponent],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideRouter([]),
+        { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: convertToParamMap({ nouvelle: '1' }) } } }
+      ]
+    }).compileComponents();
+
+    const navigate = spyOn(TestBed.inject(Router), 'navigate');
+    const component = TestBed.createComponent(MissionListComponent).componentInstance;
+
+    expect(component.formOpen()).toBeTrue();
+    expect(component.editedMission()).toBeNull();
+    expect(navigate).toHaveBeenCalledWith([], jasmine.objectContaining({ queryParams: {}, replaceUrl: true }));
   });
 });

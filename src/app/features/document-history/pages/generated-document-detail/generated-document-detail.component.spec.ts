@@ -101,6 +101,17 @@ describe('GeneratedDocumentDetailComponent', () => {
     expect(element.textContent).toContain('Contrôle annuel');
   });
 
+  it('should keep the name of a deleted type, without asking for its form', () => {
+    fixture.componentRef.setInput('id', '9');
+    fixture.detectChanges();
+
+    httpTesting.expectOne(`${URL}/9`).flush({ ...DOCUMENT, id: 9, documentTypeId: null });
+    fixture.detectChanges();
+
+    const chips = Array.from(element.querySelectorAll('.detail-chip')).map((chip) => chip.textContent?.trim());
+    expect(chips).toContain('Fiche de suivi (type supprimé)');
+  });
+
   it('should delete the document after confirmation, tell the list and close', () => {
     const navigate = spyOn(TestBed.inject(Router), 'navigate');
     const deleted: number[] = [];

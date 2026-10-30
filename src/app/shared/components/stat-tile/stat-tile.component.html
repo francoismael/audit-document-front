@@ -1,0 +1,19 @@
+<article class="stat-tile">
+  <span
+    class="stat-tile-icon"
+    [class.stat-tile-turquoise]="tone() === 'turquoise'"
+    [class.stat-tile-gold]="tone() === 'gold'"
+    [class.stat-tile-green]="tone() === 'green'"
+    aria-hidden="true"
+  >
+    <mat-icon>{{ icon() }}</mat-icon>
+  </span>
+
+  <div class="stat-tile-text">
+    <span class="stat-tile-label">{{ label() }}</span>
+    <strong class="stat-tile-value">{{ value() }}</strong>
+    @if (hint()) {
+      <span class="stat-tile-hint">{{ hint() }}</span>
+    }
+  </div>
+</article>

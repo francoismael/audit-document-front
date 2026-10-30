@@ -1,4 +1,156 @@
-<app-page-header
-  title="Tableau de bord"
-  description="Voici un aperçu de votre système de documents dynamiques."
-/>
+<app-page-header title="Tableau de bord" description="Vue d'ensemble des missions d'audit et des documents générés.">
+  <app-button variant="outline" (clicked)="createMission()">Nouvelle mission</app-button>
+  <app-button (clicked)="generateDocument()">Générer un document</app-button>
+</app-page-header>
+
+@if (loading()) {
+  <app-loading message="Chargement du tableau de bord..." [fullPage]="true" />
+} @else if (errorMessage()) {
+  <app-empty-state
+    icon="folder"
+    title="Impossible de charger le tableau de bord"
+    [description]="errorMessage() ?? ''"
+    actionLabel="Réessayer"
+    (action)="reload()"
+  />
+} @else if (statistics()) {
+  @if (statistics(); as statistics) {
+    <!-- The table lies on the page, as in the lists (no card around it). -->
+    <section class="dashboard-documents">
+      <div class="dashboard-section-head">
+        <h2>Derniers documents générés</h2>
+        <app-button variant="ghost" size="sm" (clicked)="openHistory()">Voir l'historique</app-button>
+      </div>
+
+      <app-data-table
+        [columns]="documentColumns"
+        [rows]="documentRows()"
+        emptyMessage="Aucun document généré pour le moment."
+      >
+        <ng-template appDataTableCell="nomFichier" let-row>
+          @if (findDocument(row); as document) {
+            <button class="dashboard-document" type="button" (click)="openDocument(document)">
+              <span class="dashboard-document-icon" aria-hidden="true"></span>
+              {{ document.nomFichier }}
+            </button>
+          }
+        </ng-template>
+
+        <ng-template appDataTableCell="type" let-row>
+          @if (findDocument(row); as document) {
+            <span class="dashboard-type" [class]="typeColor(document)">{{ typeLabel(document) }}</span>
+          }
+        </ng-template>
+
+        <ng-template appDataTableCell="actions" let-row>
+          @if (findDocument(row); as document) {
+            <div class="dashboard-actions">
+              <app-icon-button icon="visibility" variant="primary" label="Voir le détail" (clicked)="openDocument(document)" />
+              <app-icon-button
+                icon="download"
+                label="Télécharger"
+                [disabled]="downloadingId() === document.id"
+                (clicked)="downloadDocument(document)"
+              />
+            </div>
+          }
+        </ng-template>
+      </app-data-table>
+    </section>
+
+    <!-- The four blocks under the table, in a square of 2 x 2. -->
+    <div class="dashboard-grid">
+      <app-card title="Documents générés" description="Nombre de documents générés chaque mois." variant="elevated">
+        <app-select-field
+          card-actions
+          class="dashboard-period"
+          [id]="'dashboard-period'"
+          [config]="{ label: 'Période', options: periodOptions }"
+          [value]="period()"
+          (valueChange)="period.set($event)"
+        />
+        <div class="dashboard-chart">
+          <app-chart [config]="documentsChart()" label="Nombre de documents générés par mois" />
+        </div>
+      </app-card>
+
+      <app-card title="Répartition des missions" description="Missions selon leurs dates." variant="elevated">
+        <div class="dashboard-donut">
+          <div class="dashboard-donut-chart">
+            <app-chart [config]="missionsChart()" label="Répartition des missions par état" />
+            <div class="dashboard-donut-total" aria-hidden="true">
+              <strong>{{ missionTotal() }}</strong>
+              <span>Total</span>
+            </div>
+          </div>
+
+          <ul class="dashboard-legend">
+            @for (slice of missionSlices(); track slice.label) {
+              <li>
+                <span class="dashboard-legend-dot" [class]="'dashboard-legend-' + $index" aria-hidden="true"></span>
+                <span class="dashboard-legend-label">{{ slice.label }}</span>
+                <span class="dashboard-legend-share">{{ share(slice.count) }}</span>
+                <span class="dashboard-legend-count">({{ slice.count }})</span>
+              </li>
+            }
+          </ul>
+        </div>
+      </app-card>
+
+      <app-card title="Avancement des dossiers d'audit" description="Documents métier remplis pour chaque mission." variant="elevated">
+        <app-button card-actions variant="ghost" size="sm" (clicked)="openMissions()">Voir les missions</app-button>
+
+        <ul class="dashboard-progress">
+          @for (progress of progressList(); track progress.missionId) {
+            <li>
+              <div class="dashboard-progress-head">
+                <button class="dashboard-progress-mission" type="button" (click)="openMission(progress)">
+                  <span class="dashboard-progress-numero">N° {{ progress.missionNumero }}</span>
+                  <span class="dashboard-progress-intitule">{{ progress.missionIntitule }}</span>
+                </button>
+                <span class="dashboard-progress-value">
+                  {{ progress.documentsCompletes }} / {{ progress.documentsAttendus }} · {{ rounded(progress.pourcentage) }} %
+                </span>
+              </div>
+              <app-progress-bar size="sm" [value]="progress.pourcentage" [label]="'Avancement de la mission ' + progress.missionNumero" />
+            </li>
+          } @empty {
+            <li class="dashboard-progress-empty">Aucune mission pour le moment.</li>
+          }
+        </ul>
+      </app-card>
+
+      <app-card title="Indicateurs clés" description="Les chiffres principaux du moment." variant="elevated">
+        <div class="dashboard-figures">
+          <app-key-figure
+            label="Missions en cours"
+            tone="turquoise"
+            [value]="statistics.missionsEnCours"
+            [total]="statistics.nombreMissions"
+            [caption]="statistics.missionsAVenir + ' à venir'"
+          />
+          <app-key-figure
+            label="Missions terminées"
+            tone="green"
+            [value]="statistics.missionsTerminees"
+            [total]="statistics.nombreMissions"
+            [caption]="statistics.missionsSansDates + ' sans dates'"
+          />
+          <app-key-figure
+            label="Documents de la période"
+            [value]="periodTotal()"
+            [total]="statistics.nombreDocumentsGeneres"
+            [caption]="'sur les ' + period() + ' derniers mois'"
+          />
+          <app-key-figure
+            label="Types actifs"
+            tone="gold"
+            [value]="statistics.nombreTypesActifs"
+            [total]="statistics.nombreTypesDocuments"
+            [caption]="statistics.nombreTypesDocuments - statistics.nombreTypesActifs + ' inactif(s)'"
+          />
+        </div>
+      </app-card>
+    </div>
+  }
+}

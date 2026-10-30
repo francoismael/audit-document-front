@@ -1,0 +1,59 @@
+@use 'variables' as *;
+
+.stat-tile {
+  display: flex;
+  align-items: center;
+  gap: $space-4;
+  height: 100%;
+  border-radius: $radius-lg;
+  padding: $space-5;
+  background-color: $color-white;
+  box-shadow: $shadow-card;
+}
+
+.stat-tile-icon {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: $radius-md;
+  background-color: $color-info-light;
+  color: $color-primary;
+
+  &.stat-tile-turquoise {
+    color: $color-turquoise;
+  }
+
+  &.stat-tile-gold {
+    background-color: $color-warning-light;
+    color: $color-gold-dark;
+  }
+
+  &.stat-tile-green {
+    background-color: $color-success-light;
+    color: $color-green;
+  }
+}
+
+.stat-tile-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.stat-tile-label {
+  color: $color-text-muted;
+  font-size: 0.85rem;
+}
+
+.stat-tile-value {
+  color: $color-primary;
+  font-size: 1.75rem;
+  line-height: 1.2;
+}
+
+.stat-tile-hint {
+  color: $color-text-muted;
+  font-size: 0.8rem;
+}
